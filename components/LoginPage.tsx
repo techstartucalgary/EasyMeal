@@ -8,9 +8,18 @@ import {
   Platform,
 } from "react-native";
 
+import { useFonts } from "expo-font";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 function LoginPage() {
+  const [fontsLoaded] = useFonts({
+    "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.loginContainer}>
       <View style={styles.loginHeader}>
@@ -35,7 +44,7 @@ const styles = StyleSheet.create({
   },
   loginContainer: {
     flex: 1,
-    backgroundColor: "#333333",
+    backgroundColor: "#333",
   },
   loginHeader: {
     flexDirection: "row",
@@ -47,9 +56,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   loginText: {
-    fontFamily: "Inter",
+    fontFamily: "Inter-SemiBold",
     fontSize: 18,
-    fontWeight: "600",
     color: "#212325",
   },
 });
