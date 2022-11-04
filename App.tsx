@@ -4,17 +4,14 @@ import { StyleSheet, Text, View } from "react-native";
 import LoginPage from "./components/LoginPage";
 
 export default function App() {
-  return (
-    <View>
-      <LoginPage />
-      {/*
-    <View style={styles.container}>
+  /*
+  <View style={styles.container}>
       <Text>Open up App.tsx to start working on your app!</Text>
       <StatusBar style="auto" />
-    </View>
-  */}
-    </View>
-  );
+  </View>
+  */
+
+  return <LoginPage />;
 }
 
 const styles = StyleSheet.create({
