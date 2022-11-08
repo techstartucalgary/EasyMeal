@@ -1,8 +1,10 @@
+import React from "react";
+
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 
 import LoginPage from "./components/LoginPage";
-import { CounterContextProvider } from "./contexts/CounterContext";
+import { UserDataContextProvider } from "./contexts/UserDataContext";
 
 export default function App() {
   /*
@@ -13,9 +15,9 @@ export default function App() {
   */
 
   return (
-    <CounterContextProvider>
+    <UserDataContextProvider>
       <LoginPage />
-    </CounterContextProvider>
+    </UserDataContextProvider>
   );
 }
 

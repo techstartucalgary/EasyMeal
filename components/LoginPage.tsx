@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,8 +13,6 @@ import {
 import { useFonts } from "expo-font";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-import { CounterContext } from "../contexts/CounterContext";
-
 function LoginPage() {
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
@@ -26,8 +24,6 @@ function LoginPage() {
     return null;
   }
 
-  const { count, increment, decrement } = React.useContext(CounterContext);
-
   return (
     <SafeAreaView style={styles.loginContainer}>
       <View style={styles.loginHeader}>
@@ -37,7 +33,7 @@ function LoginPage() {
           color="black"
           style={styles.backButton}
         />
-        <Text style={styles.loginText}>TEST</Text>
+        <Text style={styles.loginText}>Login</Text>
       </View>
       <TextInput
         style={[styles.loginInput, styles.emailInput]}
@@ -53,8 +49,6 @@ function LoginPage() {
         <Text style={styles.signupText}>Don't have an account yet?</Text>
         <Text style={[styles.signupText, styles.signupButton]}> Sign Up</Text>
       </View>
-      <Text>{`Test count: ${count}`}</Text>
-      <Button title="Increment" onPress={increment} />
     </SafeAreaView>
   );
 }
