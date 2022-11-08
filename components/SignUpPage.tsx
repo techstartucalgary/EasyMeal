@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,8 +13,12 @@ import {
 import { useFonts } from "expo-font";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
+import { UserDataContext } from "../contexts/UserDataContext";
+
 function SignUpPage() {
   const [hidePassword, setHidePassword] = useState(true);
+  const [nameInput, setNameInput] = useState("");
+  const { name, setName } = useContext(UserDataContext);
 
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
@@ -31,23 +35,28 @@ function SignUpPage() {
   }
 
   return (
-    <SafeAreaView style={styles.loginContainer}>
-      <View style={styles.loginHeader}>
+    <SafeAreaView style={styles.signupContainer}>
+      <View style={styles.signupHeader}>
         <AntDesign
           name="arrowleft"
           size={24}
           color="black"
           style={styles.backButton}
         />
-        <Text style={styles.loginText}>Sign Up</Text>
+        <Text style={styles.signupText}>Sign Up</Text>
       </View>
       <TextInput
-        style={[styles.loginInput, styles.emailInput]}
+        style={[styles.signupInput]}
+        placeholder="Name"
+        onChangeText={setNameInput}
+      />
+      <TextInput
+        style={[styles.signupInput, styles.emailInput]}
         placeholder="Email"
       />
       <View style={styles.passwordContainer}>
         <TextInput
-          style={[styles.loginInput, styles.passwordInput]}
+          style={[styles.signupInput, styles.passwordInput]}
           placeholder="Password"
           secureTextEntry={hidePassword}
         />
@@ -61,11 +70,19 @@ function SignUpPage() {
       </View>
 
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
-      <Text style={styles.loginButton}>Sign Up</Text>
-      <View style={styles.signupTextContainer}>
-        <Text style={styles.signupText}>Already have an account?</Text>
-        <Text style={[styles.signupText, styles.signupButton]}> Login</Text>
+      <Text
+        style={styles.signupButton}
+        onPress={() => {
+          setName(nameInput);
+        }}
+      >
+        Sign Up
+      </Text>
+      <View style={styles.loginTextContainer}>
+        <Text style={styles.loginText}>Already have an account?</Text>
+        <Text style={[styles.loginText, styles.loginButton]}> Login</Text>
       </View>
+      <Text style={{ color: "green" }}>{`User Name Input: ${name}`}</Text>
     </SafeAreaView>
   );
 }
@@ -78,7 +95,7 @@ const styles = StyleSheet.create({
     left: 20,
   },
   emailInput: {
-    marginTop: 56,
+    marginTop: 24,
   },
   forgotPassword: {
     color: "#6536F9",
@@ -91,50 +108,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 20,
   },
-  loginContainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   loginButton: {
-    fontFamily: "Inter-SemiBold",
-    fontSize: 18,
-    textAlign: "center",
-    textAlignVertical: "center",
-    color: "#fcfcfc",
-    backgroundColor: "#6536F9",
-    borderRadius: 16,
-    height: 56,
-    marginLeft: 16,
-    marginRight: 16,
-    marginTop: 36,
-  },
-  loginHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    paddingTop: 16,
-    paddingBottom: 16,
-  },
-  loginInput: {
-    backgroundColor: "#fff",
-    borderColor: "#f1f1f1",
-    borderWidth: 2,
-    borderRadius: 16,
-    height: 56,
-
-    marginLeft: 16,
-    marginRight: 16,
-    paddingLeft: 16,
-    fontFamily: "Inter-Regular",
-    fontSize: 16,
-    textAlignVertical: "center",
+    color: "#6536F9",
   },
   loginText: {
-    fontFamily: "Inter-SemiBold",
-    fontSize: 18,
-    color: "#212325",
+    fontFamily: "Inter-Medium",
+    fontSize: 16,
+    color: "#91919F",
+  },
+  loginTextContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 36,
   },
   passwordContainer: {
     marginTop: 24,
@@ -147,18 +133,50 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginRight: 0,
   },
+  signupContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   signupButton: {
-    color: "#6536F9",
+    fontFamily: "Inter-SemiBold",
+    fontSize: 18,
+    textAlign: "center",
+    textAlignVertical: "center",
+    color: "#fcfcfc",
+    backgroundColor: "#6536F9",
+    borderRadius: 16,
+    height: 56,
+    marginLeft: 16,
+    marginRight: 16,
+    marginTop: 36,
+  },
+  signupHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+  signupInput: {
+    backgroundColor: "#fff",
+    borderColor: "#f1f1f1",
+    borderWidth: 2,
+    borderRadius: 16,
+    height: 56,
+
+    marginLeft: 16,
+    marginRight: 16,
+    marginTop: 56,
+    paddingLeft: 16,
+    fontFamily: "Inter-Regular",
+    fontSize: 16,
+    textAlignVertical: "center",
   },
   signupText: {
-    fontFamily: "Inter-Medium",
-    fontSize: 16,
-    color: "#91919F",
-  },
-  signupTextContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 36,
+    fontFamily: "Inter-SemiBold",
+    fontSize: 18,
+    color: "#212325",
   },
 });
