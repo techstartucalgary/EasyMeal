@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -14,6 +14,8 @@ import { useFonts } from "expo-font";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 function LoginPage() {
+  const [hidePassword, setHidePassword] = useState(true);
+
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
     "Inter-Medium": require("../assets/fonts/Inter-Medium.ttf"),
@@ -22,6 +24,10 @@ function LoginPage() {
 
   if (!fontsLoaded) {
     return null;
+  }
+
+  function toggleHidePassword() {
+    setHidePassword(!hidePassword);
   }
 
   return (
@@ -39,10 +45,21 @@ function LoginPage() {
         style={[styles.loginInput, styles.emailInput]}
         placeholder="Email"
       />
-      <TextInput
-        style={[styles.loginInput, styles.passwordInput]}
-        placeholder="Password"
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={[styles.loginInput, styles.passwordInput]}
+          placeholder="Password"
+          secureTextEntry={hidePassword}
+        />
+        <AntDesign
+          name={hidePassword ? "eyeo" : "eye"}
+          size={22}
+          color="#91919F"
+          style={styles.hidePassword}
+          onPress={toggleHidePassword}
+        />
+      </View>
+
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
       <Text style={styles.loginButton}>Login</Text>
       <View style={styles.signupTextContainer}>
@@ -69,6 +86,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginLeft: 20,
     marginTop: 12,
+  },
+  hidePassword: {
+    position: "absolute",
+    right: 20,
   },
   loginContainer: {
     flex: 1,
@@ -115,8 +136,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#212325",
   },
-  passwordInput: {
+  passwordContainer: {
     marginTop: 24,
+    marginRight: 16,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  passwordInput: {
+    flex: 1,
+    marginTop: 0,
+    marginRight: 0,
   },
   signupButton: {
     color: "#6536F9",
