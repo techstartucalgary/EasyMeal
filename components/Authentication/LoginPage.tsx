@@ -17,9 +17,9 @@ function LoginPage() {
   const [hidePassword, setHidePassword] = useState(true);
 
   const [fontsLoaded] = useFonts({
-    "Inter-SemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
-    "Inter-Medium": require("../assets/fonts/Inter-Medium.ttf"),
-    "Inter-Regular": require("../assets/fonts/Inter-Regular.ttf"),
+    "Inter-SemiBold": require("../../assets/fonts/Inter-SemiBold.ttf"),
+    "Inter-Medium": require("../../assets/fonts/Inter-Medium.ttf"),
+    "Inter-Regular": require("../../assets/fonts/Inter-Regular.ttf"),
   });
 
   if (!fontsLoaded) {

@@ -3,8 +3,8 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 
-import LoginPage from "./components/LoginPage";
-import SignUpPage from "./components/SignUpPage";
+import LoginPage from "./components/Authentication/LoginPage";
+import SignUpPage from "./components/Authentication/SignUpPage";
 import { UserDataContextProvider } from "./contexts/UserDataContext";
 
 export default function App() {
