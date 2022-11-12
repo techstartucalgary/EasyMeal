@@ -1,27 +1,27 @@
 {
   "compilerOptions": {
+    "importHelpers": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "jsx": "react-native",
-    "lib": [
-      "es2017"
-    ],
-    "types": [
-      "react-native",
-      "jest"
-    ],
+    "lib": ["es5", "es6", "es7", "es2017", "es2019", "dom"],
+    "types": ["react-native"],
+    "declaration": true,
+    "sourceMap": true,
     "moduleResolution": "node",
     "noEmit": true,
     "strict": true,
     "target": "esnext",
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["./@types"]
   },
-  "include": [
-    "src"
-  ],
+  "exclude": ["**/*/node_modules", "build", "dist"],
   "extends": "expo/tsconfig.base"
 }

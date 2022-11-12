@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,31 +8,33 @@ import {
   Button,
   StatusBar,
   Platform,
-} from "react-native";
+} from 'react-native';
 
-import { useFonts } from "expo-font";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { useFonts } from 'expo-font';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
-import { UserDataContext } from "../../contexts/UserDataContext";
+import { useAuthContext } from 'contexts/AuthContext';
 
 function SignUpPage() {
   const [hidePassword, setHidePassword] = useState(true);
-  const [nameInput, setNameInput] = useState("");
-  const { name, setName } = useContext(UserDataContext);
+  const [nameInput, setNameInput] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const { register } = useAuthContext();
 
   const [fontsLoaded] = useFonts({
-    "Inter-SemiBold": require("../../assets/fonts/Inter-SemiBold.ttf"),
-    "Inter-Medium": require("../../assets/fonts/Inter-Medium.ttf"),
-    "Inter-Regular": require("../../assets/fonts/Inter-Regular.ttf"),
+    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
+    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
+    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
   });
 
   if (!fontsLoaded) {
     return null;
   }
 
-  function toggleHidePassword() {
+  const toggleHidePassword = () => {
     setHidePassword(!hidePassword);
-  }
+  };
 
   return (
     <SafeAreaView style={styles.signupContainer}>
@@ -53,27 +55,28 @@ function SignUpPage() {
       <TextInput
         style={[styles.signupInput, styles.emailInput]}
         placeholder="Email"
+        onChangeText={setRegisterEmail}
       />
       <View style={styles.passwordContainer}>
         <TextInput
           style={[styles.signupInput, styles.passwordInput]}
           placeholder="Password"
           secureTextEntry={hidePassword}
+          onChangeText={setRegisterPassword}
         />
         <AntDesign
-          name={hidePassword ? "eyeo" : "eye"}
+          name={hidePassword ? 'eyeo' : 'eye'}
           size={22}
           color="#91919F"
           style={styles.hidePassword}
           onPress={toggleHidePassword}
         />
       </View>
-
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
       <Text
         style={styles.signupButton}
         onPress={() => {
-          setName(nameInput);
+          register({ registerEmail, registerPassword });
         }}
       >
         Sign Up
@@ -82,7 +85,7 @@ function SignUpPage() {
         <Text style={styles.loginText}>Already have an account?</Text>
         <Text style={[styles.loginText, styles.loginButton]}> Login</Text>
       </View>
-      <Text style={{ color: "green" }}>{`User Name Input: ${name}`}</Text>
+      <Text style={{ color: 'green' }}>{`User Name Input: ${nameInput}`}</Text>
     </SafeAreaView>
   );
 }
@@ -91,42 +94,42 @@ export default SignUpPage;
 
 const styles = StyleSheet.create({
   backButton: {
-    position: "absolute",
+    position: 'absolute',
     left: 20,
   },
   emailInput: {
     marginTop: 24,
   },
   forgotPassword: {
-    color: "#6536F9",
-    fontFamily: "Inter-Regular",
+    color: '#6536F9',
+    fontFamily: 'Inter-Regular',
     fontSize: 13,
     marginLeft: 20,
     marginTop: 12,
   },
   hidePassword: {
-    position: "absolute",
+    position: 'absolute',
     right: 20,
   },
   loginButton: {
-    color: "#6536F9",
+    color: '#6536F9',
   },
   loginText: {
-    fontFamily: "Inter-Medium",
+    fontFamily: 'Inter-Medium',
     fontSize: 16,
-    color: "#91919F",
+    color: '#91919F',
   },
   loginTextContainer: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginTop: 36,
   },
   passwordContainer: {
     marginTop: 24,
     marginRight: 16,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   passwordInput: {
     flex: 1,
@@ -135,15 +138,16 @@ const styles = StyleSheet.create({
   },
   signupContainer: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   signupButton: {
-    fontFamily: "Inter-SemiBold",
+    fontFamily: 'Inter-SemiBold',
     fontSize: 18,
-    textAlign: "center",
-    textAlignVertical: "center",
-    color: "#fcfcfc",
-    backgroundColor: "#6536F9",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#fcfcfc',
+    backgroundColor: '#6536F9',
     borderRadius: 16,
     height: 56,
     marginLeft: 16,
@@ -151,17 +155,17 @@ const styles = StyleSheet.create({
     marginTop: 36,
   },
   signupHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     paddingTop: 16,
     paddingBottom: 16,
   },
   signupInput: {
-    backgroundColor: "#fff",
-    borderColor: "#f1f1f1",
+    backgroundColor: '#fff',
+    borderColor: '#f1f1f1',
     borderWidth: 2,
     borderRadius: 16,
     height: 56,
@@ -170,13 +174,13 @@ const styles = StyleSheet.create({
     marginRight: 16,
     marginTop: 56,
     paddingLeft: 16,
-    fontFamily: "Inter-Regular",
+    fontFamily: 'Inter-Regular',
     fontSize: 16,
-    textAlignVertical: "center",
+    textAlignVertical: 'center',
   },
   signupText: {
-    fontFamily: "Inter-SemiBold",
+    fontFamily: 'Inter-SemiBold',
     fontSize: 18,
-    color: "#212325",
+    color: '#212325',
   },
 });

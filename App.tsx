@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 
-import LoginPage from "./components/Authentication/LoginPage";
-import SignUpPage from "./components/Authentication/SignUpPage";
-import { UserDataContextProvider } from "./contexts/UserDataContext";
+import { AuthProvider } from 'contexts/AuthContext/AuthProvider';
+import LoginPage from './components/Authentication/LoginPage';
+import SignUpPage from './components/Authentication/SignUpPage';
 
 export default function App() {
   /*
@@ -16,17 +16,17 @@ export default function App() {
   */
 
   return (
-    <UserDataContextProvider>
+    <AuthProvider>
       <SignUpPage />
-    </UserDataContextProvider>
+    </AuthProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
