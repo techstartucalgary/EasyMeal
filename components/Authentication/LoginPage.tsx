@@ -13,8 +13,10 @@ import {
 import { useFonts } from 'expo-font';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useAuthContext } from 'contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginPage = () => {
+  const { navigate } = useNavigation();
   const [hidePassword, setHidePassword] = useState(true);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -77,7 +79,14 @@ const LoginPage = () => {
       </Text>
       <View style={styles.signupTextContainer}>
         <Text style={styles.signupText}>Dont have an account yet?</Text>
-        <Text style={[styles.signupText, styles.signupButton]}> Sign Up</Text>
+        <Text
+          style={[styles.signupText, styles.signupButton]}
+          onPress={() => {
+            navigate('SignUp' as never, {} as never);
+          }}
+        >
+          Sign Up
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -111,8 +120,9 @@ const styles = StyleSheet.create({
   loginButton: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 18,
-    textAlign: 'center',
-    textAlignVertical: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     color: '#fcfcfc',
     backgroundColor: '#6536F9',
     borderRadius: 16,
