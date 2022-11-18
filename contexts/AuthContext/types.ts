@@ -20,4 +20,6 @@ export type AuthContextType = {
     loginPassword,
   }: LogInPayload) => Promise<UserCredential>;
   logout: () => Promise<void>;
+  signInWithGoogle: () => Promise<UserCredential>;
+  signInWithFacebook: () => Promise<UserCredential>;
 };
