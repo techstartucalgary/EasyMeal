@@ -7,6 +7,7 @@ import { AuthProvider } from 'contexts/AuthContext/AuthProvider';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { publicPages } from './pages';
+import { privatePages } from './pages';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,7 +15,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <AuthProvider>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
           {publicPages.map(({ page, name }) => (
             <Stack.Screen key={name} name={name} component={page} />
           ))}
