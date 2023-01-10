@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, FC, useMemo, useEffect } from 'react';
-// import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -12,7 +12,7 @@ import { auth } from 'utils/firebase-config';
 import { AuthContext } from './AuthContext';
 
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
-  // const { navigate } = useNavigation();
+  const { navigate } = useNavigation();
   const register = ({
     registerEmail,
     registerPassword,
