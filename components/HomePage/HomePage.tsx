@@ -1,24 +1,60 @@
 import { Text, StyleSheet, View, SafeAreaView } from 'react-native';
 import React, { Component } from 'react';
+import * as Progress from 'react-native-progress';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class HomePage extends Component {
   render() {
     return (
-      <SafeAreaView style={styles.homeContainer}>
+      <View style={styles.homeContainer}>
         <View style={styles.hContainer}>
           <Text style={styles.h1text}>Hi Sal,</Text>
           <Text style={styles.h2text}>Welcome Back</Text>
         </View>
         <View style={styles.goalWrapper}>
           <Text style={styles.goalHText}>Your Weekly Goal</Text>
-          <Text style={styles.progressText}>70% complete</Text>
-          <Text style={styles.statusText}>
-            You’ve cooked <Text style={styles.greenStatusText}>3 times</Text>{' '}
-            this week. You can do this!
-          </Text>
+          <View style={styles.progressContainer}>
+            <Text style={styles.progressText}>60% complete</Text>
+            <Text style={styles.statusText}>
+              <Text style={styles.timesText}>5</Text> times/ week
+            </Text>
+          </View>
+          <Progress.Bar
+            progress={0.6}
+            width={340}
+            color={'#74CF82'}
+            unfilledColor={'#D9D9D9'}
+            borderWidth={0}
+            height={10}
+            borderRadius={100}
+          />
+          <Text style={styles.motivateText}>You got this!</Text>
+          <View style={styles.iconContainer}>
+            <View style={styles.icon}>
+              <Icon name="add" size={30} color="#757678" />
+            </View>
+            <View style={styles.icon}>
+              <Icon name="add" size={30} color="#757678" />
+            </View>
+            <View style={styles.icon}>
+              <Icon name="add" size={30} color="#757678" />
+            </View>
+            <View style={styles.icon}>
+              <Icon name="add" size={30} color="#757678" />
+            </View>
+            <View style={styles.icon}>
+              <Icon name="add" size={30} color="#757678" />
+            </View>
+            <View style={styles.icon}>
+              <Icon name="add" size={30} color="#757678" />
+            </View>
+            <View style={styles.icon}>
+              <Icon name="add" size={30} color="#757678" />
+            </View>
+          </View>
         </View>
         <Text style={styles.favouritesHText}>Favourites</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 }
@@ -32,7 +68,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingLeft: 27,
     paddingRight: 27,
-    paddingTop: 30,
+    paddingTop: 60,
     paddingBottom: 30,
   },
   h1text: {
@@ -51,6 +87,10 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 20,
   },
+  progressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   goalHText: {
     color: '#222222',
     fontWeight: '700',
@@ -61,20 +101,41 @@ const styles = StyleSheet.create({
     color: '#222222',
     fontWeight: '600',
     fontSize: 18,
+    marginBottom: 5,
   },
   statusText: {
     color: '#222222',
     fontWeight: '400',
     fontSize: 18,
-    paddingBottom: 50,
   },
-  greenStatusText: {
-    color: '#0E8921',
+  timesText: {
+    fontWeight: '600',
+  },
+  motivateText: {
+    fontWeight: '400',
+    fontSize: 18,
+    color: '#151515',
+    marginTop: 20,
+    marginBottom: 20,
   },
   favouritesHText: {
     color: '#222222',
     fontWeight: '600',
     fontSize: 20,
     marginBottom: 15,
+  },
+  icon: {
+    backgroundColor: 'white',
+    borderRadius: 100,
+    padding: 0,
+    width: 35,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
