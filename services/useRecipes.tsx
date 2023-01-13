@@ -34,7 +34,7 @@ export const useRecipes = ({
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOON_API_KEY}cuisine=${cuisine}&diet=${diet}&type=${type}&maxReadyTime=${maxReadyTime}`,
+      `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOON_API_KEY}&cuisine=${cuisine}&diet=${diet}&type=${type}&maxReadyTime=${maxReadyTime}`,
     )
       .then((response) => response.json())
       .then((data) => {
