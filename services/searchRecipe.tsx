@@ -1,4 +1,4 @@
-import { SPOONTACULAR_API_KEY } from '@env';
+import { SPOON_API_KEY } from '@env';
 import { useEffect, useState } from 'react';
 
 export const useSearchRecipe = ({ query }: { query: string }) => {
@@ -9,7 +9,7 @@ export const useSearchRecipe = ({ query }: { query: string }) => {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `https://api.spoonacular.com/recipes/complexSearch?query=${query}&apiKey=${SPOONTACULAR_API_KEY}`,
+      `https://api.spoonacular.com/recipes/complexSearch?query=${query}&apiKey=${SPOON_API_KEY}`,
     )
       .then((response) => response.json())
       .then((data) => {

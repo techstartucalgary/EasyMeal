@@ -6,5 +6,5 @@ declare module '@env' {
   export const MESSAGING_SENDER_ID: string;
   export const APP_ID: string;
   export const MEASUREMENT_ID: string;
-  export const SPOONTACULAR_API_KEY: string;
+  export const SPOON_API_KEY: string;
 }
