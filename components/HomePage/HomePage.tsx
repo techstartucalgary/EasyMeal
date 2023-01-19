@@ -3,9 +3,12 @@ import React from 'react';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAuthContext } from 'contexts/AuthContext';
+import { useFavorites } from 'services/favorites';
 
 const HomePage = () => {
   const { currentUser } = useAuthContext();
+
+  useFavorites();
 
   return (
     <View style={styles.homeContainer}>

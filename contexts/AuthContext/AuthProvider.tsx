@@ -56,6 +56,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
       if (user) {
         setCurrentUser(user);
         navigate('Home' as never, {} as never);
+      } else {
+        navigate('SignIn' as never, {} as never);
       }
     });
   }, [navigate]);

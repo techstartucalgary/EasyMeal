@@ -1,3 +1,7 @@
+export type RandomRecipeType = {
+  numberRecipes: number;
+};
+
 export interface RandomRecipeListType {
   id: number;
   title: string;
