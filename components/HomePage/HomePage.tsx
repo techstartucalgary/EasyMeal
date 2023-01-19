@@ -1,63 +1,69 @@
 import { Text, StyleSheet, View, SafeAreaView } from 'react-native';
-import React, { Component } from 'react';
+import React from 'react';
 import * as Progress from 'react-native-progress';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useAuthContext } from 'contexts/AuthContext';
+import { useFavorites } from 'services/favorites';
 
-export default class HomePage extends Component {
-  render() {
-    return (
-      <View style={styles.homeContainer}>
-        <View style={styles.hContainer}>
-          <Text style={styles.h1text}>Hi Sal,</Text>
-          <Text style={styles.h2text}>Welcome Back</Text>
-        </View>
-        <View style={styles.goalWrapper}>
-          <Text style={styles.goalHText}>Your Weekly Goal</Text>
-          <View style={styles.progressContainer}>
-            <Text style={styles.progressText}>60% complete</Text>
-            <Text style={styles.statusText}>
-              <Text style={styles.timesText}>5</Text> times/ week
-            </Text>
-          </View>
-          <Progress.Bar
-            progress={0.6}
-            width={340}
-            color={'#74CF82'}
-            unfilledColor={'#D9D9D9'}
-            borderWidth={0}
-            height={10}
-            borderRadius={100}
-          />
-          <Text style={styles.motivateText}>You got this!</Text>
-          <View style={styles.iconContainer}>
-            <View style={styles.icon}>
-              <Icon name="add" size={30} color="#757678" />
-            </View>
-            <View style={styles.icon}>
-              <Icon name="add" size={30} color="#757678" />
-            </View>
-            <View style={styles.icon}>
-              <Icon name="add" size={30} color="#757678" />
-            </View>
-            <View style={styles.icon}>
-              <Icon name="add" size={30} color="#757678" />
-            </View>
-            <View style={styles.icon}>
-              <Icon name="add" size={30} color="#757678" />
-            </View>
-            <View style={styles.icon}>
-              <Icon name="add" size={30} color="#757678" />
-            </View>
-            <View style={styles.icon}>
-              <Icon name="add" size={30} color="#757678" />
-            </View>
-          </View>
-        </View>
-        <Text style={styles.favouritesHText}>Favourites</Text>
+const HomePage = () => {
+  const { currentUser } = useAuthContext();
+
+  useFavorites();
+
+  return (
+    <View style={styles.homeContainer}>
+      <View style={styles.hContainer}>
+        <Text style={styles.h1text}>
+          Hi {currentUser?.displayName || currentUser?.email},
+        </Text>
+        <Text style={styles.h2text}>Welcome Back</Text>
       </View>
-    );
-  }
-}
+      <View style={styles.goalWrapper}>
+        <Text style={styles.goalHText}>Your Weekly Goal</Text>
+        <View style={styles.progressContainer}>
+          <Text style={styles.progressText}>60% complete</Text>
+          <Text style={styles.statusText}>
+            <Text style={styles.timesText}>5</Text> times/ week
+          </Text>
+        </View>
+        <Progress.Bar
+          width={340}
+          progress={0.6}
+          color="#74CF82"
+          unfilledColor="#D9D9D9"
+          borderWidth={0}
+          height={10}
+          borderRadius={100}
+        />
+        <Text style={styles.motivateText}>You got this!</Text>
+        <View style={styles.iconContainer}>
+          <View style={styles.icon}>
+            <Icon name="add" size={30} color="#757678" />
+          </View>
+          <View style={styles.icon}>
+            <Icon name="add" size={30} color="#757678" />
+          </View>
+          <View style={styles.icon}>
+            <Icon name="add" size={30} color="#757678" />
+          </View>
+          <View style={styles.icon}>
+            <Icon name="add" size={30} color="#757678" />
+          </View>
+          <View style={styles.icon}>
+            <Icon name="add" size={30} color="#757678" />
+          </View>
+          <View style={styles.icon}>
+            <Icon name="add" size={30} color="#757678" />
+          </View>
+          <View style={styles.icon}>
+            <Icon name="add" size={30} color="#757678" />
+          </View>
+        </View>
+      </View>
+      <Text style={styles.favouritesHText}>Favourites</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   hContainer: {
@@ -139,3 +145,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
+
+export default HomePage;

@@ -1,24 +1,6 @@
 import { SPOON_API_KEY } from '@env';
 import { useEffect, useState } from 'react';
-
-type RecipesType = {
-  cuisine?: string;
-  diet?: string;
-  type?: string;
-  maxReadyTime?: number;
-};
-
-type RecipeListType = {
-  offset: number;
-  number: number;
-  results: {
-    id: number;
-    title: string;
-    image: string;
-    imageType: string;
-  }[];
-  totalResults: number;
-};
+import { RecipeListType, RecipesType } from './types';
 
 export const useRecipes = ({
   cuisine,

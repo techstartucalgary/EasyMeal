@@ -1,4 +1,10 @@
-import React, { PropsWithChildren, FC, useMemo, useEffect } from 'react';
+import React, {
+  PropsWithChildren,
+  FC,
+  useMemo,
+  useEffect,
+  useState,
+} from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
   createUserWithEmailAndPassword,
@@ -7,6 +13,7 @@ import {
   GoogleAuthProvider,
   signOut,
   signInWithPopup,
+  User,
 } from 'firebase/auth';
 import { auth } from 'utils/firebase-config';
 import { AuthContext } from './AuthContext';
@@ -20,6 +27,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     registerEmail: string;
     registerPassword: string;
   }) => createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const login = ({
     loginEmail,
@@ -43,17 +51,27 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     return signInWithPopup(auth, provider);
   };
 
-  // useEffect(() => {
-  //   auth.onAuthStateChanged((user) => {
-  //     if (user) {
-  //       navigate('Home', {});
-  //     }
-  //   });
-  // }, [navigate]);
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUser(user);
+        navigate('Home' as never, {} as never);
+      } else {
+        navigate('SignIn' as never, {} as never);
+      }
+    });
+  }, [navigate]);
 
   const value = useMemo(
-    () => ({ register, login, logout, signInWithFacebook, signInWithGoogle }),
-    [],
+    () => ({
+      register,
+      login,
+      logout,
+      signInWithFacebook,
+      signInWithGoogle,
+      currentUser,
+    }),
+    [currentUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

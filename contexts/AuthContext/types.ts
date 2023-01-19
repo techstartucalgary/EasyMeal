@@ -1,4 +1,4 @@
-import { UserCredential } from 'firebase/auth';
+import { User, UserCredential } from 'firebase/auth';
 
 export type LogInPayload = {
   loginEmail: string;
@@ -22,4 +22,5 @@ export type AuthContextType = {
   logout: () => Promise<void>;
   signInWithGoogle: () => Promise<UserCredential>;
   signInWithFacebook: () => Promise<UserCredential>;
+  currentUser: User | null;
 };

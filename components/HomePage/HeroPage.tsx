@@ -1,14 +1,15 @@
 import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
-import CarouselCardItem, { SLIDER_WIDTH, ITEM_WIDTH } from './CarouselItem';
 import { useNavigation } from '@react-navigation/native';
+import CarouselCardItem, { SLIDER_WIDTH, ITEM_WIDTH } from './CarouselItem';
 import data from './CarouselData';
 
 const HeroPage = () => {
   const { navigate } = useNavigation();
   const [homestep, SetHomeStep] = useState<number>(0);
   const isCarousel = React.useRef(null);
+
   return (
     <SafeAreaView style={styles.homeContainer}>
       <Carousel
@@ -21,7 +22,8 @@ const HeroPage = () => {
         itemWidth={ITEM_WIDTH}
         inactiveSlideShift={0}
         onSnapToItem={(homestep) => SetHomeStep(homestep)}
-        useScrollView={true}
+        useScrollView
+        vertical={false}
       />
       <Pagination
         dotsLength={data.length}
@@ -36,7 +38,7 @@ const HeroPage = () => {
         }}
         inactiveDotOpacity={0.4}
         inactiveDotScale={0.5}
-        tappableDots={true}
+        tappableDots
       />
       <Pressable
         style={styles.signUpButton}
