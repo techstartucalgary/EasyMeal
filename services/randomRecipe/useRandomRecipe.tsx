@@ -1,10 +1,6 @@
 import { SPOON_API_KEY } from '@env';
 import { useEffect, useState } from 'react';
-import { RandomRecipeListType } from './types';
-
-type RandomRecipeType = {
-  numberRecipes: number;
-};
+import { RandomRecipeListType, RandomRecipeType } from './types';
 
 export const useRandomRecipe = ({ numberRecipes }: RandomRecipeType) => {
   const [randomRecipes, setRandomRecipes] = useState<

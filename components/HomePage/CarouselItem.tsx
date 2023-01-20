@@ -4,15 +4,13 @@ import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 export const SLIDER_WIDTH = Dimensions.get('window').width + 80;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 
-const CarouselItem = ({ item, index }: { item: any; index: number }) => {
-  return (
-    <View style={styles.container} key={index}>
-      <Image source={item.imgUrl} style={styles.image} />
-      <Text style={styles.header}>{item.title}</Text>
-      <Text style={styles.body}>{item.body}</Text>
-    </View>
-  );
-};
+const CarouselItem = ({ item, index }: { item: any; index: number }) => (
+  <View style={styles.container} key={index}>
+    <Image source={item.imgUrl} style={styles.image} />
+    <Text style={styles.header}>{item.title}</Text>
+    <Text style={styles.body}>{item.body}</Text>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
