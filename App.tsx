@@ -8,16 +8,34 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuthContext } from 'contexts/AuthContext';
 import { publicPages, privatePages } from './pages';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
 
-const Naviator = () => {
+const Stack = createNativeStackNavigator();
+
+const Unauthenticated = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      {publicPages.map(({ page, name }) => (
+        <Stack.Screen key={name} name={name} component={page} />
+      ))}
+    </Stack.Navigator>
+  );
+};
+
+const Authenticated = () => {
   const { currentUser } = useAuthContext();
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = '';
 
@@ -34,20 +52,23 @@ const Naviator = () => {
         tabBarInactiveTintColor: '#9FA5C0',
       })}
     >
-      {(currentUser ? privatePages : publicPages).map(({ page, name }) => (
+      {privatePages.map(({ page, name }) => (
         <Tab.Screen key={name} name={name} component={page} />
       ))}
     </Tab.Navigator>
   );
 };
 
-const App = () => (
-  <NavigationContainer>
-    <AuthProvider>
-      <Naviator />
-    </AuthProvider>
-  </NavigationContainer>
-);
+const App = () => {
+  const { currentUser } = useAuthContext();
+  return (
+    <NavigationContainer>
+      <AuthProvider>
+        {currentUser ? <Authenticated /> : <Unauthenticated />}
+      </AuthProvider>
+    </NavigationContainer>
+  );
+};
 
 export default App;
 
