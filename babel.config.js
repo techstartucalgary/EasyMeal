@@ -2,10 +2,16 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: ['babel-preset-expo', 'module:metro-react-native-babel-preset'],
     plugins: [
       'transform-inline-environment-variables',
-      'module:react-native-dotenv',
+      [
+        'module:react-native-dotenv',
+        {
+          moduleName: '@env',
+          path: '.env',
+        },
+      ],
       [
         'module-resolver',
         {
@@ -15,6 +21,7 @@ module.exports = function (api) {
             context: './context',
             utils: './utils',
             services: './services',
+            hooks: './hooks',
           },
         },
       ],

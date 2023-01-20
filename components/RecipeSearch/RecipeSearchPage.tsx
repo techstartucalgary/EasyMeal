@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -14,7 +14,6 @@ import {
   FlatList,
   Pressable,
 } from 'react-native';
-import { SPOON_API_KEY } from '@env';
 import { useFonts } from 'expo-font';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 
@@ -22,33 +21,32 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from 'utils/firebase-config';
 import { Slider } from '@miblanchard/react-native-slider';
-import { testRecipes, RecipeData } from './test-results';
 import { cuisines, types, diets } from './filter-options';
 
 import { useRecipes } from '../../services/searchRecipe/useSearchRecipes';
 
 const RecipeSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [cookingTime, setCookingTime] = useState(10);
+  const [cookingTime, setCookingTime] = useState(60);
   const [filterVisible, setFilterVisible] = useState(false);
   const [cardDimension, setCardDimension] = useState(0);
   const { navigate } = useNavigation();
   const { logout } = useAuthContext();
 
   const [selectedCuisine, setSelectedCuisine] =
-    useState<typeof cuisines[number]['searchTerm']>('African');
+    useState<typeof cuisines[number]['searchTerm']>('American');
   const [selectedType, setSelectedType] =
     useState<typeof types[number]['searchTerm']>('main course');
   const [selectedDiet, setSelectedDiet] =
     useState<typeof diets[number]['searchTerm']>('Gluten Free');
 
-  const { recipeList, isLoading } = useRecipes({
+  const { recipeList } = useRecipes({
     cuisine: selectedCuisine,
     diet: selectedDiet,
     type: selectedType,
     maxReadyTime: cookingTime,
+    enabled: !filterVisible,
   });
 
   const [fontsLoaded] = useFonts({
@@ -61,49 +59,6 @@ const RecipeSearchPage = () => {
   if (!fontsLoaded) {
     return null;
   }
-
-  const handleCardLayout = ({ nativeEvent }) => {
-    setCardDimension(nativeEvent.layout.width - 24);
-  };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.recipeCard} onLayout={handleCardLayout}>
-      {/* {JSON.stringify(item)} */}
-      <Text>hello</Text>
-      <Text>{SPOON_API_KEY}</Text>
-      {/* <Image
-        source={{ uri: image }}
-        style={[
-          styles.recipeCardImage,
-          { width: cardDimension, height: cardDimension },
-        ]}
-      />
-
-      <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
-        {title}
-      </Text>
-      <View style={styles.recipeCardSubHeader}>
-        <Text style={styles.recipeCardTextSubHeader}>Breakfast · </Text>
-        <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
-      </View> */}
-    </View>
-  );
-
-  const FilterSliderValue = () => (
-    <>
-      {cookingTime != 60 && (
-        <Text
-          style={[
-            styles.filterSliderNumberText,
-            styles.filterSliderNumberMargin,
-            styles.filterSliderNumberPurple,
-          ]}
-        >
-          {cookingTime}
-        </Text>
-      )}
-    </>
-  );
 
   return (
     <SafeAreaView style={styles.pageContainer}>
@@ -136,11 +91,32 @@ const RecipeSearchPage = () => {
         </TouchableWithoutFeedback>
       </View>
       <View style={styles.searchResultsContainer}>
-        <Text>{JSON.stringify(recipeList?.results)}</Text>
-        <Text>{`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOON_API_KEY}`}</Text>
         <FlatList
           data={recipeList?.results || []}
-          renderItem={renderItem}
+          renderItem={({ item }) => (
+            <View
+              style={styles.recipeCard}
+              onLayout={({ nativeEvent }) => {
+                setCardDimension(nativeEvent.layout.width - 24);
+              }}
+            >
+              <Image
+                source={{ uri: item.image }}
+                style={[
+                  styles.recipeCardImage,
+                  { width: cardDimension, height: cardDimension },
+                ]}
+              />
+
+              <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <View style={styles.recipeCardSubHeader}>
+                <Text style={styles.recipeCardTextSubHeader}>Breakfast · </Text>
+                <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+              </View>
+            </View>
+          )}
           numColumns={2}
         />
       </View>
@@ -185,6 +161,7 @@ const RecipeSearchPage = () => {
             >
               {cuisines.map((cuisine) => (
                 <Pressable
+                  key={cuisine.searchTerm}
                   onPress={() => setSelectedCuisine(cuisine.searchTerm)}
                 >
                   <Text
@@ -216,7 +193,10 @@ const RecipeSearchPage = () => {
               style={styles.filterButtonRow}
             >
               {types.map((type) => (
-                <Pressable onPress={() => setSelectedType(type.searchTerm)}>
+                <Pressable
+                  key={type.searchTerm}
+                  onPress={() => setSelectedType(type.searchTerm)}
+                >
                   <Text
                     style={[
                       styles.filterButton,
@@ -246,7 +226,10 @@ const RecipeSearchPage = () => {
               style={styles.filterButtonRow}
             >
               {diets.map((diet) => (
-                <Pressable onPress={() => setSelectedDiet(diet.searchTerm)}>
+                <Pressable
+                  key={diet.title}
+                  onPress={() => setSelectedDiet(diet.searchTerm)}
+                >
                   <Text
                     style={[
                       styles.filterButton,
@@ -286,7 +269,7 @@ const RecipeSearchPage = () => {
               </Text>
             )}
 
-            {(cookingTime <= 55 || cookingTime == 60) && (
+            {(cookingTime <= 55 || cookingTime === 60) && (
               <Text
                 style={[
                   styles.filterSliderNumberText,
@@ -300,10 +283,11 @@ const RecipeSearchPage = () => {
               </Text>
             )}
           </View>
-
           <Slider
             value={cookingTime}
-            onValueChange={(cookingTime) => setCookingTime(cookingTime)}
+            onValueChange={(cookingTime) => {
+              setCookingTime(cookingTime as number);
+            }}
             minimumValue={10}
             maximumValue={60}
             step={1}
@@ -313,7 +297,21 @@ const RecipeSearchPage = () => {
             containerStyle={styles.filterSlider}
             trackStyle={styles.sliderTrack}
             thumbStyle={styles.sliderThumb}
-            renderAboveThumbComponent={FilterSliderValue}
+            renderAboveThumbComponent={
+              cookingTime !== 60
+                ? () => (
+                    <Text
+                      style={[
+                        styles.filterSliderNumberText,
+                        styles.filterSliderNumberMargin,
+                        styles.filterSliderNumberPurple,
+                      ]}
+                    >
+                      {cookingTime}
+                    </Text>
+                  )
+                : undefined
+            }
           />
           <Text
             style={styles.filterShowResults}
@@ -421,8 +419,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#6536F9',
     borderRadius: 32,
 
-    textAlign: 'center',
-    textAlignVertical: 'center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     fontFamily: 'Inter-Bold',
     fontSize: 15,
     color: '#FFFFFF',
