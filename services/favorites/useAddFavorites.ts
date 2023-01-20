@@ -21,7 +21,7 @@ export function useAddFavorites() {
         setIsLoading(false);
       } else {
         await setDoc(doc(db, 'favorites', currentUser.uid), {
-          recipe: [...favorites, recipe],
+          recipes: [...favorites, recipe],
         });
         setIsLoading(false);
       }
