@@ -12,19 +12,22 @@ import {
   StatusBar,
   Platform,
   FlatList,
+  Pressable,
 } from 'react-native';
-
+import { SPOON_API_KEY } from '@env';
 import { useFonts } from 'expo-font';
-import { AntDesign } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from 'utils/firebase-config';
-import { testRecipes, RecipeData } from './test-results';
-
 import { Slider } from '@miblanchard/react-native-slider';
+import { testRecipes, RecipeData } from './test-results';
+import { cuisines, types, diets } from './filter-options';
+
+import { useRecipes } from '../../services/searchRecipe/useSearchRecipes';
 
 const RecipeSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,6 +36,20 @@ const RecipeSearchPage = () => {
   const [cardDimension, setCardDimension] = useState(0);
   const { navigate } = useNavigation();
   const { logout } = useAuthContext();
+
+  const [selectedCuisine, setSelectedCuisine] =
+    useState<typeof cuisines[number]['searchTerm']>('African');
+  const [selectedType, setSelectedType] =
+    useState<typeof types[number]['searchTerm']>('main course');
+  const [selectedDiet, setSelectedDiet] =
+    useState<typeof diets[number]['searchTerm']>('Gluten Free');
+
+  const { recipeList, isLoading } = useRecipes({
+    cuisine: selectedCuisine,
+    diet: selectedDiet,
+    type: selectedType,
+    maxReadyTime: cookingTime,
+  });
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -45,33 +62,32 @@ const RecipeSearchPage = () => {
     return null;
   }
 
-  const RecipeCard = ({ recipeInfo }) => (
-    <View style={styles.recipeCard} onLayout={handleCardLayout}>
-      <Image
-        source={recipeInfo.imageFP}
-        style={[
-          styles.recipeCardImage,
-          { width: cardDimension, height: cardDimension },
-        ]}
-      ></Image>
-
-      <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
-        {recipeInfo.title}
-      </Text>
-      <View style={styles.recipeCardSubHeader}>
-        <Text style={styles.recipeCardTextSubHeader}>{recipeInfo.type} · </Text>
-        <Text style={styles.recipeCardTextSubHeader}>{recipeInfo.time}</Text>
-      </View>
-    </View>
-  );
-
   const handleCardLayout = ({ nativeEvent }) => {
     setCardDimension(nativeEvent.layout.width - 24);
   };
 
-  const renderItem = ({ item }) => {
-    return <RecipeCard recipeInfo={item} />;
-  };
+  const renderItem = ({ item }) => (
+    <View style={styles.recipeCard} onLayout={handleCardLayout}>
+      {/* {JSON.stringify(item)} */}
+      <Text>hello</Text>
+      <Text>{SPOON_API_KEY}</Text>
+      {/* <Image
+        source={{ uri: image }}
+        style={[
+          styles.recipeCardImage,
+          { width: cardDimension, height: cardDimension },
+        ]}
+      />
+
+      <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
+        {title}
+      </Text>
+      <View style={styles.recipeCardSubHeader}>
+        <Text style={styles.recipeCardTextSubHeader}>Breakfast · </Text>
+        <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+      </View> */}
+    </View>
+  );
 
   const FilterSliderValue = () => (
     <>
@@ -91,8 +107,8 @@ const RecipeSearchPage = () => {
 
   return (
     <SafeAreaView style={styles.pageContainer}>
-      {filterVisible && <View style={styles.backgroundDim}></View>}
-      <View style={styles.statusBarGap}></View>
+      {filterVisible && <View style={styles.backgroundDim} />}
+      <View style={styles.statusBarGap} />
       <View style={styles.searchInputContainer}>
         <TextInput
           style={styles.searchInput}
@@ -116,21 +132,23 @@ const RecipeSearchPage = () => {
             source={require('../../assets/searchfilter-icon.png')}
             style={styles.searchFilterIcon}
             resizeMode="center"
-          ></Image>
+          />
         </TouchableWithoutFeedback>
       </View>
       <View style={styles.searchResultsContainer}>
+        <Text>{JSON.stringify(recipeList?.results)}</Text>
+        <Text>{`https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOON_API_KEY}`}</Text>
         <FlatList
-          data={testRecipes}
+          data={recipeList?.results || []}
           renderItem={renderItem}
           numColumns={2}
-        ></FlatList>
+        />
       </View>
 
       <Modal
         animationType="slide"
         visible={filterVisible}
-        transparent={true}
+        transparent
         onRequestClose={() => {
           setFilterVisible(!filterVisible);
         }}
@@ -145,28 +163,42 @@ const RecipeSearchPage = () => {
               onPress={() => setFilterVisible(!filterVisible)}
             />
             <Text style={styles.filterTitle}>Filter</Text>
-            <Text style={styles.filterResetButton}>Reset</Text>
+            <Text
+              style={styles.filterResetButton}
+              onPress={() => {
+                setSelectedCuisine('African');
+                setSelectedType('main course');
+                setSelectedDiet('Gluten Free');
+                setCookingTime(10);
+              }}
+            >
+              Reset
+            </Text>
           </View>
 
           <Text style={styles.filterTextHeader}>Cuisine</Text>
           <View style={styles.filterButtonRowContainer}>
             <ScrollView
-              horizontal={true}
+              horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.filterButtonRow}
             >
-              <Text style={[styles.filterButton, styles.filterButtonOn]}>
-                Any
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Italian
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Mexican
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Korean
-              </Text>
+              {cuisines.map((cuisine) => (
+                <Pressable
+                  onPress={() => setSelectedCuisine(cuisine.searchTerm)}
+                >
+                  <Text
+                    style={[
+                      styles.filterButton,
+                      selectedCuisine === cuisine.searchTerm
+                        ? styles.filterButtonOn
+                        : styles.filterButtonOff,
+                    ]}
+                  >
+                    {cuisine.title}
+                  </Text>
+                </Pressable>
+              ))}
             </ScrollView>
             <LinearGradient
               colors={['transparent', '#ffffff']}
@@ -179,22 +211,24 @@ const RecipeSearchPage = () => {
           <Text style={styles.filterTextHeader}>Type</Text>
           <View style={styles.filterButtonRowContainer}>
             <ScrollView
-              horizontal={true}
+              horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.filterButtonRow}
             >
-              <Text style={[styles.filterButton, styles.filterButtonOn]}>
-                Any
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Breakfast
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Lunch
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Dinner
-              </Text>
+              {types.map((type) => (
+                <Pressable onPress={() => setSelectedType(type.searchTerm)}>
+                  <Text
+                    style={[
+                      styles.filterButton,
+                      selectedType === type.searchTerm
+                        ? styles.filterButtonOn
+                        : styles.filterButtonOff,
+                    ]}
+                  >
+                    {type.title}
+                  </Text>
+                </Pressable>
+              ))}
             </ScrollView>
             <LinearGradient
               colors={['transparent', '#ffffff']}
@@ -207,22 +241,24 @@ const RecipeSearchPage = () => {
           <Text style={styles.filterTextHeader}>Dietary Restrictions</Text>
           <View style={styles.filterButtonRowContainer}>
             <ScrollView
-              horizontal={true}
+              horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.filterButtonRow}
             >
-              <Text style={[styles.filterButton, styles.filterButtonOn]}>
-                None
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Vegan
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Gluten Free
-              </Text>
-              <Text style={[styles.filterButton, styles.filterButtonOff]}>
-                Kosher
-              </Text>
+              {diets.map((diet) => (
+                <Pressable onPress={() => setSelectedDiet(diet.searchTerm)}>
+                  <Text
+                    style={[
+                      styles.filterButton,
+                      selectedDiet === diet.searchTerm
+                        ? styles.filterButtonOn
+                        : styles.filterButtonOff,
+                    ]}
+                  >
+                    {diet.title}
+                  </Text>
+                </Pressable>
+              ))}
             </ScrollView>
             <LinearGradient
               colors={['transparent', '#ffffff']}
