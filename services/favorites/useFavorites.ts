@@ -7,7 +7,9 @@ import { FavoriteRecipeType } from './types';
 export const useFavorites = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [favorites, setFavorites] = useState<FavoriteRecipeType[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteRecipeType[] | undefined>(
+    undefined,
+  );
 
   const getFavorites = useCallback(async () => {
     if (currentUser) {
