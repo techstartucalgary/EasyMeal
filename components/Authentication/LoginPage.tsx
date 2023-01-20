@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,26 +8,38 @@ import {
   Button,
   StatusBar,
   Platform,
+  Image,
+  TouchableWithoutFeedback,
   Pressable,
 } from 'react-native';
 
 import { useFonts } from 'expo-font';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { AntDesign } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { auth } from 'utils/firebase-config';
 
 const LoginPage = () => {
   const { navigate } = useNavigation();
   const [hidePassword, setHidePassword] = useState(true);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const { login } = useAuthContext();
+  const { login, signInWithGoogle, signInWithFacebook } = useAuthContext();
 
   const [fontsLoaded] = useFonts({
     'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
     'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
     'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
   });
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigate('Home' as never, {} as never);
+      }
+    });
+  }, [navigate]);
 
   if (!fontsLoaded) {
     return null;
@@ -80,8 +92,49 @@ const LoginPage = () => {
       >
         Login
       </Text>
+
+      <View style={styles.altLoginTextContainer}>
+        <View style={styles.altLoginHr} />
+        <View>
+          <Text style={styles.altLoginText}>Or login with</Text>
+        </View>
+        <View style={styles.altLoginHr}></View>
+      </View>
+
+      <View style={styles.altLoginButtonContainer}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            signInWithGoogle();
+          }}
+        >
+          <View style={styles.altLoginButton}>
+            <Image
+              source={require('../../assets/google-logo.png')}
+              style={styles.altLogo}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+
+        <View style={styles.altLoginButton}>
+          <Image
+            source={require('../../assets/apple-logo.png')}
+            style={styles.altLogo}
+          />
+        </View>
+        <View style={styles.altLoginButton}>
+          <MaterialIcons
+            name="facebook"
+            size={36}
+            color="#1877F2"
+            onPress={() => {
+              signInWithFacebook();
+            }}
+          />
+        </View>
+      </View>
+
       <View style={styles.signupTextContainer}>
-        <Text style={styles.signupText}>Dont have an account yet?</Text>
+        <Text style={styles.signupText}>Dont have an account yet? </Text>
         <Text
           style={[styles.signupText, styles.signupButton]}
           onPress={() => {
@@ -98,6 +151,46 @@ const LoginPage = () => {
 export default LoginPage;
 
 const styles = StyleSheet.create({
+  altLoginButton: {
+    marginRight: 16,
+    marginLeft: 16,
+    borderWidth: 2,
+    borderColor: '#F1F1FA',
+    borderRadius: 16,
+    height: 52,
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  altLoginButtonContainer: {
+    marginTop: 24,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  altLoginHr: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#91919F',
+  },
+  altLoginText: {
+    color: '#91919F',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 16,
+    lineHeight: 18,
+    marginLeft: 12,
+    marginRight: 12,
+  },
+  altLoginTextContainer: {
+    marginTop: 24,
+    marginLeft: 44,
+    marginRight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  altLogo: {
+    height: 28,
+    width: 28,
+  },
   backButton: {
     position: 'absolute',
     left: 20,
@@ -126,6 +219,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    textAlign: 'center',
+    textAlignVertical: 'center',
     color: '#fcfcfc',
     backgroundColor: '#6536F9',
     borderRadius: 16,
@@ -156,6 +251,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 16,
     textAlignVertical: 'center',
+    color: '#91919F',
+    outlineColor: '#6536F9',
   },
   loginText: {
     fontFamily: 'Inter-SemiBold',
@@ -185,6 +282,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 36,
+    marginTop: 72,
   },
 });
