@@ -12,23 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator();
 
-const Stack = createNativeStackNavigator();
-
-const Unauthenticated = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      {publicPages.map(({ page, name }) => (
-        <Stack.Screen key={name} name={name} component={page} />
-      ))}
-    </Stack.Navigator>
-  );
-};
-
-const Authenticated = () => {
+const Navigator = () => {
   const { currentUser } = useAuthContext();
 
   return (
@@ -52,7 +36,7 @@ const Authenticated = () => {
         tabBarInactiveTintColor: '#9FA5C0',
       })}
     >
-      {privatePages.map(({ page, name }) => (
+      {(currentUser ? privatePages : publicPages).map(({ page, name }) => (
         <Tab.Screen key={name} name={name} component={page} />
       ))}
     </Tab.Navigator>
@@ -64,7 +48,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <AuthProvider>
-        {currentUser ? <Authenticated /> : <Unauthenticated />}
+        <Navigator />
       </AuthProvider>
     </NavigationContainer>
   );
