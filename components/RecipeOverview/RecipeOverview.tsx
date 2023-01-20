@@ -1,6 +1,11 @@
 import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
 import React from 'react';
+// import PieChart from 'react-native-pie-chart';
+
+// const widthAndHeight = 250;
+// const series = [123, 321, 123];
+// const sliceColor = ['#F44336', '#2196F3', '#FFEB3B'];
 
 const RecipeOverview = () => (
   <ScrollView>
@@ -22,7 +27,16 @@ const RecipeOverview = () => (
       <Text style={styles.desc}>
         Hearty Korean BBQ Bowls made with bulgogi beef, garlic View More
       </Text>
-      <View style={styles.macrowrapper} />
+      <View style={styles.macrowrapper}>
+        {/* <PieChart
+          widthAndHeight={widthAndHeight}
+          series={series}
+          sliceColor={sliceColor}
+          doughnut={true}
+          coverRadius={0.45}
+          coverFill={'#FFF'}
+        /> */}
+      </View>
       <View style={styles.ingwrapper}>
         <Text style={styles.ingheading}>Ingredients</Text>
         <View style={styles.ing}>

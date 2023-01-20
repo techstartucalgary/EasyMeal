@@ -8,6 +8,7 @@ import {
   Button,
   StatusBar,
   Platform,
+  Pressable,
 } from 'react-native';
 
 import { useFonts } from 'expo-font';
@@ -41,12 +42,14 @@ function SignUpPage() {
   return (
     <SafeAreaView style={styles.signupContainer}>
       <View style={styles.signupHeader}>
-        <AntDesign
-          name="arrowleft"
-          size={24}
-          color="black"
+        <Pressable
           style={styles.backButton}
-        />
+          onPress={() => {
+            navigate('Hero' as never, {} as never);
+          }}
+        >
+          <AntDesign name="arrowleft" size={24} color="black" />
+        </Pressable>
         <Text style={styles.signupText}>Sign Up</Text>
       </View>
       <TextInput
