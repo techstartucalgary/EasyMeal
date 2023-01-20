@@ -26,20 +26,11 @@ import { testRecipes, RecipeData } from './test-results';
 
 import { Slider } from '@miblanchard/react-native-slider';
 
-const RecipeCard = ({ recipeInfo }) => (
-  <View style={styles.recipeCard}>
-    <Image
-      source={require('../../assets/test-1.jpg')}
-      style={styles.recipeCardImage}
-    ></Image>
-    <Text>{recipeInfo.title}</Text>
-  </View>
-);
-
 const RecipeSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [cookingTime, setCookingTime] = useState(10);
   const [filterVisible, setFilterVisible] = useState(false);
+  const [cardDimension, setCardDimension] = useState(0);
   const { navigate } = useNavigation();
   const { logout } = useAuthContext();
 
@@ -54,9 +45,49 @@ const RecipeSearchPage = () => {
     return null;
   }
 
+  const RecipeCard = ({ recipeInfo }) => (
+    <View style={styles.recipeCard} onLayout={handleCardLayout}>
+      <Image
+        source={recipeInfo.imageFP}
+        style={[
+          styles.recipeCardImage,
+          { width: cardDimension, height: cardDimension },
+        ]}
+      ></Image>
+
+      <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
+        {recipeInfo.title}
+      </Text>
+      <View style={styles.recipeCardSubHeader}>
+        <Text style={styles.recipeCardTextSubHeader}>{recipeInfo.type} · </Text>
+        <Text style={styles.recipeCardTextSubHeader}>{recipeInfo.time}</Text>
+      </View>
+    </View>
+  );
+
+  const handleCardLayout = ({ nativeEvent }) => {
+    setCardDimension(nativeEvent.layout.width - 24);
+  };
+
   const renderItem = ({ item }) => {
     return <RecipeCard recipeInfo={item} />;
   };
+
+  const FilterSliderValue = () => (
+    <>
+      {cookingTime != 60 && (
+        <Text
+          style={[
+            styles.filterSliderNumberText,
+            styles.filterSliderNumberMargin,
+            styles.filterSliderNumberPurple,
+          ]}
+        >
+          {cookingTime}
+        </Text>
+      )}
+    </>
+  );
 
   return (
     <SafeAreaView style={styles.pageContainer}>
@@ -83,7 +114,7 @@ const RecipeSearchPage = () => {
         >
           <Image
             source={require('../../assets/searchfilter-icon.png')}
-            style={styles.searchFilterLogo}
+            style={styles.searchFilterIcon}
             resizeMode="center"
           ></Image>
         </TouchableWithoutFeedback>
@@ -173,17 +204,6 @@ const RecipeSearchPage = () => {
             />
           </View>
 
-          <Slider
-            value={cookingTime}
-            onValueChange={(cookingTime) => setCookingTime(cookingTime)}
-            minimumValue={10}
-            maximumValue={60}
-            step={1}
-            minimumTrackTintColor="#6536F9"
-            maximumTrackTintColor="#F4F5F7"
-            containerStyle={styles.filterSlider}
-          />
-
           <Text style={styles.filterTextHeader}>Dietary Restrictions</Text>
           <View style={styles.filterButtonRowContainer}>
             <ScrollView
@@ -212,10 +232,59 @@ const RecipeSearchPage = () => {
             />
           </View>
 
-          <View style={styles.rowFlexDirection}>
-            <Text style={styles.filterTextHeader}>Cooking Duration</Text>
+          <Text style={styles.filterTextHeader}>
+            Cooking Duration
             <Text style={styles.filterTextSubHeader}> (in minutes)</Text>
+          </Text>
+
+          <View style={styles.filterSliderNumberContainer}>
+            {cookingTime >= 15 && (
+              <Text
+                style={[
+                  styles.filterSliderNumberText,
+                  styles.filterSliderNumberLeft,
+                  styles.filterSliderNumberPurple,
+                ]}
+              >
+                {'<'}10
+              </Text>
+            )}
+
+            {(cookingTime <= 55 || cookingTime == 60) && (
+              <Text
+                style={[
+                  styles.filterSliderNumberText,
+                  styles.filterSliderNumberRight,
+                  cookingTime < 60
+                    ? styles.filterSliderNumberGray
+                    : styles.filterSliderNumberPurple,
+                ]}
+              >
+                {'>'}60
+              </Text>
+            )}
           </View>
+
+          <Slider
+            value={cookingTime}
+            onValueChange={(cookingTime) => setCookingTime(cookingTime)}
+            minimumValue={10}
+            maximumValue={60}
+            step={1}
+            minimumTrackTintColor="#6536F9"
+            maximumTrackTintColor="#F4F5F7"
+            thumbTintColor="#6536F9"
+            containerStyle={styles.filterSlider}
+            trackStyle={styles.sliderTrack}
+            thumbStyle={styles.sliderThumb}
+            renderAboveThumbComponent={FilterSliderValue}
+          />
+          <Text
+            style={styles.filterShowResults}
+            onPress={() => setFilterVisible(!filterVisible)}
+          >
+            Show results
+          </Text>
         </View>
       </Modal>
     </SafeAreaView>
@@ -307,11 +376,55 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#353535',
   },
+  filterShowResults: {
+    marginTop: 60,
+    alignSelf: 'center',
+
+    width: 156,
+    height: 56,
+    backgroundColor: '#6536F9',
+    borderRadius: 32,
+
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
+    color: '#FFFFFF',
+  },
   filterSlider: {
-    flex: 1,
+    height: 24,
     marginLeft: 32,
     marginRight: 32,
     marginTop: 24,
+  },
+  filterSliderNumberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    marginTop: 24,
+  },
+  filterSliderNumberGray: {
+    color: '#9FA5C0',
+  },
+  filterSliderNumberLeft: {
+    position: 'absolute',
+    left: 32,
+  },
+  filterSliderNumberMargin: {
+    position: 'absolute',
+    left: 34,
+    bottom: -11,
+  },
+  filterSliderNumberPurple: {
+    color: '#6536F9',
+  },
+  filterSliderNumberRight: {
+    position: 'absolute',
+    right: 32,
+  },
+  filterSliderNumberText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
   },
   filterTextHeader: {
     marginTop: 24,
@@ -340,27 +453,57 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     flex: 1,
     marginLeft: 10,
-    marginTop: 16,
+    marginTop: 8,
     marginRight: 10,
+    marginBottom: 8,
     borderRadius: 16,
 
-    elevation: 7,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+
+    elevation: 10,
   },
   recipeCardImage: {
-    flex: 1,
-    margin: 12,
+    marginTop: 12,
+    marginLeft: 12,
+
     borderRadius: 16,
-    height: 126,
-    width: 126,
+  },
+  recipeCardSubHeader: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    marginTop: 8,
+    marginLeft: 12,
+    marginBottom: 20,
+  },
+  recipeCardTextHeader: {
+    marginTop: 12,
+    marginLeft: 12,
+    marginRight: 12,
+
+    fontFamily: 'Inter-Bold',
+    fontSize: 17,
+    color: '#474747',
+  },
+  recipeCardTextSubHeader: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+    color: '#9FA5C0',
   },
   rowFlexDirection: {
     flex: 1,
     flexDirection: 'row',
   },
-  searchFilterLogo: {
+  searchFilterIcon: {
     width: 32,
     height: 32,
-    color: '#212325',
 
     marginLeft: 16,
     marginRight: 20,
@@ -385,6 +528,7 @@ const styles = StyleSheet.create({
   },
   searchInputContainer: {
     marginTop: 16,
+    marginBottom: 8,
     marginLeft: 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -394,6 +538,15 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginTop: 0,
+  },
+  sliderThumb: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  sliderTrack: {
+    height: 8,
+    borderRadius: 4,
   },
   statusBarGap: {
     height: Platform.OS === 'android' ? StatusBar.currentHeight : 0,

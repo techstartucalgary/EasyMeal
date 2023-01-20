@@ -2,6 +2,7 @@ import HomePage from 'components/HomePage/HomePage';
 import LoginPage from './components/Authentication/LoginPage';
 import SignUpPage from './components/Authentication/SignUpPage';
 import HeroPage from 'components/HomePage/HeroPage';
+import RecipeSearchPage from 'components/RecipeSearch/RecipeSearchPage';
 
 export const publicPages = [
   {
@@ -15,6 +16,10 @@ export const publicPages = [
   {
     page: SignUpPage,
     name: 'SignUp',
+  },
+  {
+    page: RecipeSearchPage,
+    name: 'Home',
   },
 ];
 
