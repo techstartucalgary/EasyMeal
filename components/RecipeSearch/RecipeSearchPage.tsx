@@ -23,6 +23,7 @@ import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { Slider } from '@miblanchard/react-native-slider';
 import { cuisines, types, diets } from './filter-options';
+import { testRecipes } from './test-results';
 
 import { useRecipes } from '../../services/searchRecipe/useSearchRecipes';
 
@@ -35,13 +36,13 @@ const RecipeSearchPage = () => {
   const { logout } = useAuthContext();
 
   const [selectedCuisine, setSelectedCuisine] =
-    useState<typeof cuisines[number]['searchTerm']>('American');
+    useState<typeof cuisines[number]['searchTerm']>(undefined);
   const [selectedType, setSelectedType] =
-    useState<typeof types[number]['searchTerm']>('main course');
+    useState<typeof types[number]['searchTerm']>(undefined);
   const [selectedDiet, setSelectedDiet] =
-    useState<typeof diets[number]['searchTerm']>('Gluten Free');
+    useState<typeof diets[number]['searchTerm']>(undefined);
 
-  const { recipeList } = useRecipes({
+  const { recipeList, isLoading } = useRecipes({
     cuisine: selectedCuisine,
     diet: selectedDiet,
     type: selectedType,
@@ -90,35 +91,57 @@ const RecipeSearchPage = () => {
           />
         </TouchableWithoutFeedback>
       </View>
-      <View style={styles.searchResultsContainer}>
-        <FlatList
-          data={recipeList?.results || []}
-          renderItem={({ item }) => (
-            <View
-              style={styles.recipeCard}
-              onLayout={({ nativeEvent }) => {
-                setCardDimension(nativeEvent.layout.width - 24);
-              }}
-            >
-              <Image
-                source={{ uri: item.image }}
-                style={[
-                  styles.recipeCardImage,
-                  { width: cardDimension, height: cardDimension },
-                ]}
-              />
 
-              <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
-                {item.title}
-              </Text>
-              <View style={styles.recipeCardSubHeader}>
-                <Text style={styles.recipeCardTextSubHeader}>Breakfast · </Text>
-                <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+      <View style={styles.searchResultsContainer}>
+        {isLoading ? (
+          <View>
+            <Text>Please wait for the results to load!</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={recipeList?.results || []}
+            keyExtractor={(item: any) => item.id}
+            renderItem={({ item }) => (
+              <View
+                style={styles.recipeCard}
+                onLayout={({ nativeEvent }) => {
+                  setCardDimension(nativeEvent.layout.width - 24);
+                }}
+              >
+                <Image
+                  source={{ uri: item.image }}
+                  style={[
+                    styles.recipeCardImage,
+                    { width: cardDimension, height: cardDimension },
+                  ]}
+                />
+
+                <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
+                  {item.title}
+                </Text>
+                <View style={styles.recipeCardSubHeader}>
+                  <Text style={styles.recipeCardTextSubHeader}>
+                    Breakfast ·{' '}
+                  </Text>
+                  <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+                </View>
               </View>
-            </View>
-          )}
-          numColumns={2}
-        />
+            )}
+            numColumns={2}
+            initialNumToRender={20}
+            ListHeaderComponent={
+              <View style={styles.searchResultsDivider}></View>
+            }
+            ListFooterComponent={
+              <View style={styles.searchResultsDivider}></View>
+            }
+            ListEmptyComponent={
+              <View>
+                <Text>Sorry we dont have any of those recipes!</Text>
+              </View>
+            }
+          />
+        )}
       </View>
 
       <Modal
@@ -142,10 +165,10 @@ const RecipeSearchPage = () => {
             <Text
               style={styles.filterResetButton}
               onPress={() => {
-                setSelectedCuisine('African');
-                setSelectedType('main course');
-                setSelectedDiet('Gluten Free');
-                setCookingTime(10);
+                setSelectedCuisine(undefined);
+                setSelectedType(undefined);
+                setSelectedDiet(undefined);
+                setCookingTime(60);
               }}
             >
               Reset
@@ -161,7 +184,7 @@ const RecipeSearchPage = () => {
             >
               {cuisines.map((cuisine) => (
                 <Pressable
-                  key={cuisine.searchTerm}
+                  key={cuisine.title}
                   onPress={() => setSelectedCuisine(cuisine.searchTerm)}
                 >
                   <Text
@@ -194,7 +217,7 @@ const RecipeSearchPage = () => {
             >
               {types.map((type) => (
                 <Pressable
-                  key={type.searchTerm}
+                  key={type.title}
                   onPress={() => setSelectedType(type.searchTerm)}
                 >
                   <Text
@@ -422,6 +445,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    textAlign: 'center',
+    textAlignVertical: 'center',
     fontFamily: 'Inter-Bold',
     fontSize: 15,
     color: '#FFFFFF',
@@ -488,9 +513,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     flex: 1,
     marginLeft: 10,
-    marginTop: 8,
+    marginTop: 0,
     marginRight: 10,
-    marginBottom: 8,
+    marginBottom: 16,
     borderRadius: 16,
 
     shadowColor: '#000',
@@ -563,7 +588,7 @@ const styles = StyleSheet.create({
   },
   searchInputContainer: {
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 12,
     marginLeft: 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -573,6 +598,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginTop: 0,
+  },
+  searchResultsDivider: {
+    width: '100%',
+    height: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0)',
   },
   sliderThumb: {
     width: 24,

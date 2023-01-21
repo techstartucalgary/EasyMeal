@@ -1,5 +1,9 @@
 export const cuisines = [
   {
+    searchTerm: undefined,
+    title: 'Any',
+  },
+  {
     searchTerm: 'African',
     title: 'African',
   },
@@ -107,6 +111,10 @@ export const cuisines = [
 
 export const types = [
   {
+    searchTerm: undefined,
+    title: 'Any',
+  },
+  {
     searchTerm: 'main course',
     title: 'Main Course',
   },
@@ -165,6 +173,10 @@ export const types = [
 ] as const;
 
 export const diets = [
+  {
+    searchTerm: undefined,
+    title: 'None',
+  },
   {
     searchTerm: 'Gluten Free',
     title: 'Gluten Free',
