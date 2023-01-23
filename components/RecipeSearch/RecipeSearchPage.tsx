@@ -32,6 +32,7 @@ const RecipeSearchPage = () => {
   const [cookingTime, setCookingTime] = useState(60);
   const [filterVisible, setFilterVisible] = useState(false);
   const [cardDimension, setCardDimension] = useState(0);
+  const [recipeCardWidth, setRecipeCardWidth] = useState(0);
   const { navigate } = useNavigation();
   const { logout } = useAuthContext();
 
@@ -92,7 +93,12 @@ const RecipeSearchPage = () => {
         </TouchableWithoutFeedback>
       </View>
 
-      <View style={styles.searchResultsContainer}>
+      <View
+        style={styles.searchResultsContainer}
+        onLayout={({ nativeEvent }) => {
+          setRecipeCardWidth(nativeEvent.layout.width / 2 - 20);
+        }}
+      >
         {isLoading ? (
           <View>
             <Text>Please wait for the results to load!</Text>
@@ -102,17 +108,15 @@ const RecipeSearchPage = () => {
             data={recipeList?.results || []}
             keyExtractor={(item: any) => item.id}
             renderItem={({ item }) => (
-              <View
-                style={styles.recipeCard}
-                onLayout={({ nativeEvent }) => {
-                  setCardDimension(nativeEvent.layout.width - 24);
-                }}
-              >
+              <View style={[styles.recipeCard, { width: recipeCardWidth }]}>
                 <Image
                   source={{ uri: item.image }}
                   style={[
                     styles.recipeCardImage,
-                    { width: cardDimension, height: cardDimension },
+                    {
+                      width: recipeCardWidth - 24,
+                      height: recipeCardWidth - 24,
+                    },
                   ]}
                 />
 
@@ -511,7 +515,6 @@ const styles = StyleSheet.create({
   },
   recipeCard: {
     backgroundColor: '#ffffff',
-    flex: 1,
     marginLeft: 10,
     marginTop: 0,
     marginRight: 10,
