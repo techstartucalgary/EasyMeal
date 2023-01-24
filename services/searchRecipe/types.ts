@@ -3,6 +3,7 @@ export type RecipesType = {
   diet?: string;
   type?: string;
   maxReadyTime?: number;
+  enabled?: boolean;
 };
 
 export type RecipeListType = {

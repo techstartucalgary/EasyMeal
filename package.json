@@ -34,7 +34,7 @@
     "react-native-web": "~0.18.7"
   },
   "devDependencies": {
-    "@expo/webpack-config": "^0.17.3",
+    "@expo/webpack-config": "^0.17.4",
     "@types/node": "^18.11.9",
     "@types/react": "~18.0.0",
     "@types/react-native": "~0.69.1",
@@ -55,7 +55,7 @@
     "eslint-plugin-react-native": "^4.0.0",
     "metro-react-native-babel-preset": "^0.73.4",
     "prettier": "^2.7.1",
-    "react-native-dotenv": "^3.4.2",
+    "react-native-dotenv": "^3.4.7",
     "typescript": "^4.8.4"
   },
   "private": true
