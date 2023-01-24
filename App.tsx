@@ -34,6 +34,11 @@ const Navigator = () => {
         },
         tabBarActiveTintColor: '#6536F9',
         tabBarInactiveTintColor: '#9FA5C0',
+        tapBarStyle: () => {
+          if (!currentUser) {
+            ('none');
+          }
+        },
       })}
     >
       {(currentUser ? privatePages : publicPages).map(({ page, name }) => (
