@@ -7,10 +7,11 @@ import { AuthProvider } from 'contexts/AuthContext/AuthProvider';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuthContext } from 'contexts/AuthContext';
-import { publicPages, privatePages } from './pages';
+import { publicPages, privatePages, ParamList } from './pages';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<ParamList>();
 
 const Navigator = () => {
   const { currentUser } = useAuthContext();
@@ -44,6 +45,11 @@ const Navigator = () => {
       {(currentUser ? privatePages : publicPages).map(({ page, name }) => (
         <Tab.Screen key={name} name={name} component={page} />
       ))}
+      <Tab.Screen
+        name="RecipeOverview"
+        component={RecipeOverview}
+        initialParams={{ itemId: 0 }}
+      />
     </Tab.Navigator>
   );
 };

@@ -1,7 +1,9 @@
 import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Svg, { G, Circle } from 'react-native-svg';
 import React from 'react';
+import { ParamList } from 'pages';
 
 const radius = 60;
 const circleCircumference = 2 * Math.PI * radius;
@@ -30,6 +32,8 @@ const proteinAngle = (protein / total) * 360;
 const carbsAngle = (carbs / total) * 360;
 const fatsAngle = proteinAngle + carbsAngle;
 
+// const route = useRoute<RouteProp<ParamList, 'RecipeOverview'>>(); uncommenting this causes white screen
+
 const RecipeOverview = () => (
   <ScrollView>
     <Image source={require('../../assets/heroimg1.png')} style={styles.img} />
@@ -44,7 +48,7 @@ const RecipeOverview = () => (
         <Text style={styles.h1}>Korean Rice Bowl</Text>
         <View style={styles.timecontainer}>
           <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
-          <Text style={styles.time}>40 mins</Text>
+          <Text style={styles.time}>{}</Text>
         </View>
       </View>
       <Text style={styles.desc}>

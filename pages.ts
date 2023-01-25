@@ -26,11 +26,20 @@ export const privatePages = [
     name: 'Home',
   },
   {
-    page: RecipeOverview,
-    name: 'RecipeOverview',
-  },
-  {
     page: RecipeSearchPage,
     name: 'Search',
   },
 ];
+
+export type ParamList = {
+  RecipeOverview:
+    | {
+        itemId: number;
+      }
+    | undefined;
+  RecipeSearch: undefined;
+  Home: undefined;
+  Hero: undefined;
+  Login: undefined;
+  SignUp: undefined;
+};
