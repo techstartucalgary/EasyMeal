@@ -7,8 +7,8 @@ import { AuthProvider } from 'contexts/AuthContext/AuthProvider';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuthContext } from 'contexts/AuthContext';
-import { publicPages, privatePages } from './pages';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { publicPages, privatePages } from './pages';
 
 const Tab = createBottomTabNavigator();
 
@@ -50,6 +50,7 @@ const Navigator = () => {
 
 const App = () => {
   const { currentUser } = useAuthContext();
+
   return (
     <NavigationContainer>
       <AuthProvider>

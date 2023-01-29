@@ -29,5 +29,5 @@ export const useFavorites = () => {
     getFavorites();
   }, [getFavorites]);
 
-  return { favorites, isLoading };
+  return { favorites, isLoading, getFavorites };
 };
