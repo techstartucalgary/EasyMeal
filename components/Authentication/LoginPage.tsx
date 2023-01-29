@@ -14,8 +14,7 @@ import {
 } from 'react-native';
 
 import { useFonts } from 'expo-font';
-import { AntDesign } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from 'utils/firebase-config';
@@ -98,7 +97,7 @@ const LoginPage = () => {
         <View>
           <Text style={styles.altLoginText}>Or login with</Text>
         </View>
-        <View style={styles.altLoginHr}></View>
+        <View style={styles.altLoginHr} />
       </View>
 
       <View style={styles.altLoginButtonContainer}>
