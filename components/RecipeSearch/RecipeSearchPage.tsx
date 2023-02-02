@@ -142,12 +142,8 @@ const RecipeSearchPage = () => {
             )}
             numColumns={2}
             initialNumToRender={20}
-            ListHeaderComponent={
-              <View style={styles.searchResultsDivider}></View>
-            }
-            ListFooterComponent={
-              <View style={styles.searchResultsDivider}></View>
-            }
+            ListHeaderComponent={<View style={styles.searchResultsDivider} />}
+            ListFooterComponent={<View style={styles.searchResultsDivider} />}
             ListEmptyComponent={
               <View>
                 <Text>Sorry we dont have any of those recipes!</Text>
