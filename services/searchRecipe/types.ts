@@ -4,6 +4,8 @@ export type RecipesType = {
   type?: string;
   maxReadyTime?: number;
   enabled?: boolean;
+  query?: string;
+  number?: number;
 };
 
 export type RecipeListType = {

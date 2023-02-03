@@ -3,31 +3,30 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { db } from 'utils/firebase-config';
 import { useFavorites } from './useFavorites';
-import { FavoriteRecipeType } from './types';
 
-export function useAddFavorites() {
+export function useRemoveFavorites() {
   const [isLoading, setIsLoading] = useState(false);
   const { currentUser } = useAuthContext();
 
   const { favorites, getFavorites } = useFavorites();
 
-  async function addFavorites(recipe: FavoriteRecipeType) {
+  async function removeFavorites(id: number) {
     setIsLoading(true);
     await getFavorites();
     if (currentUser) {
       if (!favorites) {
         await setDoc(doc(db, 'favorites', currentUser.uid), {
-          recipes: [recipe],
+          recipes: [],
         });
         setIsLoading(false);
       } else {
         await setDoc(doc(db, 'favorites', currentUser.uid), {
-          recipes: [...favorites, recipe],
+          recipes: favorites.filter((el) => el.id !== id),
         });
         await getFavorites();
         setIsLoading(false);
       }
     }
   }
-  return { addFavorites, isLoading };
+  return { removeFavorites, isLoading };
 }
