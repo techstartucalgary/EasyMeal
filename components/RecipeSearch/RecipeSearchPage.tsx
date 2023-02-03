@@ -26,9 +26,11 @@ import { cuisines, types, diets } from './filter-options';
 import { testRecipes } from './test-results';
 
 import { useRecipes } from '../../services/searchRecipe/useSearchRecipes';
+import useDebounce from 'hooks/useDebounce';
 
 const RecipeSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm);
   const [cookingTime, setCookingTime] = useState(60);
   const [filterVisible, setFilterVisible] = useState(false);
   const [cardDimension, setCardDimension] = useState(0);

@@ -84,10 +84,11 @@ const LoginPage = () => {
       </View>
 
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
+
       <Text
         style={styles.loginButton}
         onPress={() => {
-          login({ loginEmail, loginPassword });
+          login({ loginEmail, loginPassword }).catch(error => console.log(error));
         }}
       >
         Login
