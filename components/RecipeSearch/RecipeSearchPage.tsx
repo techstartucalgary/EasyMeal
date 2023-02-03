@@ -13,6 +13,7 @@ import {
   Platform,
   FlatList,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { useFonts } from 'expo-font';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
@@ -104,8 +105,12 @@ const RecipeSearchPage = () => {
         }}
       >
         {isLoading ? (
-          <View>
-            <Text>Please wait for the results to load!</Text>
+          <View style={styles.centerContainer}>
+            <ActivityIndicator
+              size="large"
+              color="#6536f9"
+              style={styles.loadingIcon}
+            />
           </View>
         ) : (
           <FlatList
@@ -364,6 +369,11 @@ const styles = StyleSheet.create({
     zIndex: 3,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
+  centerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   filterButton: {
     marginRight: 8,
     paddingLeft: 22,
@@ -508,6 +518,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     fontSize: 24,
     color: '#353535',
+  },
+  loadingIcon: {
+    scaleX: 2,
+    scaleY: 2,
   },
   pageContainer: {
     flex: 1,

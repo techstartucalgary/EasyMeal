@@ -24,6 +24,7 @@ const LoginPage = () => {
   const [hidePassword, setHidePassword] = useState(true);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [errorText, setErrorText] = useState('');
   const { login, signInWithGoogle, signInWithFacebook } = useAuthContext();
 
   const [fontsLoaded] = useFonts({
@@ -84,10 +85,16 @@ const LoginPage = () => {
 
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
 
+      {errorText.length != 0 && (
+        <Text style={styles.errorText}>{errorText}</Text>
+      )}
+
       <Text
         style={styles.loginButton}
         onPress={() => {
-          login({ loginEmail, loginPassword }).catch(error => console.log(error));
+          login({ loginEmail, loginPassword }).catch((error) => {
+            console.log(error);
+          });
         }}
       >
         Login
@@ -197,6 +204,13 @@ const styles = StyleSheet.create({
   },
   emailInput: {
     marginTop: 56,
+  },
+  errorText: {
+    color: '#FF4533',
+    fontFamily: 'Inter-Regular',
+    fontSize: 13,
+    marginLeft: 20,
+    marginTop: 8,
   },
   forgotPassword: {
     color: '#6536F9',
