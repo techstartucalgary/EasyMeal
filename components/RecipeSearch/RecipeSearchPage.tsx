@@ -51,6 +51,8 @@ const RecipeSearchPage = () => {
     type: selectedType,
     maxReadyTime: cookingTime,
     enabled: !filterVisible,
+    query: debouncedSearchTerm,
+    number: 20,
   });
 
   const [fontsLoaded] = useFonts({
