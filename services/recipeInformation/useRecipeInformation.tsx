@@ -4,24 +4,27 @@ import { RecipeInformationType } from './types';
 
 type RecipeType = {
   id?: number;
+  enabled?: boolean;
 };
 
-export const useRecipeInformation = ({ id }: RecipeType) => {
+export const useRecipeInformation = ({ id, enabled }: RecipeType) => {
   const [recipeInformation, setRecipeInformation] = useState<
     RecipeInformationType | undefined
   >(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(
-      `https://api.spoonacular.com/recipes/${id}/information?apiKey=${SPOON_API_KEY}&includeNutrition=true`,
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setIsLoading(false);
-        setRecipeInformation(data);
-      });
-  }, [id]);
+    if (enabled) {
+      setIsLoading(true);
+      fetch(
+        `https://api.spoonacular.com/recipes/${id}/information?apiKey=${SPOON_API_KEY}&includeNutrition=true`,
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setIsLoading(false);
+          setRecipeInformation(data);
+        });
+    }
+  }, [id, enabled]);
   return { recipeInformation, isLoading };
 };

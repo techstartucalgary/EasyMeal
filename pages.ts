@@ -18,7 +18,7 @@ export const publicPages = [
     page: SignUpPage,
     name: 'SignUp',
   },
-];
+] as const;
 
 export const privatePages = [
   {
@@ -29,7 +29,7 @@ export const privatePages = [
     page: RecipeSearchPage,
     name: 'Search',
   },
-];
+] as const;
 
 export type ParamList = {
   RecipeOverview:
@@ -42,4 +42,5 @@ export type ParamList = {
   Hero: undefined;
   Login: undefined;
   SignUp: undefined;
+  Search: undefined;
 };

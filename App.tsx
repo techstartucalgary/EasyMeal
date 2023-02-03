@@ -7,9 +7,9 @@ import { AuthProvider } from 'contexts/AuthContext/AuthProvider';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuthContext } from 'contexts/AuthContext';
-import { publicPages, privatePages, ParamList } from './pages';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
+import { publicPages, privatePages, ParamList } from './pages';
 
 const Tab = createBottomTabNavigator<ParamList>();
 
@@ -37,8 +37,9 @@ const Navigator = () => {
         tabBarInactiveTintColor: '#9FA5C0',
         tapBarStyle: () => {
           if (!currentUser) {
-            ('none');
+            return { display: 'none' };
           }
+          return null;
         },
       })}
     >
@@ -56,6 +57,7 @@ const Navigator = () => {
 
 const App = () => {
   const { currentUser } = useAuthContext();
+
   return (
     <NavigationContainer>
       <AuthProvider>
