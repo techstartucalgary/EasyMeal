@@ -1,11 +1,34 @@
 import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
+import Svg, { G, Circle } from 'react-native-svg';
 import React from 'react';
-// import PieChart from 'react-native-pie-chart';
 
-// const widthAndHeight = 250;
-// const series = [123, 321, 123];
-// const sliceColor = ['#F44336', '#2196F3', '#FFEB3B'];
+const radius = 60;
+const circleCircumference = 2 * Math.PI * radius;
+
+const proteinWeight = 80;
+const carbsWeight = 20;
+const fatsWeight = 15;
+
+const protein = proteinWeight * 4;
+const carbs = carbsWeight * 4;
+const fats = fatsWeight * 9;
+const total = protein + carbs + fats;
+
+const proteinPercentage = Math.round((protein / total) * 100);
+const carbsPercentage = Math.round((carbs / total) * 100);
+const fatsPercentage = Math.round((fats / total) * 100);
+
+const proteinStrokeDashoffset =
+  circleCircumference - (circleCircumference * proteinPercentage) / 100;
+const carbsStrokeDashoffset =
+  circleCircumference - (circleCircumference * carbsPercentage) / 100;
+const fatsStrokeDashoffset =
+  circleCircumference - (circleCircumference * fatsPercentage) / 100;
+
+const proteinAngle = (protein / total) * 360;
+const carbsAngle = (carbs / total) * 360;
+const fatsAngle = proteinAngle + carbsAngle;
 
 const RecipeOverview = () => (
   <ScrollView>
@@ -28,14 +51,73 @@ const RecipeOverview = () => (
         Hearty Korean BBQ Bowls made with bulgogi beef, garlic View More
       </Text>
       <View style={styles.macrowrapper}>
-        {/* <PieChart
-          widthAndHeight={widthAndHeight}
-          series={series}
-          sliceColor={sliceColor}
-          doughnut={true}
-          coverRadius={0.45}
-          coverFill={'#FFF'}
-        /> */}
+        <View style={styles.graphWrapper}>
+          <Svg height="160" width="160" viewBox="0 0 180 180">
+            <G rotation={-90} originX="90" originY="90">
+              <Circle
+                cx="50%"
+                cy="50%"
+                r={radius}
+                stroke="#C05CC2"
+                fill="transparent"
+                strokeWidth="20"
+                strokeDasharray={circleCircumference}
+                strokeDashoffset={proteinStrokeDashoffset}
+                rotation={0}
+                originX="90"
+                originY="90"
+                strokeLinecap="round"
+              />
+              <Circle
+                cx="50%"
+                cy="50%"
+                r={radius}
+                stroke="#E3B428"
+                fill="transparent"
+                strokeWidth="20"
+                strokeDasharray={circleCircumference}
+                strokeDashoffset={carbsStrokeDashoffset}
+                rotation={proteinAngle}
+                originX="90"
+                originY="90"
+              />
+              <Circle
+                cx="50%"
+                cy="50%"
+                r={radius}
+                stroke="#39C3B3"
+                fill="transparent"
+                strokeWidth="20"
+                strokeDasharray={circleCircumference}
+                strokeDashoffset={fatsStrokeDashoffset}
+                rotation={fatsAngle}
+                originX="90"
+                originY="90"
+              />
+            </G>
+          </Svg>
+          <View style={styles.middlechart}>
+            <Text style={styles.text}>{total}</Text>
+            <Text style={styles.cal}>cal</Text>
+          </View>
+        </View>
+        <View style={styles.macros}>
+          <View style={styles.stack}>
+            <Text style={styles.percentCarbs}>{carbsPercentage}%</Text>
+            <Text style={styles.weight}>{carbsWeight} g</Text>
+            <Text style={styles.macro}>Carbs</Text>
+          </View>
+          <View style={styles.stack}>
+            <Text style={styles.percentProtein}>{proteinPercentage}%</Text>
+            <Text style={styles.weight}>{proteinWeight} g</Text>
+            <Text style={styles.macro}>Protein</Text>
+          </View>
+          <View style={styles.stack}>
+            <Text style={styles.percentFats}>{fatsPercentage}%</Text>
+            <Text style={styles.weight}>{fatsWeight} g</Text>
+            <Text style={styles.macro}>Fats</Text>
+          </View>
+        </View>
       </View>
       <View style={styles.ingwrapper}>
         <Text style={styles.ingheading}>Ingredients</Text>
@@ -148,6 +230,9 @@ const styles = StyleSheet.create({
     borderColor: '#D0DBEA',
     paddingTop: 15,
     paddingBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
   ingwrapper: {
     borderBottomWidth: 1,
@@ -194,5 +279,60 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#4E4E4E',
     fontSize: 15,
+  },
+  graphWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 18,
+    color: '#474747',
+  },
+  middlechart: {
+    flexDirection: 'column',
+    position: 'absolute',
+  },
+  cal: {
+    textAlign: 'center',
+    color: '#727272',
+  },
+  macros: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  stack: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  percentCarbs: {
+    fontWeight: '500',
+    color: '#E3B428',
+    fontSize: 14,
+  },
+  percentProtein: {
+    fontWeight: '500',
+    color: '#C05CC2',
+    fontSize: 14,
+  },
+  percentFats: {
+    fontWeight: '500',
+    color: '#39C3B3',
+    fontSize: 14,
+  },
+  weight: {
+    fontWeight: '600',
+    fontSize: 16,
+    color: '#5A5A5A',
+    marginTop: 5,
+  },
+  macro: {
+    fontWeight: '500',
+    fontSize: 13,
+    color: '#727272',
+    marginTop: 5,
   },
 });
