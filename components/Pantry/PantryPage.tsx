@@ -49,6 +49,7 @@ const PantryPage = () => {
       <View style={styles.pantryTypeHeader}>
         {pantryTypes.map((pantryType) => (
           <Pressable
+            key={pantryType.id}
             onPress={() => setSelectedPantryType(pantryType.id)}
             style={styles.pantryTypeVContainer}
           >
