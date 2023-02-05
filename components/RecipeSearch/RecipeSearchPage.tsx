@@ -129,28 +129,37 @@ const RecipeSearchPage = () => {
             data={recipeList?.results || []}
             keyExtractor={(item: any) => item.id}
             renderItem={({ item }) => (
-              <View style={[styles.recipeCard, { width: recipeCardWidth }]}>
-                <Image
-                  source={{ uri: item.image }}
-                  style={[
-                    styles.recipeCardImage,
-                    {
-                      width: recipeCardWidth - 24,
-                      height: recipeCardWidth - 24,
-                    },
-                  ]}
-                />
+              <Pressable
+                onPress={() => {
+                  navigate(
+                    'RecipeOverview' as never,
+                    { itemId: item.id } as never,
+                  );
+                }}
+              >
+                <View style={[styles.recipeCard, { width: recipeCardWidth }]}>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={[
+                      styles.recipeCardImage,
+                      {
+                        width: recipeCardWidth - 24,
+                        height: recipeCardWidth - 24,
+                      },
+                    ]}
+                  />
 
-                <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
-                  {item.title}
-                </Text>
-                <View style={styles.recipeCardSubHeader}>
-                  <Text style={styles.recipeCardTextSubHeader}>
-                    Breakfast ·{' '}
+                  <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
+                    {item.title}
                   </Text>
-                  <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+                  <View style={styles.recipeCardSubHeader}>
+                    <Text style={styles.recipeCardTextSubHeader}>
+                      Breakfast ·{' '}
+                    </Text>
+                    <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+                  </View>
                 </View>
-              </View>
+              </Pressable>
             )}
             numColumns={2}
             initialNumToRender={20}
