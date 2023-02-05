@@ -16,7 +16,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useFonts } from 'expo-font';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons, Feather } from '@expo/vector-icons';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -112,6 +112,18 @@ const RecipeSearchPage = () => {
               style={styles.loadingIcon}
             />
           </View>
+        ) : recipeList?.totalResults === 0 ? (
+          <View style={styles.centerContainer}>
+            <Feather
+              name="alert-circle"
+              size={144}
+              color="#9FA5C0"
+              style={styles.shiftUp}
+            />
+            <Text style={styles.noResultsText}>
+              Sorry, we dont have any of those recipes!
+            </Text>
+          </View>
         ) : (
           <FlatList
             data={recipeList?.results || []}
@@ -144,11 +156,6 @@ const RecipeSearchPage = () => {
             initialNumToRender={20}
             ListHeaderComponent={<View style={styles.searchResultsDivider} />}
             ListFooterComponent={<View style={styles.searchResultsDivider} />}
-            ListEmptyComponent={
-              <View>
-                <Text>Sorry we dont have any of those recipes!</Text>
-              </View>
-            }
           />
         )}
       </View>
@@ -523,6 +530,18 @@ const styles = StyleSheet.create({
     scaleX: 2,
     scaleY: 2,
   },
+  noResultsText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 20,
+    color: '#9FA5C0',
+
+    marginTop: 24,
+    marginLeft: 24,
+    marginRight: 24,
+  },
   pageContainer: {
     flex: 1,
     backgroundColor: '#fff',
@@ -620,6 +639,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 12,
     backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
+  shiftUp: {
+    marginTop: -64,
   },
   sliderThumb: {
     width: 24,
