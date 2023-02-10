@@ -52,14 +52,14 @@ const RecipeOverview = () => {
   const radius = 60;
   const circleCircumference = 2 * Math.PI * radius;
 
-  const proteinWeight = 80;
-  const carbsWeight = 20;
-  const fatsWeight = 15;
+  const proteinWeight = recipeInformation?.nutrition.nutrients[8].amount;
+  const carbsWeight = recipeInformation?.nutrition.nutrients[3].amount;
+  const fatsWeight = recipeInformation?.nutrition.nutrients[1].amount;
 
   const protein = proteinWeight * 4;
   const carbs = carbsWeight * 4;
   const fats = fatsWeight * 9;
-  const total = protein + carbs + fats;
+  const total = recipeInformation?.nutrition.nutrients[0].amount;
   const proteinPercentage = Math.round((protein / total) * 100);
   // const proteinPercentage =
   //   recipeInformation?.nutrition.caloricBreakdown.percentProtein;
@@ -98,7 +98,7 @@ const RecipeOverview = () => {
           <View style={styles.timecontainer}>
             <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
             <Text style={styles.time}>
-              {recipeInformation?.readyInMinutes}min
+              {recipeInformation?.readyInMinutes} mins
             </Text>
           </View>
         </View>
