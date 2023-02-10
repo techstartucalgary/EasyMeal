@@ -1,10 +1,18 @@
-import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+} from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Svg, { G, Circle } from 'react-native-svg';
 import React from 'react';
 import { ParamList } from 'pages';
+import ViewMoreText from 'react-native-view-more-text';
 import { useRecipeInformation } from 'services/recipeInformation';
 
 const radius = 60;
@@ -40,7 +48,7 @@ const RecipeOverview = () => {
     id: route.params?.itemId,
     enabled: !!route.params?.itemId,
   });
-
+  const { goBack } = useNavigation();
   const radius = 60;
   const circleCircumference = 2 * Math.PI * radius;
 
@@ -77,7 +85,9 @@ const RecipeOverview = () => {
     <ScrollView>
       <Image source={{ uri: recipeInformation?.image }} style={styles.img} />
       <View style={styles.back}>
-        <Ionicons name="ios-chevron-back" size={24} color="#000000" />
+        <Pressable onPress={goBack}>
+          <Ionicons name="ios-chevron-back" size={24} color="#000000" />
+        </Pressable>
       </View>
       <View style={styles.favorite}>
         <MaterialIcons name="favorite" size={24} color="#000000" />
@@ -191,6 +201,7 @@ export default RecipeOverview;
 const styles = StyleSheet.create({
   img: {
     width: '100%',
+    height: 300,
   },
   back: {
     borderRadius: 100,
@@ -226,7 +237,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 17,
     marginRight: 2,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   time: {
     color: '#9F9F9F',
@@ -250,6 +261,7 @@ const styles = StyleSheet.create({
     borderColor: '#D0DBEA',
     paddingTop: 15,
     paddingBottom: 15,
+    marginTop: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
