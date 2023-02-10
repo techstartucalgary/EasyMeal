@@ -22,17 +22,17 @@ export const publicPages = [
 ] as const;
 
 export const privatePages = [
+  // {
+  //   page: HomePage,
+  //   name: 'Home',
+  // },
   {
-    page: HomePage,
-    name: 'Home',
+    page: RecipeSearchPage,
+    name: 'Search',
   },
   {
     page: PantryPage,
     name: 'Pantry',
-  },
-  {
-    page: RecipeSearchPage,
-    name: 'Search',
   },
 ] as const;
 
