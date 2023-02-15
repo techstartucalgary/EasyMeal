@@ -10,10 +10,15 @@ import {
   Image,
   ScrollView,
   FlatList,
+  Modal,
+  Dimensions,
+  TextInput,
 } from 'react-native';
 
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
+import { LinearGradient } from 'expo-linear-gradient';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 import { pantryTypes } from './pantry-types';
 import { pantryItems } from './test-pantry';
@@ -22,6 +27,12 @@ const PantryPage = () => {
   const [selectedPantryType, setSelectedPantryType] =
     useState<typeof pantryTypes[number]['id']>(0);
   const [pantryCounts, setPantryCounts] = useState(pantryTypes);
+  const [shadowWidth, setShadowWidth] = useState(0);
+  const [addItemVisible, setAddItemVisible] = useState(false);
+  const [addItemName, setAddItemName] = useState('');
+  const [addItemAmount, setAddItemAmount] = useState('');
+  const [addItemPantryType, setAddItemPantryType] = useState(pantryTypes[1].id);
+
   const [testItems, setTestItems] = useState(pantryItems);
 
   const [fontsLoaded] = useFonts({
@@ -75,13 +86,21 @@ const PantryPage = () => {
     });
   };
 
+  const deletePantryItem = (id: number) => {
+    console.log('DELETE ITEM');
+  };
+
   return (
-    <SafeAreaView style={styles.pantryPageContainer}>
+    <SafeAreaView style={styles.pantryPageContainer} onLayout={calcPantryCount}>
+      {addItemVisible && <View style={styles.backgroundDim}></View>}
       <View style={styles.pantryPageHeader}>
         <Text style={styles.pantryHeaderText}>Pantry</Text>
         <View style={styles.pantryPageRightHeader}>
           <AntDesign name="search1" size={24} color="#3E5481" />
-          <Pressable style={styles.addItemButton}>
+          <Pressable
+            onPress={() => setAddItemVisible(!addItemVisible)}
+            style={styles.addItemButton}
+          >
             <AntDesign
               name="pluscircle"
               size={20}
@@ -92,7 +111,7 @@ const PantryPage = () => {
           </Pressable>
         </View>
       </View>
-      <View style={styles.pantryTypeHeader} onLayout={calcPantryCount}>
+      <View style={styles.pantryTypeHeader}>
         {pantryTypes.map((pantryType) => (
           <Pressable
             key={pantryType.id}
@@ -109,41 +128,157 @@ const PantryPage = () => {
           </Pressable>
         ))}
       </View>
-      <View style={styles.pantryResultsContainer}>
+      <View
+        style={styles.pantryResultsContainer}
+        onLayout={({ nativeEvent }) => {
+          setShadowWidth(nativeEvent.layout.width - 32);
+        }}
+      >
         <FlatList
           data={testItems}
           keyExtractor={(item: any) => item.id}
           renderItem={({ item }) => {
             if (selectedPantryType === 0 || item.type === selectedPantryType) {
               return (
-                <View style={styles.pantryCardContainer}>
-                  <Image source={item.imageFP} style={styles.pantryCardImage} />
-                  <View style={styles.pantryCardTextContainer}>
-                    <Text style={styles.pantryCardTitle}>{item.name}</Text>
-                    <Text style={styles.pantryCardType}>{item.typeText}</Text>
+                <Swipeable
+                  friction={1.5}
+                  rightThreshold={80}
+                  overshootFriction={8}
+                  renderRightActions={(progress, dragX) => {
+                    return (
+                      <Pressable onPress={() => deletePantryItem(item.id)}>
+                        <View style={styles.deleteButton}>
+                          <Feather
+                            name="trash-2"
+                            size={24}
+                            color="white"
+                            style={styles.deleteIcon}
+                          />
+                        </View>
+                      </Pressable>
+                    );
+                  }}
+                >
+                  <View
+                    style={[
+                      styles.pantryCardContainer,
+                      styles.pantryCardShadow,
+                    ]}
+                  >
+                    <Image
+                      source={item.imageFP}
+                      style={styles.pantryCardImage}
+                    />
+                    <View style={styles.pantryCardTextContainer}>
+                      <Text style={styles.pantryCardTitle}>{item.name}</Text>
+                      <Text style={styles.pantryCardType}>{item.typeText}</Text>
+                    </View>
+                    <View style={styles.pantryCardButtonContainer}>
+                      <Pressable
+                        onPress={() => updatePantryItemCount(item.id, -1)}
+                      >
+                        <Text style={styles.pantryCardButton}>-</Text>
+                      </Pressable>
+                      <Text style={styles.pantryCardCount}>{item.count}</Text>
+                      <Pressable
+                        onPress={() => updatePantryItemCount(item.id, 1)}
+                      >
+                        <Text style={styles.pantryCardButton}>+</Text>
+                      </Pressable>
+                    </View>
                   </View>
-                  <View style={styles.pantryCardButtonContainer}>
-                    <Pressable
-                      onPress={() => updatePantryItemCount(item.id, -1)}
-                    >
-                      <Text style={styles.pantryCardButton}>-</Text>
-                    </Pressable>
-                    <Text style={styles.pantryCardCount}>{item.count}</Text>
-                    <Pressable
-                      onPress={() => updatePantryItemCount(item.id, 1)}
-                    >
-                      <Text style={styles.pantryCardButton}>+</Text>
-                    </Pressable>
-                  </View>
-                </View>
+                </Swipeable>
               );
             }
             return <View></View>;
           }}
           initialNumToRender={20}
-          ListFooterComponent={<View style={styles.pantryResultsDivider} />}
+          ListFooterComponent={<View style={styles.pantryResultsFooter} />}
         />
       </View>
+
+      <Modal
+        animationType="fade"
+        visible={addItemVisible}
+        onRequestClose={() => {
+          setAddItemVisible(!addItemVisible);
+        }}
+        transparent={true}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.addItemContainer}>
+            <View style={styles.addItemHeaderContainer}>
+              <Text style={styles.addItemHeaderText}>Add item</Text>
+              <Pressable onPress={() => setAddItemVisible(!addItemVisible)}>
+                <Feather name="x" size={32} color="#33363F" />
+              </Pressable>
+            </View>
+            <Text style={styles.addItemSubHeaderText}>Item name</Text>
+            <TextInput
+              onChangeText={setAddItemName}
+              placeholder="e.g. Tomatoes"
+              style={styles.addItemNameInput}
+            />
+            <Text style={styles.addItemSubHeaderText}>Amount</Text>
+            <TextInput
+              keyboardType="numeric"
+              maxLength={6}
+              onChangeText={(text) => {
+                setAddItemAmount(text.replace('/[^0-9]/g', ''));
+              }}
+              placeholder="e.g. 4"
+              style={styles.addItemAmountInput}
+            />
+            <Text style={styles.addItemSubHeaderText}>Location</Text>
+            <View style={styles.addItemButtonRowContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.addItemButtonRow}
+              >
+                {pantryTypes.map((type) => {
+                  if (type.id == 0) {
+                    return <View key={type.id}></View>;
+                  } else {
+                    return (
+                      <Pressable
+                        key={type.id}
+                        onPress={() => setAddItemPantryType(type.id)}
+                      >
+                        <View
+                          style={[
+                            styles.addItemTypeButton,
+                            type.id == addItemPantryType
+                              ? styles.addItemTypeButtonOn
+                              : styles.addItemTypeButtonOff,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.addItemTypeButtonText,
+                              type.id == addItemPantryType
+                                ? styles.addItemTypeButtonTextOn
+                                : styles.addItemTypeButtonTextOff,
+                            ]}
+                          >
+                            {type.title}
+                          </Text>
+                        </View>
+                      </Pressable>
+                    );
+                  }
+                })}
+              </ScrollView>
+            </View>
+            <Pressable
+              onPress={() => setAddItemVisible(!addItemVisible)}
+              style={styles.addItemAddItemButton}
+            >
+              <Text style={styles.addItemAddItemButtonText}>Add item</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -151,6 +286,44 @@ const PantryPage = () => {
 export default PantryPage;
 
 const styles = StyleSheet.create({
+  addItemAddItemButton: {
+    marginTop: 40,
+    marginBottom: 40,
+    height: 56,
+    width: 156,
+
+    borderRadius: 32,
+    backgroundColor: '#6536F9',
+
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  addItemAddItemButtonText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    alignSelf: 'center',
+
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
+    color: '#FFFFFF',
+  },
+  addItemAmountInput: {
+    marginTop: 4,
+    marginBottom: 4,
+    marginLeft: 20,
+    paddingLeft: 16,
+    height: 48,
+    width: 100,
+
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#F1F1FA',
+    borderStyle: 'solid',
+
+    fontFamily: 'Inter-Regular',
+    fontSize: 16,
+    color: '#91919F',
+  },
   addItemButton: {
     marginLeft: 24,
     height: 40,
@@ -161,8 +334,72 @@ const styles = StyleSheet.create({
 
     backgroundColor: '#EDEDED',
   },
+  addItemButtonRow: {
+    flex: 1,
+  },
+  addItemButtonRowContainer: {
+    marginTop: 4,
+    marginLeft: 20,
+    marginRight: 20,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addItemButtonRowEnd: {
+    position: 'absolute',
+    right: 0,
+    width: 8,
+    height: 48,
+  },
+  addItemContainer: {
+    marginLeft: 24,
+    marginRight: 24,
+
+    borderRadius: 24,
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+  },
+  addItemHeaderContainer: {
+    marginTop: 32,
+    marginLeft: 20,
+    marginRight: 20,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  addItemHeaderText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 24,
+    color: '#222222',
+  },
   addItemIcon: {
     marginLeft: 8,
+  },
+  addItemNameInput: {
+    marginTop: 4,
+    marginBottom: 4,
+    marginLeft: 20,
+    marginRight: 20,
+    paddingLeft: 16,
+    height: 48,
+
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#F1F1FA',
+    borderStyle: 'solid',
+
+    fontFamily: 'Inter-Regular',
+    fontSize: 16,
+    color: '#91919F',
+  },
+  addItemSubHeaderText: {
+    marginTop: 12,
+    marginLeft: 20,
+
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
+    color: '#5D6066',
   },
   addItemText: {
     marginLeft: 8,
@@ -171,6 +408,72 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     fontSize: 12,
     color: '#000000',
+  },
+  addItemTypeButton: {
+    marginRight: 8,
+    height: 48,
+
+    borderRadius: 24,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addItemTypeButtonOff: {
+    borderWidth: 2,
+    borderColor: '#D0DBEA',
+    borderStyle: 'solid',
+    backgroundColor: '#FFFFFF',
+  },
+  addItemTypeButtonOn: {
+    borderWidth: 2,
+    borderColor: '#6536F9',
+    borderStyle: 'solid',
+    backgroundColor: '#6536F9',
+  },
+  addItemTypeButtonText: {
+    marginLeft: 24,
+    marginRight: 24,
+
+    fontSize: 15,
+  },
+  addItemTypeButtonTextOff: {
+    fontFamily: 'Inter-Medium',
+    color: '#9FA5C0',
+  },
+  addItemTypeButtonTextOn: {
+    fontFamily: 'Inter-Bold',
+    color: '#FFFFFF',
+  },
+  backgroundDim: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: Dimensions.get('screen').height,
+    zIndex: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  deleteButton: {
+    marginTop: 4,
+    marginBottom: 10,
+    marginRight: 16,
+    marginLeft: -80,
+    borderLeftColor: '#eb5c5c',
+    borderLeftWidth: 64,
+    height: 92,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    backgroundColor: '#eb5c5c',
+  },
+  deleteIcon: {
+    marginLeft: 28,
+    marginRight: 28,
   },
   pantryCardButton: {
     height: 22,
@@ -194,22 +497,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pantryCardContainer: {
-    marginTop: 12,
+    marginTop: 4,
+    marginBottom: 10,
     marginLeft: 16,
     marginRight: 16,
     height: 92,
 
     borderRadius: 20,
     backgroundColor: '#ffffff',
-    shadowColor: '#5a6cea',
-    shadowOffset: {
-      width: 0,
-      height: 9,
-    },
-    shadowOpacity: 0.37,
-    shadowRadius: 7.49,
-
-    elevation: 12,
 
     flexDirection: 'row',
     alignItems: 'center',
@@ -230,6 +525,17 @@ const styles = StyleSheet.create({
     height: 68,
     width: 68,
     borderRadius: 16,
+  },
+  pantryCardShadow: {
+    shadowColor: '#5a6cea',
+    shadowOffset: {
+      width: 0,
+      height: 9,
+    },
+    shadowOpacity: 0.37,
+    shadowRadius: 7.49,
+
+    elevation: 12,
   },
   pantryCardTextContainer: {
     marginLeft: 16,
@@ -287,6 +593,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   pantryResultsDivider: {
+    width: '100%',
+    height: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
+  pantryResultsFooter: {
     width: '100%',
     height: 20,
     backgroundColor: 'rgba(0, 0, 0, 0)',

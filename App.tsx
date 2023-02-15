@@ -10,6 +10,7 @@ import { useAuthContext } from 'contexts/AuthContext';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
 import { publicPages, privatePages, ParamList } from './pages';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Tab = createBottomTabNavigator<ParamList>();
 
@@ -59,11 +60,13 @@ const App = () => {
   const { currentUser } = useAuthContext();
 
   return (
-    <NavigationContainer>
-      <AuthProvider>
-        <Navigator />
-      </AuthProvider>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <AuthProvider>
+          <Navigator />
+        </AuthProvider>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
 
