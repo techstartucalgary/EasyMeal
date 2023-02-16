@@ -11,6 +11,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
 import HomePage from 'components/HomePage/HomePage';
 import { publicPages, privatePages, ParamList } from './pages';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Tab = createBottomTabNavigator<ParamList>();
 const Stack = createNativeStackNavigator<ParamList>();
@@ -69,13 +70,17 @@ const Navigator = () => {
   );
 };
 
-const App = () => (
-  <NavigationContainer>
-    <AuthProvider>
-      <Navigator />
-    </AuthProvider>
-  </NavigationContainer>
-);
+const App = () => {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <AuthProvider>
+          <Navigator />
+        </AuthProvider>
+      </NavigationContainer>
+    </GestureHandlerRootView>
+  );
+};
 
 export default App;
 
