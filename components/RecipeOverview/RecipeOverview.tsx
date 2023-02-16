@@ -1,9 +1,19 @@
-import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+} from 'react-native';
+import RenderHtml from 'react-native-render-html';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Svg, { G, Circle } from 'react-native-svg';
 import React from 'react';
 import { ParamList } from 'pages';
+import ViewMoreText from 'react-native-view-more-text';
+import { useRecipeInformation } from 'services/recipeInformation';
 
 const radius = 60;
 const circleCircumference = 2 * Math.PI * radius;
@@ -32,151 +42,166 @@ const proteinAngle = (protein / total) * 360;
 const carbsAngle = (carbs / total) * 360;
 const fatsAngle = proteinAngle + carbsAngle;
 
-// const route = useRoute<RouteProp<ParamList, 'RecipeOverview'>>(); uncommenting this causes white screen
+const RecipeOverview = () => {
+  const route = useRoute<RouteProp<ParamList, 'RecipeOverview'>>();
+  const { recipeInformation } = useRecipeInformation({
+    id: route.params?.itemId,
+    enabled: !!route.params?.itemId,
+  });
+  const { goBack } = useNavigation();
+  const radius = 60;
+  const circleCircumference = 2 * Math.PI * radius;
 
-const RecipeOverview = () => (
-  <ScrollView>
-    <Image source={require('../../assets/heroimg1.png')} style={styles.img} />
-    <View style={styles.back}>
-      <Ionicons name="ios-chevron-back" size={24} color="#000000" />
-    </View>
-    <View style={styles.favorite}>
-      <MaterialIcons name="favorite" size={24} color="#000000" />
-    </View>
-    <View style={styles.card}>
-      <View style={styles.hcontainer}>
-        <Text style={styles.h1}>Korean Rice Bowl</Text>
-        <View style={styles.timecontainer}>
-          <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
-          <Text style={styles.time}>{}</Text>
-        </View>
+  const proteinWeight = recipeInformation?.nutrition.nutrients[8].amount;
+  const carbsWeight = recipeInformation?.nutrition.nutrients[3].amount;
+  const fatsWeight = recipeInformation?.nutrition.nutrients[1].amount;
+
+  const protein = proteinWeight * 4;
+  const carbs = carbsWeight * 4;
+  const fats = fatsWeight * 9;
+  const total = recipeInformation?.nutrition.nutrients[0].amount;
+  const proteinPercentage = Math.round((protein / total) * 100);
+  // const proteinPercentage =
+  //   recipeInformation?.nutrition.caloricBreakdown.percentProtein;
+  // const carbsPercentage =
+  //   recipeInformation?.nutrition.caloricBreakdown.percentCarbs;
+  // const fatsPercentage =
+  //   recipeInformation?.nutrition.caloricBreakdown.percentFat;
+  const carbsPercentage = Math.round((carbs / total) * 100);
+  const fatsPercentage = Math.round((fats / total) * 100);
+
+  const proteinStrokeDashoffset =
+    circleCircumference - (circleCircumference * proteinPercentage) / 100;
+  const carbsStrokeDashoffset =
+    circleCircumference - (circleCircumference * carbsPercentage) / 100;
+  const fatsStrokeDashoffset =
+    circleCircumference - (circleCircumference * fatsPercentage) / 100;
+
+  const proteinAngle = (protein / total) * 360;
+  const carbsAngle = (carbs / total) * 360;
+  const fatsAngle = proteinAngle + carbsAngle;
+
+  return (
+    <ScrollView>
+      <Image source={{ uri: recipeInformation?.image }} style={styles.img} />
+      <View style={styles.back}>
+        <Pressable onPress={goBack}>
+          <Ionicons name="ios-chevron-back" size={24} color="#000000" />
+        </Pressable>
       </View>
-      <Text style={styles.desc}>
-        Hearty Korean BBQ Bowls made with bulgogi beef, garlic View More
-      </Text>
-      <View style={styles.macrowrapper}>
-        <View style={styles.graphWrapper}>
-          <Svg height="160" width="160" viewBox="0 0 180 180">
-            <G rotation={-90} originX="90" originY="90">
-              <Circle
-                cx="50%"
-                cy="50%"
-                r={radius}
-                stroke="#C05CC2"
-                fill="transparent"
-                strokeWidth="20"
-                strokeDasharray={circleCircumference}
-                strokeDashoffset={proteinStrokeDashoffset}
-                rotation={0}
-                originX="90"
-                originY="90"
-                strokeLinecap="round"
-              />
-              <Circle
-                cx="50%"
-                cy="50%"
-                r={radius}
-                stroke="#E3B428"
-                fill="transparent"
-                strokeWidth="20"
-                strokeDasharray={circleCircumference}
-                strokeDashoffset={carbsStrokeDashoffset}
-                rotation={proteinAngle}
-                originX="90"
-                originY="90"
-              />
-              <Circle
-                cx="50%"
-                cy="50%"
-                r={radius}
-                stroke="#39C3B3"
-                fill="transparent"
-                strokeWidth="20"
-                strokeDasharray={circleCircumference}
-                strokeDashoffset={fatsStrokeDashoffset}
-                rotation={fatsAngle}
-                originX="90"
-                originY="90"
-              />
-            </G>
-          </Svg>
-          <View style={styles.middlechart}>
-            <Text style={styles.text}>{total}</Text>
-            <Text style={styles.cal}>cal</Text>
+      <View style={styles.favorite}>
+        <MaterialIcons name="favorite" size={24} color="#000000" />
+      </View>
+      <View style={styles.card}>
+        <View style={styles.hcontainer}>
+          <Text style={styles.h1}>{recipeInformation?.title}</Text>
+          <View style={styles.timecontainer}>
+            <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
+            <Text style={styles.time}>
+              {recipeInformation?.readyInMinutes} mins
+            </Text>
           </View>
         </View>
-        <View style={styles.macros}>
-          <View style={styles.stack}>
-            <Text style={styles.percentCarbs}>{carbsPercentage}%</Text>
-            <Text style={styles.weight}>{carbsWeight} g</Text>
-            <Text style={styles.macro}>Carbs</Text>
+
+        <RenderHtml source={{ html: recipeInformation?.summary }} />
+
+        <View style={styles.macrowrapper}>
+          <View style={styles.graphWrapper}>
+            <Svg height="160" width="160" viewBox="0 0 180 180">
+              <G rotation={-90} originX="90" originY="90">
+                <Circle
+                  cx="50%"
+                  cy="50%"
+                  r={radius}
+                  stroke="#C05CC2"
+                  fill="transparent"
+                  strokeWidth="20"
+                  strokeDasharray={circleCircumference}
+                  strokeDashoffset={proteinStrokeDashoffset}
+                  rotation={0}
+                  originX="90"
+                  originY="90"
+                  strokeLinecap="round"
+                />
+                <Circle
+                  cx="50%"
+                  cy="50%"
+                  r={radius}
+                  stroke="#E3B428"
+                  fill="transparent"
+                  strokeWidth="20"
+                  strokeDasharray={circleCircumference}
+                  strokeDashoffset={carbsStrokeDashoffset}
+                  rotation={proteinAngle}
+                  originX="90"
+                  originY="90"
+                />
+                <Circle
+                  cx="50%"
+                  cy="50%"
+                  r={radius}
+                  stroke="#39C3B3"
+                  fill="transparent"
+                  strokeWidth="20"
+                  strokeDasharray={circleCircumference}
+                  strokeDashoffset={fatsStrokeDashoffset}
+                  rotation={fatsAngle}
+                  originX="90"
+                  originY="90"
+                />
+              </G>
+            </Svg>
+            <View style={styles.middlechart}>
+              <Text style={styles.text}>{total}</Text>
+              <Text style={styles.cal}>cal</Text>
+            </View>
           </View>
-          <View style={styles.stack}>
-            <Text style={styles.percentProtein}>{proteinPercentage}%</Text>
-            <Text style={styles.weight}>{proteinWeight} g</Text>
-            <Text style={styles.macro}>Protein</Text>
+          <View style={styles.macros}>
+            <View style={styles.stack}>
+              <Text style={styles.percentCarbs}>{carbsPercentage}%</Text>
+              <Text style={styles.weight}>{carbsWeight} g</Text>
+              <Text style={styles.macro}>Carbs</Text>
+            </View>
+            <View style={styles.stack}>
+              <Text style={styles.percentProtein}>{proteinPercentage}%</Text>
+              <Text style={styles.weight}>{proteinWeight} g</Text>
+              <Text style={styles.macro}>Protein</Text>
+            </View>
+            <View style={styles.stack}>
+              <Text style={styles.percentFats}>{fatsPercentage}%</Text>
+              <Text style={styles.weight}>{fatsWeight} g</Text>
+              <Text style={styles.macro}>Fats</Text>
+            </View>
           </View>
-          <View style={styles.stack}>
-            <Text style={styles.percentFats}>{fatsPercentage}%</Text>
-            <Text style={styles.weight}>{fatsWeight} g</Text>
-            <Text style={styles.macro}>Fats</Text>
+        </View>
+        <View style={styles.ingwrapper}>
+          <Text style={styles.ingheading}>Ingredients</Text>
+
+          {recipeInformation?.extendedIngredients.map((ingredient: any) => (
+            <View style={styles.ing} key={ingredient}>
+              <Entypo name="circle" size={20} color="#888888" />
+              <Text style={styles.ingtext}>{ingredient.original}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.instrwrapper}>
+          <Text style={styles.instrheading}>Instructions</Text>
+
+          <View style={styles.stepdesc}>
+            <RenderHtml source={{ html: recipeInformation?.instructions }} />
           </View>
         </View>
       </View>
-      <View style={styles.ingwrapper}>
-        <Text style={styles.ingheading}>Ingredients</Text>
-        <View style={styles.ing}>
-          <Entypo name="circle" size={20} color="#888888" />
-          <Text style={styles.ingtext}>1/2 pound steak</Text>
-        </View>
-        <View style={styles.ing}>
-          <Entypo name="circle" size={20} color="#888888" />
-          <Text style={styles.ingtext}>6 cloves garlic</Text>
-        </View>
-        <View style={styles.ing}>
-          <Entypo name="circle" size={20} color="#888888" />
-          <Text style={styles.ingtext}>1 cup jasmine rice</Text>
-        </View>
-      </View>
-      <View style={styles.instrwrapper}>
-        <Text style={styles.instrheading}>Instructions</Text>
-        <View style={styles.instr}>
-          <Text style={styles.step}>1</Text>
-          <Text style={styles.stepdesc}>
-            Steak Marinade: In a food processor combine the pear, garlic,
-            ginger, and onion and pulse until a thick paste forms. In a large
-            bowl, combine the sliced steak, prepared tenderizer, soy sauce,
-            brown sugar, sesame oil, and scallions. Stir to coat the meat
-            evenly. Cover and refrigerate for 20- 30 minutes.
-          </Text>
-        </View>
-        <View style={styles.instr}>
-          <Text style={styles.step}>2</Text>
-          <Text style={styles.stepdesc}>
-            Garlic Rice: Add the oil and garlic to a skillet and heat the
-            skillet over medium heat. This will infuse the oil with the garlic
-            flavour. Add the rice and allow to toast for 2-3 minutes. Add the
-            chicken broth and allow to come to a boil. Cover, reduce heat to low
-            and allow the rice to cook for 12-15 minutes.
-          </Text>
-        </View>
-        <View style={styles.instr}>
-          <Text style={styles.step}>3</Text>
-          <Text style={styles.stepdesc}>
-            Cucumber + Carrot Salad: In a bowl combine the sesame seeds, 1/2
-            teaspoon salt, red pepper flakes, and
-          </Text>
-        </View>
-      </View>
-    </View>
-  </ScrollView>
-);
+    </ScrollView>
+  );
+};
 
 export default RecipeOverview;
 
 const styles = StyleSheet.create({
   img: {
     width: '100%',
+    height: 300,
   },
   back: {
     borderRadius: 100,
@@ -211,6 +236,8 @@ const styles = StyleSheet.create({
     color: '#474747',
     fontWeight: '700',
     fontSize: 17,
+    marginRight: 2,
+    textAlign: 'left',
   },
   time: {
     color: '#9F9F9F',
@@ -234,6 +261,7 @@ const styles = StyleSheet.create({
     borderColor: '#D0DBEA',
     paddingTop: 15,
     paddingBottom: 15,
+    marginTop: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
@@ -265,7 +293,12 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
   },
-  instr: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 15 },
+  instr: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 15,
+    marginRight: 10,
+  },
   instrheading: {
     color: '#474747',
     fontWeight: '700',
@@ -279,7 +312,6 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   stepdesc: {
-    marginLeft: 10,
     fontWeight: '500',
     color: '#4E4E4E',
     fontSize: 15,
