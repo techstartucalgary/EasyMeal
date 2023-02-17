@@ -14,33 +14,7 @@ import React from 'react';
 import { ParamList } from 'pages';
 import ViewMoreText from 'react-native-view-more-text';
 import { useRecipeInformation } from 'services/recipeInformation';
-
-const radius = 60;
-const circleCircumference = 2 * Math.PI * radius;
-
-const proteinWeight = 80;
-const carbsWeight = 20;
-const fatsWeight = 15;
-
-const protein = proteinWeight * 4;
-const carbs = carbsWeight * 4;
-const fats = fatsWeight * 9;
-const total = protein + carbs + fats;
-
-const proteinPercentage = Math.round((protein / total) * 100);
-const carbsPercentage = Math.round((carbs / total) * 100);
-const fatsPercentage = Math.round((fats / total) * 100);
-
-const proteinStrokeDashoffset =
-  circleCircumference - (circleCircumference * proteinPercentage) / 100;
-const carbsStrokeDashoffset =
-  circleCircumference - (circleCircumference * carbsPercentage) / 100;
-const fatsStrokeDashoffset =
-  circleCircumference - (circleCircumference * fatsPercentage) / 100;
-
-const proteinAngle = (protein / total) * 360;
-const carbsAngle = (carbs / total) * 360;
-const fatsAngle = proteinAngle + carbsAngle;
+import { useAddFavorites } from 'services/favorites';
 
 const RecipeOverview = () => {
   const route = useRoute<RouteProp<ParamList, 'RecipeOverview'>>();
@@ -48,25 +22,20 @@ const RecipeOverview = () => {
     id: route.params?.itemId,
     enabled: !!route.params?.itemId,
   });
+  const { addFavorites, isLoading } = useAddFavorites();
   const { goBack } = useNavigation();
   const radius = 60;
   const circleCircumference = 2 * Math.PI * radius;
 
-  const proteinWeight = recipeInformation?.nutrition.nutrients[8].amount;
-  const carbsWeight = recipeInformation?.nutrition.nutrients[3].amount;
-  const fatsWeight = recipeInformation?.nutrition.nutrients[1].amount;
+  const proteinWeight = recipeInformation?.nutrition.nutrients[8].amount || 0;
+  const carbsWeight = recipeInformation?.nutrition.nutrients[3].amount || 0;
+  const fatsWeight = recipeInformation?.nutrition.nutrients[1].amount || 0;
 
   const protein = proteinWeight * 4;
   const carbs = carbsWeight * 4;
   const fats = fatsWeight * 9;
-  const total = recipeInformation?.nutrition.nutrients[0].amount;
+  const total = recipeInformation?.nutrition.nutrients[0].amount || 0;
   const proteinPercentage = Math.round((protein / total) * 100);
-  // const proteinPercentage =
-  //   recipeInformation?.nutrition.caloricBreakdown.percentProtein;
-  // const carbsPercentage =
-  //   recipeInformation?.nutrition.caloricBreakdown.percentCarbs;
-  // const fatsPercentage =
-  //   recipeInformation?.nutrition.caloricBreakdown.percentFat;
   const carbsPercentage = Math.round((carbs / total) * 100);
   const fatsPercentage = Math.round((fats / total) * 100);
 
@@ -90,7 +59,22 @@ const RecipeOverview = () => {
         </Pressable>
       </View>
       <View style={styles.favorite}>
-        <MaterialIcons name="favorite" size={24} color="#000000" />
+        <Pressable
+          onPress={() =>
+            addFavorites({
+              cuisines: recipeInformation?.cuisines || [],
+              dishTypes: recipeInformation?.dishTypes || [],
+              id: recipeInformation?.id || 0,
+              image: recipeInformation?.image || '',
+              imageType: recipeInformation?.imageType || '',
+              pricePerServing: recipeInformation?.pricePerServing || 0,
+              readyInMinutes: recipeInformation?.readyInMinutes || 0,
+              title: recipeInformation?.title || '',
+            })
+          }
+        >
+          <MaterialIcons name="favorite" size={24} color="#000000" />
+        </Pressable>
       </View>
       <View style={styles.card}>
         <View style={styles.hcontainer}>
@@ -103,7 +87,7 @@ const RecipeOverview = () => {
           </View>
         </View>
 
-        <RenderHtml source={{ html: recipeInformation?.summary }} />
+        <RenderHtml source={{ html: recipeInformation?.summary || '' }} />
 
         <View style={styles.macrowrapper}>
           <View style={styles.graphWrapper}>
