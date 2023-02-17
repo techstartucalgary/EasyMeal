@@ -23,11 +23,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { Slider } from '@miblanchard/react-native-slider';
+import useDebounce from 'hooks/useDebounce';
 import { cuisines, types, diets } from './filter-options';
 import { testRecipes } from './test-results';
 
 import { useRecipes } from '../../services/searchRecipe/useSearchRecipes';
-import useDebounce from 'hooks/useDebounce';
 
 const RecipeSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
