@@ -1,24 +1,40 @@
-// get (search)
 // delete
 // post (add)
-import { doc, getDoc } from '@firebase/firestore';
+import { doc, getDoc, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
+import { IngredientToAdd } from '.';
+import { IngredientType, InventoryProps } from './types';
 
-export type StorageType = 'dryPan' | 'freezer' | 'fridge';
+// Create collection
+export const useCreateInventoryCollection = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { currentUser } = useAuthContext();
 
-export type InventoryProps = {
-  storageType: StorageType;
+  const createInventoryCollection = async () => {
+    if (currentUser) {
+      setIsLoading(true);
+      const inventoryCollectionRef = doc(db, 'inventory', currentUser?.uid);
+
+      if (!inventoryCollectionRef) {
+        await setDoc(doc(db, 'inventory', currentUser.uid), {
+          pantry: {
+            dryPan: [],
+            freezer: [],
+            fridge: [],
+          },
+        });
+
+        setIsLoading(false);
+      }
+    }
+  };
+
+  return { createInventoryCollection, isLoading };
 };
 
-export type IngredientType = {
-  id: number;
-  image: string;
-  name: string;
-  quantity: number;
-};
-
+// Filter by storage type
 export const useInventoryIngredients = ({ storageType }: InventoryProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [ingredients, setIngredients] = useState<IngredientType[]>([]);
@@ -31,9 +47,9 @@ export const useInventoryIngredients = ({ storageType }: InventoryProps) => {
       setIsLoading(true);
       const docSnap = await getDoc(inventoryCollectionRef);
 
-      setIsLoading(false);
       if (docSnap.exists()) {
         setIngredients(docSnap.get('pantry')[storageType]);
+        setIsLoading(false);
       }
     }
   }, [currentUser, storageType]);
@@ -45,6 +61,40 @@ export const useInventoryIngredients = ({ storageType }: InventoryProps) => {
   return { ingredients, isLoading, getInventory };
 };
 
-export const useAddToInventory = () => {};
+export const useAddToInventory = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { currentUser } = useAuthContext();
+
+  const addToInventory = async ({ storage, ...rest }: IngredientToAdd) => {
+    if (currentUser) {
+      setIsLoading(true);
+      const inventoryCollectionRef = doc(db, 'inventory', currentUser?.uid);
+
+      const docSnap = await getDoc(inventoryCollectionRef);
+
+      docSnap.get('pantry');
+
+      if (docSnap.exists()) {
+        const currentPantryData = docSnap.get('pantry');
+        const existingIngredient = currentPantryData[storage].find(
+          (el: IngredientType) => el.id === rest.id,
+        );
+
+        await setDoc(doc(db, 'favorites', currentUser.uid), {
+          ...currentPantryData,
+          [storage]: existingIngredient
+            ? currentPantryData[storage].map((el: IngredientType) =>
+                el.id === rest.id ? { ...el, quantity: el.quantity + 1 } : el,
+              )
+            : [...currentPantryData[storage], { ...rest, quantity: 1 }],
+        });
+
+        setIsLoading(false);
+      }
+    }
+  };
+
+  return { addToInventory, isLoading };
+};
 
 export const useDeleteFromInventory = () => {};
