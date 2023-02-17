@@ -14,3 +14,8 @@ export type IngredientType = {
 export interface IngredientToAdd extends Omit<IngredientType, 'quantity'> {
   storage: StorageType;
 }
+
+export type IngredientToDelete = {
+  ingredientId: number;
+  storage: StorageType;
+};

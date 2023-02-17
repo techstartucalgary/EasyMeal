@@ -1,10 +1,8 @@
-// delete
-// post (add)
 import { doc, getDoc, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
-import { IngredientToAdd } from '.';
+import { IngredientToAdd, IngredientToDelete, StorageType } from '.';
 import { IngredientType, InventoryProps } from './types';
 
 // Create collection
@@ -72,15 +70,13 @@ export const useAddToInventory = () => {
 
       const docSnap = await getDoc(inventoryCollectionRef);
 
-      docSnap.get('pantry');
-
       if (docSnap.exists()) {
         const currentPantryData = docSnap.get('pantry');
         const existingIngredient = currentPantryData[storage].find(
           (el: IngredientType) => el.id === rest.id,
         );
 
-        await setDoc(doc(db, 'favorites', currentUser.uid), {
+        await setDoc(doc(db, 'inventory', currentUser.uid), {
           ...currentPantryData,
           [storage]: existingIngredient
             ? currentPantryData[storage].map((el: IngredientType) =>
@@ -97,4 +93,40 @@ export const useAddToInventory = () => {
   return { addToInventory, isLoading };
 };
 
-export const useDeleteFromInventory = () => {};
+export const useDeleteFromInventory = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { currentUser } = useAuthContext();
+
+  const deleteFromInventory = async ({
+    ingredientId,
+    storage,
+  }: IngredientToDelete) => {
+    if (currentUser) {
+      const inventoryCollectionRef = doc(db, 'inventory', currentUser?.uid);
+
+      const docSnap = await getDoc(inventoryCollectionRef);
+
+      if (docSnap.exists()) {
+        const currentPantryData = docSnap.get('pantry');
+        const existingIngredient: IngredientType | undefined =
+          currentPantryData[storage].find(
+            (el: IngredientType) => el.id === ingredientId,
+          );
+
+        await setDoc(doc(db, 'inventory', currentUser.uid), {
+          ...currentPantryData,
+          [storage]:
+            existingIngredient && existingIngredient.quantity - 1 === 0
+              ? currentPantryData[storage].filter(
+                  (el: IngredientType) => el.id !== ingredientId,
+                )
+              : currentPantryData[storage],
+        });
+
+        setIsLoading(false);
+      }
+    }
+  };
+
+  return { deleteFromInventory, isLoading };
+};
