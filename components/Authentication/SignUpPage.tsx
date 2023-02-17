@@ -19,6 +19,7 @@ import { auth } from 'utils/firebase-config';
 
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { useCreateInventory } from 'services/inventory/useCreateInventory';
 
 function SignUpPage() {
   const { navigate } = useNavigation();
@@ -26,7 +27,9 @@ function SignUpPage() {
   const [nameInput, setNameInput] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [error, setError] = useState('');
   const { register, signInWithGoogle, signInWithFacebook } = useAuthContext();
+  const { createInventory } = useCreateInventory();
 
   const [fontsLoaded] = useFonts({
     'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -89,10 +92,15 @@ function SignUpPage() {
         />
       </View>
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
+      {error ? <Text style={styles.errorMessage} /> : null}
       <Text
         style={styles.signupButton}
         onPress={() => {
-          register({ registerEmail, registerPassword });
+          register({ registerEmail, registerPassword }).then((response) => {
+            if (response.user) {
+              createInventory();
+            }
+          });
         }}
       >
         Sign Up
@@ -109,7 +117,11 @@ function SignUpPage() {
       <View style={styles.altLoginButtonContainer}>
         <TouchableWithoutFeedback
           onPress={() => {
-            signInWithGoogle();
+            signInWithGoogle().then((response) => {
+              if (response.user) {
+                createInventory();
+              }
+            });
           }}
         >
           <View style={styles.altLoginButton}>
@@ -132,7 +144,11 @@ function SignUpPage() {
             size={32}
             color="#1877F2"
             onPress={() => {
-              signInWithFacebook();
+              signInWithFacebook().then((response) => {
+                if (response.user) {
+                  createInventory();
+                }
+              });
             }}
           />
         </View>
@@ -209,6 +225,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginLeft: 20,
     marginTop: 12,
+  },
+  errorMessage: {
+    color: 'red',
+    fontFamily: 'Inter-Regular',
+    fontSize: 13,
+    marginLeft: 0,
+    marginTop: 20,
+    textAlign: 'center',
   },
   hidePassword: {
     position: 'absolute',
