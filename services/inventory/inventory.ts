@@ -2,8 +2,12 @@ import { doc, getDoc, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
-import { IngredientToAdd, IngredientToDelete, StorageType } from '.';
-import { IngredientType, InventoryProps } from './types';
+import {
+  IngredientToAdd,
+  IngredientToDelete,
+  IngredientType,
+  InventoryProps,
+} from './types';
 
 // Create collection
 export const useCreateInventoryCollection = () => {
