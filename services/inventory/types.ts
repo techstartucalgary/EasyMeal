@@ -11,7 +11,7 @@ export type IngredientType = {
   quantity: number;
 };
 
-export interface IngredientToAdd extends Omit<IngredientType, 'quantity'> {
+export interface IngredientToAdd extends IngredientType {
   storage: StorageType;
 }
 

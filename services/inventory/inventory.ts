@@ -84,7 +84,9 @@ export const useAddToInventory = () => {
           ...currentPantryData,
           [storage]: existingIngredient
             ? currentPantryData[storage].map((el: IngredientType) =>
-                el.id === rest.id ? { ...el, quantity: el.quantity + 1 } : el,
+                el.id === rest.id
+                  ? { ...el, quantity: el.quantity + rest.quantity }
+                  : el,
               )
             : [...currentPantryData[storage], { ...rest, quantity: 1 }],
         });
