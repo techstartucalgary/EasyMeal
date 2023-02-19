@@ -4,6 +4,7 @@ import RecipeSearchPage from 'components/RecipeSearch/RecipeSearchPage';
 import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
 import LoginPage from 'components/Authentication/LoginPage';
 import SignUpPage from 'components/Authentication/SignUpPage';
+import PantryPage from 'components/Pantry/PantryPage';
 
 export const publicPages = [
   {
@@ -18,19 +19,34 @@ export const publicPages = [
     page: SignUpPage,
     name: 'SignUp',
   },
-];
+] as const;
 
 export const privatePages = [
-  {
-    page: HomePage,
-    name: 'Home',
-  },
-  {
-    page: RecipeOverview,
-    name: 'RecipeOverview',
-  },
+  // {
+  //   page: HomePage,
+  //   name: 'Home',
+  // },
   {
     page: RecipeSearchPage,
     name: 'Search',
   },
-];
+  {
+    page: PantryPage,
+    name: 'Pantry',
+  },
+] as const;
+
+export type ParamList = {
+  RecipeOverview:
+    | {
+        itemId: number;
+      }
+    | undefined;
+  RecipeSearch: undefined;
+  Home: undefined;
+  Hero: undefined;
+  Login: undefined;
+  SignUp: undefined;
+  Pantry: undefined;
+  Search: undefined;
+};

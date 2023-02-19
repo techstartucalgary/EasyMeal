@@ -28,7 +28,7 @@ export interface RecipeInformationType {
   imageType: string;
   nutrition: Nutrition;
   summary: string;
-  cuisines: any[];
+  cuisines: string[];
   dishTypes: string[];
   diets: any[];
   occasions: any[];

@@ -19,6 +19,7 @@ import { auth } from 'utils/firebase-config';
 
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { useCreateInventoryCollection } from 'services/inventory';
 
 function SignUpPage() {
   const { navigate } = useNavigation();
@@ -27,6 +28,7 @@ function SignUpPage() {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const { register, signInWithGoogle, signInWithFacebook } = useAuthContext();
+  const { createInventoryCollection } = useCreateInventoryCollection();
 
   const [fontsLoaded] = useFonts({
     'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -92,7 +94,9 @@ function SignUpPage() {
       <Text
         style={styles.signupButton}
         onPress={() => {
-          register({ registerEmail, registerPassword });
+          register({ registerEmail, registerPassword }).then(() => {
+            createInventoryCollection();
+          });
         }}
       >
         Sign Up
@@ -109,7 +113,9 @@ function SignUpPage() {
       <View style={styles.altLoginButtonContainer}>
         <TouchableWithoutFeedback
           onPress={() => {
-            signInWithGoogle();
+            signInWithGoogle().then(() => {
+              createInventoryCollection();
+            });
           }}
         >
           <View style={styles.altLoginButton}>
@@ -132,7 +138,9 @@ function SignUpPage() {
             size={32}
             color="#1877F2"
             onPress={() => {
-              signInWithFacebook();
+              signInWithFacebook().then(() => {
+                createInventoryCollection();
+              });
             }}
           />
         </View>

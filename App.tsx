@@ -8,13 +8,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuthContext } from 'contexts/AuthContext';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { publicPages, privatePages } from './pages';
+import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
+import HomePage from 'components/HomePage/HomePage';
+import { publicPages, privatePages, ParamList } from './pages';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<ParamList>();
+const Stack = createNativeStackNavigator<ParamList>();
 
-const Navigator = () => {
-  const { currentUser } = useAuthContext();
-
+function PrivateTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -25,8 +27,10 @@ const Navigator = () => {
 
           if (route.name === 'Home') {
             iconName = focused ? 'ios-home' : 'ios-home-outline';
-          } else if (route.name === 'RecipeOverview') {
-            iconName = focused ? 'ios-list' : 'ios-list-outline';
+          } else if (route.name === 'Search') {
+            iconName = focused ? 'ios-search' : 'ios-search-outline';
+          } else if (route.name === 'Pantry') {
+            iconName = focused ? 'ios-basket' : 'ios-basket-outline';
           }
 
           // You can return any component that you like here!
@@ -34,29 +38,47 @@ const Navigator = () => {
         },
         tabBarActiveTintColor: '#6536F9',
         tabBarInactiveTintColor: '#9FA5C0',
-        tapBarStyle: () => {
-          if (!currentUser) {
-            ('none');
-          }
-        },
       })}
     >
-      {(currentUser ? privatePages : publicPages).map(({ page, name }) => (
+      <Tab.Screen name="Home" component={HomePage} />
+      {privatePages.map(({ page, name }) => (
         <Tab.Screen key={name} name={name} component={page} />
       ))}
     </Tab.Navigator>
   );
-};
+}
 
-const App = () => {
+const Navigator = () => {
   const { currentUser } = useAuthContext();
 
   return (
-    <NavigationContainer>
-      <AuthProvider>
-        <Navigator />
-      </AuthProvider>
-    </NavigationContainer>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Home" component={PrivateTabs} />
+      {(currentUser ? privatePages : publicPages).map(({ page, name }) => (
+        <Stack.Screen key={name} name={name} component={page} />
+      ))}
+      <Stack.Screen
+        name="RecipeOverview"
+        component={RecipeOverview}
+        initialParams={{ itemId: 0 }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const App = () => {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <AuthProvider>
+          <Navigator />
+        </AuthProvider>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
 

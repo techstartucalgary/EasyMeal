@@ -13,15 +13,17 @@ import {
   Platform,
   FlatList,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { useFonts } from 'expo-font';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons, Feather } from '@expo/vector-icons';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { Slider } from '@miblanchard/react-native-slider';
+import useDebounce from 'hooks/useDebounce';
 import { cuisines, types, diets } from './filter-options';
 import { testRecipes } from './test-results';
 
@@ -29,6 +31,7 @@ import { useRecipes } from '../../services/searchRecipe/useSearchRecipes';
 
 const RecipeSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm);
   const [cookingTime, setCookingTime] = useState(60);
   const [filterVisible, setFilterVisible] = useState(false);
   const [cardDimension, setCardDimension] = useState(0);
@@ -49,6 +52,8 @@ const RecipeSearchPage = () => {
     type: selectedType,
     maxReadyTime: cookingTime,
     enabled: !filterVisible,
+    query: debouncedSearchTerm,
+    number: 20,
   });
 
   const [fontsLoaded] = useFonts({
@@ -100,46 +105,66 @@ const RecipeSearchPage = () => {
         }}
       >
         {isLoading ? (
-          <View>
-            <Text>Please wait for the results to load!</Text>
+          <View style={styles.centerContainer}>
+            <ActivityIndicator
+              size="large"
+              color="#6536f9"
+              style={styles.loadingIcon}
+            />
+          </View>
+        ) : recipeList?.totalResults === 0 ? (
+          <View style={styles.centerContainer}>
+            <Feather
+              name="alert-circle"
+              size={144}
+              color="#9FA5C0"
+              style={styles.shiftUp}
+            />
+            <Text style={styles.noResultsText}>
+              Sorry, we dont have any of those recipes!
+            </Text>
           </View>
         ) : (
           <FlatList
             data={recipeList?.results || []}
             keyExtractor={(item: any) => item.id}
             renderItem={({ item }) => (
-              <View style={[styles.recipeCard, { width: recipeCardWidth }]}>
-                <Image
-                  source={{ uri: item.image }}
-                  style={[
-                    styles.recipeCardImage,
-                    {
-                      width: recipeCardWidth - 24,
-                      height: recipeCardWidth - 24,
-                    },
-                  ]}
-                />
+              <Pressable
+                onPress={() => {
+                  navigate(
+                    'RecipeOverview' as never,
+                    { itemId: item.id } as never,
+                  );
+                }}
+              >
+                <View style={[styles.recipeCard, { width: recipeCardWidth }]}>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={[
+                      styles.recipeCardImage,
+                      {
+                        width: recipeCardWidth - 24,
+                        height: recipeCardWidth - 24,
+                      },
+                    ]}
+                  />
 
-                <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
-                  {item.title}
-                </Text>
-                <View style={styles.recipeCardSubHeader}>
-                  <Text style={styles.recipeCardTextSubHeader}>
-                    Breakfast ·{' '}
+                  <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
+                    {item.title}
                   </Text>
-                  <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+                  <View style={styles.recipeCardSubHeader}>
+                    <Text style={styles.recipeCardTextSubHeader}>
+                      Breakfast ·{' '}
+                    </Text>
+                    <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
+                  </View>
                 </View>
-              </View>
+              </Pressable>
             )}
             numColumns={2}
             initialNumToRender={20}
             ListHeaderComponent={<View style={styles.searchResultsDivider} />}
             ListFooterComponent={<View style={styles.searchResultsDivider} />}
-            ListEmptyComponent={
-              <View>
-                <Text>Sorry we dont have any of those recipes!</Text>
-              </View>
-            }
           />
         )}
       </View>
@@ -360,6 +385,11 @@ const styles = StyleSheet.create({
     zIndex: 3,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
+  centerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   filterButton: {
     marginRight: 8,
     paddingLeft: 22,
@@ -505,6 +535,22 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#353535',
   },
+  loadingIcon: {
+    scaleX: 2,
+    scaleY: 2,
+  },
+  noResultsText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 20,
+    color: '#9FA5C0',
+
+    marginTop: 24,
+    marginLeft: 24,
+    marginRight: 24,
+  },
   pageContainer: {
     flex: 1,
     backgroundColor: '#fff',
@@ -602,6 +648,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 12,
     backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
+  shiftUp: {
+    marginTop: -64,
   },
   sliderThumb: {
     width: 24,
