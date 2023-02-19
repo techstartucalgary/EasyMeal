@@ -1,7 +1,7 @@
 export type StorageType = 'dryPan' | 'freezer' | 'fridge';
 
 export type InventoryProps = {
-  storageType: StorageType;
+  storageType?: StorageType;
 };
 
 export type IngredientType = {

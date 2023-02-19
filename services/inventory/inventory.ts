@@ -7,6 +7,7 @@ import {
   IngredientToDelete,
   IngredientType,
   InventoryProps,
+  StorageType,
 } from './types';
 
 // Create collection
@@ -50,7 +51,20 @@ export const useInventoryIngredients = ({ storageType }: InventoryProps) => {
       const docSnap = await getDoc(inventoryCollectionRef);
 
       if (docSnap.exists()) {
-        setIngredients(docSnap.get('pantry')[storageType]);
+        if (storageType) {
+          setIngredients(docSnap.get('pantry')[storageType]);
+        } else {
+          const response = Object.keys(docSnap.get('pantry')).reduce(
+            (acc: IngredientType[], key) => [
+              ...acc,
+              ...docSnap.get('pantry')[key],
+            ],
+            [] as IngredientType[],
+          );
+
+          setIngredients(response);
+        }
+
         setIsLoading(false);
       }
     }
