@@ -20,6 +20,11 @@ import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
+import {
+  useAddToInventory,
+  useDeleteFromInventory,
+  useInventoryIngredients,
+} from 'services/inventory';
 import { pantryTypes } from './pantry-types';
 import { pantryItems } from './test-pantry';
 
@@ -32,6 +37,9 @@ const PantryPage = () => {
   const [addItemName, setAddItemName] = useState('');
   const [addItemAmount, setAddItemAmount] = useState('');
   const [addItemPantryType, setAddItemPantryType] = useState(pantryTypes[1].id);
+  const { ingredients, getInventory } = useInventoryIngredients();
+  const { addToInventory } = useAddToInventory();
+  const { deleteFromInventory } = useDeleteFromInventory();
 
   const [testItems, setTestItems] = useState(pantryItems);
 
@@ -48,15 +56,17 @@ const PantryPage = () => {
   }
 
   const calcPantryCount = () => {
-    let tmpCounts = pantryCounts;
+    const tmpCounts = pantryCounts;
+
     tmpCounts[0].count = testItems.length;
 
-    for (let i = 1; i < tmpCounts.length; i++) {
-      let currID = tmpCounts[i].id;
+    for (let i = 1; i < tmpCounts.length; i += 1) {
+      const currID = tmpCounts[i].id;
       let currCount = 0;
-      for (let j = 0; j < testItems.length; j++) {
+
+      for (let j = 0; j < testItems.length; j += 1) {
         if (currID === testItems[j].type) {
-          currCount++;
+          currCount += 1;
         }
       }
 
@@ -68,22 +78,24 @@ const PantryPage = () => {
 
   const updatePantryItemCount = (id: number, change: number) => {
     let index = 0;
-    for (let i = 0; i < testItems.length; i++) {
+
+    for (let i = 0; i < testItems.length; i += 1) {
       if (testItems[i].id === id) {
         index = i;
       }
     }
 
     let newCount = testItems[index].count + change;
+
     if (newCount < 0) {
       newCount = 0;
     }
 
-    setTestItems((prevItems) => {
-      return prevItems.map((item) => {
-        return item.id === id ? { ...item, count: newCount } : item;
-      });
-    });
+    setTestItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, count: newCount } : item,
+      ),
+    );
   };
 
   const deletePantryItem = (id: number) => {
@@ -91,8 +103,8 @@ const PantryPage = () => {
   };
 
   return (
-    <SafeAreaView style={styles.pantryPageContainer} onLayout={calcPantryCount}>
-      {addItemVisible && <View style={styles.backgroundDim}></View>}
+    <SafeAreaView style={styles.pantryPageContainer}>
+      {addItemVisible && <View style={styles.backgroundDim} />}
       <View style={styles.pantryPageHeader}>
         <Text style={styles.pantryHeaderText}>Pantry</Text>
         <View style={styles.pantryPageRightHeader}>
@@ -123,7 +135,7 @@ const PantryPage = () => {
               <Text style={styles.pantryTypeCount}>{pantryType.count}</Text>
             </View>
             {selectedPantryType === pantryType.id && (
-              <View style={styles.pantryTypeBar}></View>
+              <View style={styles.pantryTypeBar} />
             )}
           </Pressable>
         ))}
@@ -135,75 +147,75 @@ const PantryPage = () => {
         }}
       >
         <FlatList
-          data={testItems}
-          keyExtractor={(item: any) => item.id}
-          renderItem={({ item }) => {
-            if (selectedPantryType === 0 || item.type === selectedPantryType) {
-              return (
-                <Swipeable
-                  friction={1.5}
-                  rightThreshold={80}
-                  overshootFriction={8}
-                  renderRightActions={(progress, dragX) => {
-                    return (
-                      <Pressable onPress={() => deletePantryItem(item.id)}>
-                        <View style={styles.deleteButton}>
-                          <Feather
-                            name="trash-2"
-                            size={24}
-                            color="white"
-                            style={styles.deleteIcon}
-                          />
-                        </View>
-                      </Pressable>
-                    );
-                  }}
-                >
-                  <View
-                    style={[
-                      styles.pantryCardContainer,
-                      styles.pantryCardShadow,
-                    ]}
-                  >
-                    <Image
-                      source={item.imageFP}
-                      style={styles.pantryCardImage}
+          data={ingredients}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => (
+            <Swipeable
+              friction={1.5}
+              rightThreshold={80}
+              overshootFriction={8}
+              renderRightActions={(progress, dragX) => (
+                <Pressable onPress={() => deletePantryItem(item.id)}>
+                  <View style={styles.deleteButton}>
+                    <Feather
+                      name="trash-2"
+                      size={24}
+                      color="white"
+                      style={styles.deleteIcon}
                     />
-                    <View style={styles.pantryCardTextContainer}>
-                      <Text style={styles.pantryCardTitle}>{item.name}</Text>
-                      <Text style={styles.pantryCardType}>{item.typeText}</Text>
-                    </View>
-                    <View style={styles.pantryCardButtonContainer}>
-                      <Pressable
-                        onPress={() => updatePantryItemCount(item.id, -1)}
-                      >
-                        <Text style={styles.pantryCardButton}>-</Text>
-                      </Pressable>
-                      <Text style={styles.pantryCardCount}>{item.count}</Text>
-                      <Pressable
-                        onPress={() => updatePantryItemCount(item.id, 1)}
-                      >
-                        <Text style={styles.pantryCardButton}>+</Text>
-                      </Pressable>
-                    </View>
                   </View>
-                </Swipeable>
-              );
-            }
-            return <View></View>;
-          }}
+                </Pressable>
+              )}
+            >
+              <View
+                style={[styles.pantryCardContainer, styles.pantryCardShadow]}
+              >
+                <Image
+                  source={{ uri: item.image }}
+                  style={styles.pantryCardImage}
+                />
+                <View style={styles.pantryCardTextContainer}>
+                  <Text style={styles.pantryCardTitle}>{item.name}</Text>
+                  <Text style={styles.pantryCardType}>{item.name}</Text>
+                </View>
+                <View style={styles.pantryCardButtonContainer}>
+                  <Pressable
+                    onPress={() => {
+                      deleteFromInventory(item).then(() => {
+                        getInventory();
+                      });
+                    }}
+                  >
+                    <Text style={styles.pantryCardButton}>-</Text>
+                  </Pressable>
+                  <Text style={styles.pantryCardCount}>{item.quantity}</Text>
+                  <Pressable
+                    onPress={() => {
+                      addToInventory({
+                        ...item,
+                        quantity: item.quantity + 1,
+                      }).then(() => {
+                        getInventory();
+                      });
+                    }}
+                  >
+                    <Text style={styles.pantryCardButton}>+</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </Swipeable>
+          )}
           initialNumToRender={20}
           ListFooterComponent={<View style={styles.pantryResultsFooter} />}
         />
       </View>
-
       <Modal
         animationType="fade"
         visible={addItemVisible}
         onRequestClose={() => {
           setAddItemVisible(!addItemVisible);
         }}
-        transparent={true}
+        transparent
       >
         <View style={styles.centeredView}>
           <View style={styles.addItemContainer}>
@@ -237,41 +249,51 @@ const PantryPage = () => {
                 style={styles.addItemButtonRow}
               >
                 {pantryTypes.map((type) => {
-                  if (type.id == 0) {
-                    return <View key={type.id}></View>;
-                  } else {
-                    return (
-                      <Pressable
-                        key={type.id}
-                        onPress={() => setAddItemPantryType(type.id)}
+                  if (type.id === 0) {
+                    return <View key={type.id} />;
+                  }
+                  return (
+                    <Pressable
+                      key={type.id}
+                      onPress={() => setAddItemPantryType(type.id)}
+                    >
+                      <View
+                        style={[
+                          styles.addItemTypeButton,
+                          type.id === addItemPantryType
+                            ? styles.addItemTypeButtonOn
+                            : styles.addItemTypeButtonOff,
+                        ]}
                       >
-                        <View
+                        <Text
                           style={[
-                            styles.addItemTypeButton,
-                            type.id == addItemPantryType
-                              ? styles.addItemTypeButtonOn
-                              : styles.addItemTypeButtonOff,
+                            styles.addItemTypeButtonText,
+                            type.id === addItemPantryType
+                              ? styles.addItemTypeButtonTextOn
+                              : styles.addItemTypeButtonTextOff,
                           ]}
                         >
-                          <Text
-                            style={[
-                              styles.addItemTypeButtonText,
-                              type.id == addItemPantryType
-                                ? styles.addItemTypeButtonTextOn
-                                : styles.addItemTypeButtonTextOff,
-                            ]}
-                          >
-                            {type.title}
-                          </Text>
-                        </View>
-                      </Pressable>
-                    );
-                  }
+                          {type.title}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  );
                 })}
               </ScrollView>
             </View>
             <Pressable
-              onPress={() => setAddItemVisible(!addItemVisible)}
+              onPress={() => {
+                addToInventory({
+                  id: 19400,
+                  name: 'banana chips',
+                  image: 'banana-chips.jpg',
+                  quantity: 1,
+                  storage: 'dryPan',
+                }).then(() => {
+                  getInventory();
+                  setAddItemVisible(!addItemVisible);
+                });
+              }}
               style={styles.addItemAddItemButton}
             >
               <Text style={styles.addItemAddItemButtonText}>Add item</Text>
