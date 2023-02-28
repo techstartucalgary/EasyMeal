@@ -11,11 +11,11 @@ export type IngredientType = {
   quantity: number;
 };
 
-export interface IngredientToAdd extends IngredientType {
+export interface IngredientWithStorage extends IngredientType {
   storage: StorageType;
 }
 
 export type IngredientToDelete = {
-  ingredientId: number;
+  id: number;
   storage: StorageType;
 };
