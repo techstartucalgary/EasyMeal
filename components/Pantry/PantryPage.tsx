@@ -23,6 +23,13 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { pantryTypes } from './pantry-types';
 import { pantryItems } from './test-pantry';
 
+import { useSearchIngredient } from '../../services/ingredients/useSearchIngredients';
+import {
+  useInventoryIngredients,
+  useAddToInventory,
+  useDeleteFromInventory,
+} from '../../services/inventory/inventory';
+
 const PantryPage = () => {
   const [selectedPantryType, setSelectedPantryType] =
     useState<typeof pantryTypes[number]['id']>(0);
@@ -34,6 +41,18 @@ const PantryPage = () => {
   const [addItemPantryType, setAddItemPantryType] = useState(pantryTypes[1].id);
 
   const [testItems, setTestItems] = useState(pantryItems);
+  const {
+    ingredients: ingredientSearchIngredients,
+    isLoading: ingredientSearchLoading,
+  } = useSearchIngredient({ query: 'Bread' });
+  const {
+    ingredients,
+    isLoading: inventoryLoading,
+    getInventory,
+  } = useInventoryIngredients({ storageType: 'dryPan' });
+  const { addToInventory, isLoading: addLoading } = useAddToInventory();
+  const { deleteFromInventory, isLoading: deleteLoading } =
+    useDeleteFromInventory();
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -87,7 +106,22 @@ const PantryPage = () => {
   };
 
   const deletePantryItem = (id: number) => {
-    console.log('DELETE ITEM');
+    deleteFromInventory({ ingredientId: 10120129, storage: 'dryPan' }).then(
+      () => getInventory(),
+    );
+  };
+
+  const testAddItem = () => {
+    addToInventory({
+      storage: 'dryPan',
+      id: 10120129,
+      image: 'flour.png',
+      name: 'bread flour',
+      quantity: 4,
+    }).then(() => getInventory());
+
+    setAddItemVisible(!addItemVisible);
+    console.log(ingredients);
   };
 
   return (
@@ -134,11 +168,14 @@ const PantryPage = () => {
           setShadowWidth(nativeEvent.layout.width - 32);
         }}
       >
+        {addLoading && <Text>TESTADD</Text>}
+        {deleteLoading && <Text>TESTDELETE</Text>}
+        {inventoryLoading && <Text>TESTINVENTORY</Text>}
         <FlatList
-          data={testItems}
+          data={ingredients}
           keyExtractor={(item: any) => item.id}
           renderItem={({ item }) => {
-            if (selectedPantryType === 0 || item.type === selectedPantryType) {
+            if (selectedPantryType === 0) {
               return (
                 <Swipeable
                   friction={1.5}
@@ -166,12 +203,12 @@ const PantryPage = () => {
                     ]}
                   >
                     <Image
-                      source={item.imageFP}
+                      source={{ uri: item.image }}
                       style={styles.pantryCardImage}
                     />
                     <View style={styles.pantryCardTextContainer}>
                       <Text style={styles.pantryCardTitle}>{item.name}</Text>
-                      <Text style={styles.pantryCardType}>{item.typeText}</Text>
+                      <Text style={styles.pantryCardType}>Dry pantry</Text>
                     </View>
                     <View style={styles.pantryCardButtonContainer}>
                       <Pressable
@@ -179,7 +216,9 @@ const PantryPage = () => {
                       >
                         <Text style={styles.pantryCardButton}>-</Text>
                       </Pressable>
-                      <Text style={styles.pantryCardCount}>{item.count}</Text>
+                      <Text style={styles.pantryCardCount}>
+                        {item.quantity}
+                      </Text>
                       <Pressable
                         onPress={() => updatePantryItemCount(item.id, 1)}
                       >
@@ -271,7 +310,7 @@ const PantryPage = () => {
               </ScrollView>
             </View>
             <Pressable
-              onPress={() => setAddItemVisible(!addItemVisible)}
+              onPress={testAddItem}
               style={styles.addItemAddItemButton}
             >
               <Text style={styles.addItemAddItemButtonText}>Add item</Text>
