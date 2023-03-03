@@ -128,7 +128,10 @@ export const useAddToInventory = () => {
                 ? currentPantryData[storage].map((el: IngredientType) =>
                     el.id === rest.id ? { ...el, quantity: rest.quantity } : el,
                   )
-                : [...currentPantryData[storage], { ...rest, quantity: 1 }],
+                : [
+                    ...currentPantryData[storage],
+                    { ...rest, quantity: rest.quantity },
+                  ],
             },
           };
 
@@ -191,5 +194,42 @@ export const useDeleteFromInventory = () => {
     [createInventoryCollection, currentUser],
   );
 
-  return { deleteFromInventory, isLoading };
+  const deleteAllFromInventory = useCallback(
+    async ({ id, storage }: IngredientToDelete) => {
+      if (currentUser) {
+        const inventoryCollectionRef = doc(db, 'inventory', currentUser?.uid);
+
+        const docSnap = await getDoc(inventoryCollectionRef);
+
+        if (!docSnap.exists()) {
+          await createInventoryCollection();
+        } else {
+          const currentPantryData = docSnap.get('pantry');
+
+          const existingIngredient: IngredientType | undefined =
+            currentPantryData
+              ? currentPantryData[storage].find(
+                  (el: IngredientType) => el.id === id,
+                )
+              : undefined;
+
+          const payload = {
+            pantry: {
+              ...currentPantryData,
+              [storage]: currentPantryData[storage].filter(
+                (el: IngredientType) => el.id !== id,
+              ),
+            },
+          };
+
+          await setDoc(doc(db, 'inventory', currentUser.uid), payload);
+
+          setIsLoading(false);
+        }
+      }
+    },
+    [createInventoryCollection, currentUser],
+  );
+
+  return { deleteFromInventory, isLoading, deleteAllFromInventory };
 };
