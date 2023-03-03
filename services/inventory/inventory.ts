@@ -128,7 +128,10 @@ export const useAddToInventory = () => {
                 ? currentPantryData[storage].map((el: IngredientType) =>
                     el.id === rest.id ? { ...el, quantity: rest.quantity } : el,
                   )
-                : [...currentPantryData[storage], { ...rest, quantity: 1 }],
+                : [
+                    ...currentPantryData[storage],
+                    { ...rest, quantity: rest.quantity },
+                  ],
             },
           };
 

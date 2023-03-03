@@ -19,37 +19,49 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Autocomplete from 'react-native-autocomplete-input';
 
 import { pantryTypes } from './pantry-types';
 import { pantryItems } from './test-pantry';
 
+import useDebounce from 'hooks/useDebounce';
 import { useSearchIngredient } from '../../services/ingredients/useSearchIngredients';
 import {
   useInventoryIngredients,
   useAddToInventory,
   useDeleteFromInventory,
 } from '../../services/inventory/inventory';
+import { Result } from '../../services/ingredients/types';
+import { StorageType } from '../../services/inventory/types';
 
 const PantryPage = () => {
-  const [selectedPantryType, setSelectedPantryType] =
-    useState<typeof pantryTypes[number]['id']>(0);
+  const [selectedPantryType, setSelectedPantryType] = useState('all');
   const [pantryCounts, setPantryCounts] = useState(pantryTypes);
   const [shadowWidth, setShadowWidth] = useState(0);
   const [addItemVisible, setAddItemVisible] = useState(false);
   const [addItemName, setAddItemName] = useState('');
+  const debouncedAddItemName = useDebounce(addItemName);
+  const [selectedAddItem, setSelectedAddItem] = useState({
+    id: 0,
+    name: '',
+    image: '',
+  });
+  const [hideAutocomplete, setHideAutocomplete] = useState(true);
   const [addItemAmount, setAddItemAmount] = useState('');
-  const [addItemPantryType, setAddItemPantryType] = useState(pantryTypes[1].id);
+  const [addItemPantryType, setAddItemPantryType] = useState<StorageType>(
+    pantryTypes[1].val as StorageType,
+  );
 
   const [testItems, setTestItems] = useState(pantryItems);
   const {
-    ingredients: ingredientSearchIngredients,
+    ingredients: ingredientSearchResult,
     isLoading: ingredientSearchLoading,
-  } = useSearchIngredient({ query: 'Bread' });
+  } = useSearchIngredient({ query: debouncedAddItemName });
   const {
     ingredients,
     isLoading: inventoryLoading,
     getInventory,
-  } = useInventoryIngredients({ storageType: 'dryPan' });
+  } = useInventoryIngredients({ storageType: undefined });
   const { addToInventory, isLoading: addLoading } = useAddToInventory();
   const { deleteFromInventory, isLoading: deleteLoading } =
     useDeleteFromInventory();
@@ -69,50 +81,20 @@ const PantryPage = () => {
   const calcPantryCount = () => {
     const tmpCounts = pantryCounts;
 
-    tmpCounts[0].count = testItems.length;
+    tmpCounts[0].count = ingredients.length;
+    for (let j = 1; j < tmpCounts.length; j += 1) {
+      tmpCounts[j].count = 0;
+    }
 
-    for (let i = 1; i < tmpCounts.length; i += 1) {
-      const currID = tmpCounts[i].id;
-      let currCount = 0;
-
-      for (let j = 0; j < testItems.length; j += 1) {
-        if (currID === testItems[j].type) {
-          currCount += 1;
+    for (let i = 0; i < ingredients.length; i += 1) {
+      for (let j = 1; j < tmpCounts.length; j += 1) {
+        if (ingredients[i].storage === tmpCounts[j].val) {
+          tmpCounts[j].count += 1;
         }
       }
-
-      tmpCounts[i].count = currCount;
     }
 
     setPantryCounts(tmpCounts);
-  };
-
-  const updatePantryItemCount = (id: number, change: number) => {
-    let index = 0;
-
-    for (let i = 0; i < testItems.length; i += 1) {
-      if (testItems[i].id === id) {
-        index = i;
-      }
-    }
-
-    let newCount = testItems[index].count + change;
-
-    if (newCount < 0) {
-      newCount = 0;
-    }
-
-    setTestItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, count: newCount } : item,
-      ),
-    );
-  };
-
-  const deletePantryItem = (id: number) => {
-    deleteFromInventory({ id: 10120129, storage: 'dryPan' }).then(() =>
-      getInventory(),
-    );
   };
 
   const testAddItem = () => {
@@ -128,6 +110,88 @@ const PantryPage = () => {
     console.log(ingredients);
   };
 
+  const setSelectedItem = (newItem: Result) => {
+    setSelectedAddItem(() => ({ ...newItem }));
+    setHideAutocomplete(true);
+  };
+
+  const addToPantry = () => {
+    if (selectedAddItem.id === 0) {
+      return;
+    }
+
+    let addCount = 1;
+    if (addItemAmount.length > 0) {
+      addCount = +addItemAmount;
+    }
+
+    addToInventory({
+      id: selectedAddItem.id,
+      name: selectedAddItem.name,
+      image: selectedAddItem.image,
+      quantity: addCount,
+      storage: addItemPantryType,
+    }).then(() => {
+      getInventory();
+      setAddItemVisible(!addItemVisible);
+    });
+  };
+
+  const deletePantryItem = (itemID: number, itemType: StorageType) => {
+    deleteFromInventory({ id: itemID, storage: itemType }).then(() =>
+      getInventory(),
+    );
+  };
+
+  const updatePantryItemCount = (
+    change: number,
+    itemID: number,
+    itemName: string,
+    itemImage: string,
+    itemCount: number,
+    itemType: StorageType,
+  ) => {
+    let newCount = itemCount + change;
+
+    if (newCount < 0) {
+      return;
+    }
+
+    addToInventory({
+      id: itemID,
+      name: itemName,
+      image: itemImage,
+      quantity: newCount,
+      storage: itemType,
+    }).then(() => {
+      getInventory();
+    });
+
+    console.log(itemImage);
+  };
+
+  const decodeIngredientText = (type: string, input: string) => {
+    if (type === 'ingredientName') {
+      return input.charAt(0).toUpperCase() + input.slice(1);
+    } else if (type === 'pantryName') {
+      if (input === 'fridge') {
+        return 'Fridge';
+      } else if (input === 'freezer') {
+        return 'Freezer';
+      } else if (input === 'dryPan') {
+        return 'Dry pantry';
+      }
+    }
+  };
+
+  const unselectAddItem = () => {
+    setSelectedAddItem({
+      id: 0,
+      name: '',
+      image: '',
+    });
+  };
+
   return (
     <SafeAreaView style={styles.pantryPageContainer}>
       {addItemVisible && <View style={styles.backgroundDim} />}
@@ -136,7 +200,11 @@ const PantryPage = () => {
         <View style={styles.pantryPageRightHeader}>
           <AntDesign name="search1" size={24} color="#3E5481" />
           <Pressable
-            onPress={() => setAddItemVisible(!addItemVisible)}
+            onPress={() => {
+              setAddItemVisible(!addItemVisible);
+
+              calcPantryCount();
+            }}
             style={styles.addItemButton}
           >
             <AntDesign
@@ -153,14 +221,14 @@ const PantryPage = () => {
         {pantryTypes.map((pantryType) => (
           <Pressable
             key={pantryType.id}
-            onPress={() => setSelectedPantryType(pantryType.id)}
+            onPress={() => setSelectedPantryType(pantryType.val)}
             style={styles.pantryTypeVContainer}
           >
             <View style={styles.pantryTypeHContainer}>
               <Text style={styles.pantryTypeText}>{pantryType.title}</Text>
               <Text style={styles.pantryTypeCount}>{pantryType.count}</Text>
             </View>
-            {selectedPantryType === pantryType.id && (
+            {selectedPantryType === pantryType.val && (
               <View style={styles.pantryTypeBar} />
             )}
           </Pressable>
@@ -179,7 +247,10 @@ const PantryPage = () => {
           data={ingredients}
           keyExtractor={(item: any) => item.id}
           renderItem={({ item }) => {
-            if (selectedPantryType === 0) {
+            if (
+              selectedPantryType === 'all' ||
+              item.storage === selectedPantryType
+            ) {
               return (
                 <Swipeable
                   friction={1.5}
@@ -187,7 +258,9 @@ const PantryPage = () => {
                   overshootFriction={8}
                   renderRightActions={(progress, dragX) => {
                     return (
-                      <Pressable onPress={() => deletePantryItem(item.id)}>
+                      <Pressable
+                        onPress={() => deletePantryItem(item.id, item.storage)}
+                      >
                         <View style={styles.deleteButton}>
                           <Feather
                             name="trash-2"
@@ -211,12 +284,17 @@ const PantryPage = () => {
                       style={styles.pantryCardImage}
                     />
                     <View style={styles.pantryCardTextContainer}>
-                      <Text style={styles.pantryCardTitle}>{item.name}</Text>
-                      <Text style={styles.pantryCardType}>Dry pantry</Text>
+                      <Text style={styles.pantryCardTitle}>
+                        {decodeIngredientText('ingredientName', item.name)}
+                      </Text>
+                      <Text style={styles.pantryCardType}>
+                        {decodeIngredientText('pantryName', item.storage)}
+                      </Text>
                     </View>
                     <View style={styles.pantryCardButtonContainer}>
                       <Pressable
-                        onPress={() => updatePantryItemCount(item.id, -1)}
+                        disabled={addLoading || deleteLoading}
+                        onPress={() => deletePantryItem(item.id, item.storage)}
                       >
                         <Text style={styles.pantryCardButton}>-</Text>
                       </Pressable>
@@ -224,7 +302,17 @@ const PantryPage = () => {
                         {item.quantity}
                       </Text>
                       <Pressable
-                        onPress={() => updatePantryItemCount(item.id, 1)}
+                        disabled={addLoading || deleteLoading}
+                        onPress={() =>
+                          updatePantryItemCount(
+                            1,
+                            item.id,
+                            item.name,
+                            item.image,
+                            item.quantity,
+                            item.storage,
+                          )
+                        }
                       >
                         <Text style={styles.pantryCardButton}>+</Text>
                       </Pressable>
@@ -246,23 +334,100 @@ const PantryPage = () => {
         onRequestClose={() => {
           setAddItemVisible(!addItemVisible);
         }}
+        onShow={() => {
+          setAddItemName('');
+          unselectAddItem();
+          setAddItemAmount('');
+          setAddItemPantryType(pantryTypes[1].val as StorageType);
+        }}
         transparent
       >
         <View style={styles.centeredView}>
           <View style={styles.addItemContainer}>
             <View style={styles.addItemHeaderContainer}>
               <Text style={styles.addItemHeaderText}>Add item</Text>
-              <Pressable onPress={() => setAddItemVisible(!addItemVisible)}>
+              <Pressable
+                onPress={() => {
+                  setAddItemVisible(!addItemVisible);
+                  console.log(selectedAddItem);
+                }}
+              >
                 <Feather name="x" size={32} color="#33363F" />
               </Pressable>
             </View>
             <Text style={styles.addItemSubHeaderText}>Item name</Text>
-            <TextInput
-              onChangeText={setAddItemName}
-              placeholder="e.g. Tomatoes"
-              style={styles.addItemNameInput}
-            />
-            <Text style={styles.addItemSubHeaderText}>Amount</Text>
+            <View style={styles.addItemInputContainer}>
+              <View
+                style={
+                  selectedAddItem.id === 0
+                    ? styles.addItemNameInputContainer
+                    : styles.addItemNameInputContainerS
+                }
+              >
+                {selectedAddItem.id === 0 ? (
+                  <Autocomplete
+                    data={ingredientSearchResult?.results.slice(0, 6) || []}
+                    onChangeText={(text) => {
+                      setAddItemName(text);
+                      setHideAutocomplete(false);
+                    }}
+                    onFocus={() => {
+                      setHideAutocomplete(false);
+                    }}
+                    autoCorrect={false}
+                    inputContainerStyle={styles.autocompleteContainer}
+                    listContainerStyle={
+                      ingredientSearchResult?.results.length === 0
+                        ? styles.autocompleteEmpty
+                        : styles.autocompleteListContainer
+                    }
+                    style={styles.addItemNameInput}
+                    placeholder="e.g. Tomatoes"
+                    flatListProps={{
+                      keyExtractor: (item) => item.name,
+                      renderItem: ({ item }) => (
+                        <Pressable onPress={() => setSelectedItem(item)}>
+                          <Text style={styles.autocompleteItem}>
+                            {decodeIngredientText('ingredientName', item.name)}
+                          </Text>
+                        </Pressable>
+                      ),
+                      ItemSeparatorComponent: () => (
+                        <View style={styles.autocompleteDivider}></View>
+                      ),
+                      style: styles.autocompleteList,
+                    }}
+                    hideResults={hideAutocomplete}
+                  />
+                ) : (
+                  <Pressable>
+                    <View style={styles.autocompleteSelected}>
+                      <Text style={styles.autocompleteSelectedText}>
+                        {decodeIngredientText(
+                          'ingredientName',
+                          selectedAddItem.name,
+                        )}
+                      </Text>
+                      <Feather
+                        name="x"
+                        size={24}
+                        color="#FFFFFF"
+                        onPress={unselectAddItem}
+                      />
+                    </View>
+                  </Pressable>
+                )}
+              </View>
+            </View>
+
+            <Text
+              style={[
+                styles.addItemSubHeaderText,
+                styles.addItemAmountTopMargin,
+              ]}
+            >
+              Amount
+            </Text>
             <TextInput
               keyboardType="numeric"
               maxLength={6}
@@ -286,12 +451,14 @@ const PantryPage = () => {
                   return (
                     <Pressable
                       key={type.id}
-                      onPress={() => setAddItemPantryType(type.id)}
+                      onPress={() =>
+                        setAddItemPantryType(type.val as StorageType)
+                      }
                     >
                       <View
                         style={[
                           styles.addItemTypeButton,
-                          type.id === addItemPantryType
+                          type.val === addItemPantryType
                             ? styles.addItemTypeButtonOn
                             : styles.addItemTypeButtonOff,
                         ]}
@@ -299,7 +466,7 @@ const PantryPage = () => {
                         <Text
                           style={[
                             styles.addItemTypeButtonText,
-                            type.id === addItemPantryType
+                            type.val === addItemPantryType
                               ? styles.addItemTypeButtonTextOn
                               : styles.addItemTypeButtonTextOff,
                           ]}
@@ -313,18 +480,7 @@ const PantryPage = () => {
               </ScrollView>
             </View>
             <Pressable
-              onPress={() => {
-                addToInventory({
-                  id: 19400,
-                  name: 'banana chips',
-                  image: 'banana-chips.jpg',
-                  quantity: 1,
-                  storage: 'dryPan',
-                }).then(() => {
-                  getInventory();
-                  setAddItemVisible(!addItemVisible);
-                });
-              }}
+              onPress={addToPantry}
               style={styles.addItemAddItemButton}
             >
               <Text style={styles.addItemAddItemButtonText}>Add item</Text>
@@ -339,6 +495,83 @@ const PantryPage = () => {
 export default PantryPage;
 
 const styles = StyleSheet.create({
+  autocompleteContainer: {
+    borderWidth: 0,
+  },
+  autocompleteDivider: {
+    height: 1,
+
+    flex: 1,
+    flexDirection: 'row',
+
+    borderRadius: 1,
+    backgroundColor: '#F1F1FA',
+  },
+  autocompleteEmpty: {
+    borderWidth: 0,
+  },
+  autocompleteItem: {
+    marginVertical: 6,
+    marginHorizontal: 0,
+
+    fontFamily: 'Inter-Regular',
+    fontSize: 16,
+    color: '#91919F',
+  },
+  autocompleteList: {
+    marginTop: 4,
+    marginBottom: 4,
+    marginLeft: 16,
+    marginRight: 16,
+    borderWidth: 0,
+  },
+  autocompleteListContainer: {
+    marginTop: 4,
+    marginLeft: 20,
+    marginRight: 20,
+    zIndex: 5,
+
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#F1F1FA',
+    borderStyle: 'solid',
+
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+
+    elevation: 10,
+  },
+  autocompleteSelected: {
+    marginTop: 4,
+    marginBottom: 4,
+    marginLeft: 20,
+    marginRight: 20,
+    paddingRight: 12,
+    height: 48,
+
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#6536F9',
+    borderStyle: 'solid',
+    backgroundColor: '#6536F9',
+
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  autocompleteSelectedText: {
+    marginLeft: 16,
+    marginRight: 16,
+
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
   addItemAddItemButton: {
     marginTop: 40,
     marginBottom: 40,
@@ -376,6 +609,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 16,
     color: '#91919F',
+  },
+  addItemAmountTopMargin: {
+    marginTop: 64,
   },
   addItemButton: {
     marginLeft: 24,
@@ -429,6 +665,9 @@ const styles = StyleSheet.create({
   addItemIcon: {
     marginLeft: 8,
   },
+  addItemInputContainer: {
+    flexDirection: 'column',
+  },
   addItemNameInput: {
     marginTop: 4,
     marginBottom: 4,
@@ -445,6 +684,18 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 16,
     color: '#91919F',
+  },
+  addItemNameInputContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+  },
+  addItemNameInputContainerS: {
+    position: 'absolute',
+    left: 0,
+    marginRight: 20,
+    top: 0,
   },
   addItemSubHeaderText: {
     marginTop: 12,
