@@ -161,6 +161,8 @@ const PantryPage = () => {
                     deleteAllFromInventory({
                       id: item.id,
                       storage: item.storage,
+                    }).then(() => {
+                      getInventory();
                     })
                   }
                 >
