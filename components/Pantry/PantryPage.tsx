@@ -63,8 +63,11 @@ const PantryPage = () => {
     getInventory,
   } = useInventoryIngredients({ storageType: undefined });
   const { addToInventory, isLoading: addLoading } = useAddToInventory();
-  const { deleteFromInventory, isLoading: deleteLoading } =
-    useDeleteFromInventory();
+  const {
+    deleteFromInventory,
+    isLoading: deleteLoading,
+    deleteAllFromInventory,
+  } = useDeleteFromInventory();
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -259,7 +262,14 @@ const PantryPage = () => {
                   renderRightActions={(progress, dragX) => {
                     return (
                       <Pressable
-                        onPress={() => deletePantryItem(item.id, item.storage)}
+                        onPress={() =>
+                          deleteAllFromInventory({
+                            id: item.id,
+                            storage: item.storage,
+                          }).then(() => {
+                            getInventory();
+                          })
+                        }
                       >
                         <View style={styles.deleteButton}>
                           <Feather
