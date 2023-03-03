@@ -39,7 +39,8 @@ const PantryPage = () => {
   const [addItemPantryType, setAddItemPantryType] = useState(pantryTypes[1].id);
   const { ingredients, getInventory } = useInventoryIngredients();
   const { addToInventory } = useAddToInventory();
-  const { deleteFromInventory } = useDeleteFromInventory();
+  const { deleteFromInventory, deleteAllFromInventory } =
+    useDeleteFromInventory();
 
   const [testItems, setTestItems] = useState(pantryItems);
 
@@ -155,7 +156,14 @@ const PantryPage = () => {
               rightThreshold={80}
               overshootFriction={8}
               renderRightActions={(progress, dragX) => (
-                <Pressable onPress={() => deletePantryItem(item.id)}>
+                <Pressable
+                  onPress={() =>
+                    deleteAllFromInventory({
+                      id: item.id,
+                      storage: item.storage,
+                    })
+                  }
+                >
                   <View style={styles.deleteButton}>
                     <Feather
                       name="trash-2"
