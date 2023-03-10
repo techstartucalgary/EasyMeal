@@ -61,6 +61,9 @@ const PantryPage = () => {
     ingredients,
     isLoading: inventoryLoading,
     getInventory,
+    fridgeCount,
+    freezerCount,
+    dryPanCount,
   } = useInventoryIngredients({ storageType: undefined });
   const { addToInventory, isLoading: addLoading } = useAddToInventory();
   const {
@@ -100,17 +103,26 @@ const PantryPage = () => {
     setPantryCounts(tmpCounts);
   };
 
-  const testAddItem = () => {
-    addToInventory({
-      storage: 'dryPan',
-      id: 10120129,
-      image: 'flour.png',
-      name: 'bread flour',
-      quantity: 4,
-    }).then(() => getInventory());
+  const getPantryCount = (type: string) => {
+    if (
+      fridgeCount == undefined ||
+      freezerCount == undefined ||
+      dryPanCount == undefined
+    ) {
+      return '0';
+    }
 
-    setAddItemVisible(!addItemVisible);
-    console.log(ingredients);
+    if (type === 'all') {
+      return (fridgeCount + freezerCount + dryPanCount).toString();
+    } else if (type === 'fridge') {
+      return fridgeCount.toString();
+    } else if (type === 'freezer') {
+      return freezerCount.toString();
+    } else if (type === 'dryPan') {
+      return dryPanCount.toString();
+    }
+
+    return '0';
   };
 
   const setSelectedItem = (newItem: Result) => {
@@ -169,8 +181,6 @@ const PantryPage = () => {
     }).then(() => {
       getInventory();
     });
-
-    console.log(itemImage);
   };
 
   const decodeIngredientText = (type: string, input: string) => {
@@ -205,7 +215,6 @@ const PantryPage = () => {
           <Pressable
             onPress={() => {
               setAddItemVisible(!addItemVisible);
-
               calcPantryCount();
             }}
             style={styles.addItemButton}
@@ -229,7 +238,9 @@ const PantryPage = () => {
           >
             <View style={styles.pantryTypeHContainer}>
               <Text style={styles.pantryTypeText}>{pantryType.title}</Text>
-              <Text style={styles.pantryTypeCount}>{pantryType.count}</Text>
+              <Text style={styles.pantryTypeCount}>
+                {getPantryCount(pantryType.val)}
+              </Text>
             </View>
             {selectedPantryType === pantryType.val && (
               <View style={styles.pantryTypeBar} />
@@ -359,7 +370,6 @@ const PantryPage = () => {
               <Pressable
                 onPress={() => {
                   setAddItemVisible(!addItemVisible);
-                  console.log(selectedAddItem);
                 }}
               >
                 <Feather name="x" size={32} color="#33363F" />
