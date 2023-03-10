@@ -31,6 +31,8 @@ function PrivateTabs() {
             iconName = focused ? 'ios-search' : 'ios-search-outline';
           } else if (route.name === 'Pantry') {
             iconName = focused ? 'ios-basket' : 'ios-basket-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
           }
 
           // You can return any component that you like here!
