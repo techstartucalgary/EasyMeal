@@ -5,6 +5,7 @@ import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
 import LoginPage from 'components/Authentication/LoginPage';
 import SignUpPage from 'components/Authentication/SignUpPage';
 import PantryPage from 'components/Pantry/PantryPage';
+import ProfilePage from 'components/Profile/ProfilePage';
 
 export const publicPages = [
   {
@@ -34,6 +35,10 @@ export const privatePages = [
     page: PantryPage,
     name: 'Pantry',
   },
+  {
+    page: ProfilePage,
+    name: 'Profile',
+  },
 ] as const;
 
 export type ParamList = {
@@ -49,4 +54,5 @@ export type ParamList = {
   SignUp: undefined;
   Pantry: undefined;
   Search: undefined;
+  Profile: undefined;
 };
