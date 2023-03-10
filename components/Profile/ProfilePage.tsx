@@ -47,8 +47,17 @@ const ProfilePage = () => {
       <View style={styles.profilePageHeader}>
         <Text style={styles.header1Text}>Profile</Text>
         <View style={[styles.flexRow, styles.alignCenter, styles.justifyEnd]}>
-          <Pressable style={styles.circleButtonL}>
-            <MaterialCommunityIcons name="bell" size={20} color="#273B4A" />
+          <Pressable
+            onPress={() => setNotificationsAvailable(!notificationsAvailable)}
+            style={styles.circleButtonL}
+          >
+            <MaterialCommunityIcons
+              name={
+                notificationsAvailable ? 'bell-badge-outline' : 'bell-outline'
+              }
+              size={20}
+              color="#273B4A"
+            />
           </Pressable>
           <Pressable style={styles.circleButtonL}>
             <Ionicons name="settings-sharp" size={20} color="#273B4A" />
