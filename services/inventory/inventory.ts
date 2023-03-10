@@ -52,8 +52,12 @@ export const useInventoryIngredients = ({
   const [ingredientsData, setIngredientsData] = useState<
     IngredientWithStorage[]
   >([]);
+  const [{ fridgeCount, freezerCount, dryPanCount }, setCounters] = useState({
+    fridgeCount: 0,
+    freezerCount: 0,
+    dryPanCount: 0,
+  });
   const { currentUser } = useAuthContext();
-  const mountRef = useRef({ mounted: false });
 
   const getInventory = useCallback(async () => {
     if (currentUser) {
@@ -66,6 +70,11 @@ export const useInventoryIngredients = ({
         if (storageType) {
           setIngredientsData(docSnap.get('pantry')[storageType]);
         } else {
+          setCounters({
+            fridgeCount: docSnap.get('pantry').fridge,
+            freezerCount: docSnap.get('pantry').freezer,
+            dryPanCount: docSnap.get('pantry').pantry,
+          });
           const response = Object.keys(docSnap.get('pantry')).reduce(
             (acc: IngredientWithStorage[], key) => [
               ...acc,
@@ -94,7 +103,14 @@ export const useInventoryIngredients = ({
     image: `https://spoonacular.com/cdn/ingredients_250x250/${el.image}`,
   }));
 
-  return { ingredients, isLoading, getInventory };
+  return {
+    ingredients,
+    isLoading,
+    getInventory,
+    fridgeCount,
+    freezerCount,
+    dryPanCount,
+  };
 };
 
 export const useAddToInventory = () => {
