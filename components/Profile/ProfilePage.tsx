@@ -46,7 +46,7 @@ const ProfilePage = () => {
       {false && <View style={styles.backgroundDim} />}
       <View style={styles.profilePageHeader}>
         <Text style={styles.header1Text}>Profile</Text>
-        <View style={[styles.flexRow, styles.alignCenter, styles.justifyEnd]}>
+        <View style={[styles.flexRow, styles.alignCenter]}>
           <Pressable
             onPress={() => setNotificationsAvailable(!notificationsAvailable)}
             style={styles.circleButtonL}
@@ -64,6 +64,22 @@ const ProfilePage = () => {
           </Pressable>
         </View>
       </View>
+      <View
+        style={[
+          styles.profileSectionContainer,
+          styles.flexRow,
+          styles.alignCenter,
+        ]}
+      >
+        <Image
+          source={require('../../assets/images/emoji-sparkles.png')}
+          style={styles.savingsImage}
+        />
+        <Text style={styles.savingsText}>
+          You <Text style={styles.boldText}>saved $215</Text> this month by
+          cooking at home!
+        </Text>
+      </View>
     </SafeAreaView>
   );
 };
@@ -72,7 +88,7 @@ export default ProfilePage;
 
 const styles = StyleSheet.create({
   alignCenter: {
-    alignContent: 'center',
+    alignItems: 'center',
   },
   backgroundDim: {
     position: 'absolute',
@@ -82,6 +98,9 @@ const styles = StyleSheet.create({
     height: Dimensions.get('screen').height,
     zIndex: 5,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  boldText: {
+    fontFamily: 'Inter-Bold',
   },
   circleButtonL: {
     marginLeft: 20,
@@ -102,7 +121,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#33363F',
   },
-  justifyEnd: {},
   profilePageContainer: {
     flex: 1,
     backgroundColor: '#F8F8F8',
@@ -116,5 +134,38 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     marginLeft: 24,
     marginRight: 24,
+  },
+  profileSectionContainer: {
+    marginTop: 28,
+    marginHorizontal: 16,
+    borderRadius: 22,
+
+    backgroundColor: '#FFFFFF',
+
+    shadowColor: '#5A6CEA',
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.07,
+    shadowRadius: 13.16,
+
+    elevation: 20,
+  },
+  savingsImage: {
+    height: 56,
+    width: 56,
+    marginLeft: 20,
+    marginVertical: 16,
+  },
+  savingsText: {
+    flex: 1,
+    flexWrap: 'wrap',
+    marginVertical: 0,
+    marginHorizontal: 24,
+
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: '#474747',
   },
 });
