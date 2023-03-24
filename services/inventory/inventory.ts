@@ -71,9 +71,9 @@ export const useInventoryIngredients = ({
           setIngredientsData(docSnap.get('pantry')[storageType]);
         } else {
           setCounters({
-            fridgeCount: docSnap.get('pantry').fridge,
-            freezerCount: docSnap.get('pantry').freezer,
-            dryPanCount: docSnap.get('pantry').pantry,
+            fridgeCount: docSnap.get('pantry')?.fridge?.length || 0,
+            freezerCount: docSnap.get('pantry')?.freezer?.length || 0,
+            dryPanCount: docSnap.get('pantry')?.dryPan?.length || 0,
           });
           const response = Object.keys(docSnap.get('pantry')).reduce(
             (acc: IngredientWithStorage[], key) => [
