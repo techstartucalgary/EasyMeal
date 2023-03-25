@@ -14,6 +14,7 @@ import {
   Dimensions,
   TextInput,
   Animated,
+  Easing,
 } from 'react-native';
 
 import {
@@ -28,17 +29,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 
+import DetailedCookingGoal from './DetailedCookingGoal';
+
 const ProfilePage = () => {
   const [notificationsAvailable, setNotificationsAvailable] = useState(true);
-  const slideAnimation = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    Animated.timing(slideAnimation, {
-      toValue: Dimensions.get('window').width,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [slideAnimation]);
-
   const slidePosition = useRef(new Animated.Value(0)).current;
 
   const [fontsLoaded] = useFonts({
@@ -54,18 +48,29 @@ const ProfilePage = () => {
   }
 
   const slideProfilePage = (slideLeft: boolean) => {
-    Animated.timing(slidePosition, {
-      toValue: -1 * Dimensions.get('window').width,
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
+    if (slideLeft) {
+      Animated.timing(slidePosition, {
+        toValue: -1 * Dimensions.get('window').width,
+        easing: Easing.cubic,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slidePosition, {
+        toValue: 0,
+        easing: Easing.cubic,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    }
   };
 
   return (
     <Animated.View
       style={{
-        width: '100%',
-        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
         transform: [{ translateX: slidePosition }],
       }}
     >
@@ -320,6 +325,9 @@ const ProfilePage = () => {
           </View>
         </View>
       </SafeAreaView>
+      <DetailedCookingGoal
+        animateFunction={slideProfilePage}
+      ></DetailedCookingGoal>
     </Animated.View>
   );
 };
@@ -388,7 +396,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   profilePageContainer: {
-    flex: 1,
+    height: Dimensions.get('screen').height,
+    maxWidth: Dimensions.get('screen').width,
+    width: Dimensions.get('screen').width,
     backgroundColor: '#F8F8F8',
   },
   profilePageHeader: {
