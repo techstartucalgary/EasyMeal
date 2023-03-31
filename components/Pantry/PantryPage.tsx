@@ -13,9 +13,10 @@ import {
   Modal,
   Dimensions,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -105,9 +106,9 @@ const PantryPage = () => {
 
   const getPantryCount = (type: string) => {
     if (
-      fridgeCount == undefined ||
-      freezerCount == undefined ||
-      dryPanCount == undefined
+      fridgeCount === undefined ||
+      freezerCount === undefined ||
+      dryPanCount === undefined
     ) {
       return '0';
     }
@@ -261,97 +262,123 @@ const PantryPage = () => {
           setShadowWidth(nativeEvent.layout.width - 32);
         }}
       >
-        {addLoading && <Text>TESTADD</Text>}
-        {deleteLoading && <Text>TESTDELETE</Text>}
-        {inventoryLoading && <Text>TESTINVENTORY</Text>}
-        <FlatList
-          data={ingredients}
-          keyExtractor={(item: any) => item.id}
-          renderItem={({ item }) => {
-            if (
-              selectedPantryType === 'all' ||
-              item.storage === selectedPantryType
-            ) {
-              return (
-                <Swipeable
-                  friction={1.5}
-                  rightThreshold={80}
-                  overshootFriction={8}
-                  renderRightActions={(progress, dragX) => (
-                    <Pressable
-                      onPress={() =>
-                        deleteAllFromInventory({
-                          id: item.id,
-                          storage: item.storage,
-                        }).then(() => {
-                          getInventory();
-                        })
-                      }
-                    >
-                      <View style={styles.deleteButton}>
-                        <Feather
-                          name="trash-2"
-                          size={24}
-                          color="white"
-                          style={styles.deleteIcon}
-                        />
-                      </View>
-                    </Pressable>
-                  )}
-                >
-                  <View
-                    style={[
-                      styles.pantryCardContainer,
-                      styles.pantryCardShadow,
-                    ]}
-                  >
-                    <Image
-                      source={{ uri: item.image }}
-                      style={styles.pantryCardImage}
-                    />
-                    <View style={styles.pantryCardTextContainer}>
-                      <Text style={styles.pantryCardTitle}>
-                        {decodeIngredientText('ingredientName', item.name)}
-                      </Text>
-                      <Text style={styles.pantryCardType}>
-                        {decodeIngredientText('pantryName', item.storage)}
-                      </Text>
-                    </View>
-                    <View style={styles.pantryCardButtonContainer}>
+        {(addLoading || deleteLoading || inventoryLoading) && (
+          <View style={styles.loadingOverlayContainer}>
+            <View style={styles.loadingIconContainer}>
+              <ActivityIndicator
+                size="large"
+                color="#6536f9"
+                style={styles.loadingIcon}
+              />
+            </View>
+          </View>
+        )}
+
+        {ingredients?.length === 0 ? (
+          <View style={styles.centeredContainer}>
+            <AntDesign
+              name="questioncircleo"
+              size={132}
+              color="#9FA5C0"
+              style={styles.shiftUp}
+            />
+            <Text style={styles.noResultsText}>
+              Your pantry is empty! You can add ingredients by pressing the "Add
+              item" button in the top right.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={ingredients}
+            keyExtractor={(item: any) => item.id}
+            renderItem={({ item }) => {
+              if (
+                selectedPantryType === 'all' ||
+                item.storage === selectedPantryType
+              ) {
+                return (
+                  <Swipeable
+                    friction={1.5}
+                    rightThreshold={80}
+                    overshootFriction={8}
+                    renderRightActions={(progress, dragX) => (
                       <Pressable
-                        disabled={addLoading || deleteLoading}
-                        onPress={() => deletePantryItem(item.id, item.storage)}
-                      >
-                        <Text style={styles.pantryCardButton}>-</Text>
-                      </Pressable>
-                      <Text style={styles.pantryCardCount}>
-                        {item.quantity}
-                      </Text>
-                      <Pressable
-                        disabled={addLoading || deleteLoading}
                         onPress={() =>
-                          updatePantryItemCount(
-                            1,
-                            item.id,
-                            item.name,
-                            item.image,
-                            item.quantity,
-                            item.storage,
-                          )
+                          deleteAllFromInventory({
+                            id: item.id,
+                            storage: item.storage,
+                          }).then(() => {
+                            getInventory();
+                          })
                         }
                       >
-                        <Text style={styles.pantryCardButton}>+</Text>
+                        <View style={styles.deleteButton}>
+                          <Feather
+                            name="trash-2"
+                            size={24}
+                            color="white"
+                            style={styles.deleteIcon}
+                          />
+                        </View>
                       </Pressable>
+                    )}
+                  >
+                    <View
+                      style={[
+                        styles.pantryCardContainer,
+                        styles.pantryCardShadow,
+                      ]}
+                    >
+                      <Image
+                        source={{ uri: item.image }}
+                        style={styles.pantryCardImage}
+                      />
+                      <View style={styles.pantryCardTextContainer}>
+                        <Text style={styles.pantryCardTitle}>
+                          {decodeIngredientText('ingredientName', item.name)}
+                        </Text>
+                        <Text style={styles.pantryCardType}>
+                          {decodeIngredientText('pantryName', item.storage)}
+                        </Text>
+                      </View>
+                      <View style={styles.pantryCardButtonContainer}>
+                        <Pressable
+                          disabled={addLoading || deleteLoading}
+                          onPress={() =>
+                            deletePantryItem(item.id, item.storage)
+                          }
+                        >
+                          <Text style={styles.pantryCardButton}>-</Text>
+                        </Pressable>
+                        <Text style={styles.pantryCardCount}>
+                          {item.quantity}
+                        </Text>
+                        <Pressable
+                          disabled={addLoading || deleteLoading}
+                          onPress={() =>
+                            updatePantryItemCount(
+                              1,
+                              item.id,
+                              item.name,
+                              item.image,
+                              item.quantity,
+                              item.storage,
+                            )
+                          }
+                        >
+                          <Text style={styles.pantryCardButton}>+</Text>
+                        </Pressable>
+                      </View>
                     </View>
-                  </View>
-                </Swipeable>
-              );
-            }
-            return <></>;
-          }}
-          initialNumToRender={20}
-          ListFooterComponent={<View style={styles.pantryResultsFooter} />}
-        />
+                  </Swipeable>
+                );
+              }
+              return null;
+            }}
+            initialNumToRender={20}
+            ListFooterComponent={<View style={styles.pantryResultsFooter} />}
+          />
+        )}
       </View>
       <Modal
         animationType="fade"
@@ -781,6 +808,11 @@ const styles = StyleSheet.create({
     zIndex: 5,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
+  centeredContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -802,6 +834,41 @@ const styles = StyleSheet.create({
   deleteIcon: {
     marginLeft: 28,
     marginRight: 28,
+  },
+  loadingIcon: {
+    scaleX: 2,
+    scaleY: 2,
+  },
+  loadingIconContainer: {
+    padding: 64,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    borderRadius: 40,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingOverlayContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(236, 236, 236, 0.4)',
+    zIndex: 10,
+  },
+  noResultsText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+
+    fontFamily: 'Inter-Medium',
+    fontSize: 18,
+    lineHeight: 26,
+    color: '#9FA5C0',
+
+    marginTop: 32,
+    marginLeft: 24,
+    marginRight: 24,
   },
   pantryCardButton: {
     height: 22,
@@ -973,5 +1040,8 @@ const styles = StyleSheet.create({
   },
   pantryTypeVContainer: {
     flexDirection: 'column',
+  },
+  shiftUp: {
+    marginTop: -64,
   },
 });
