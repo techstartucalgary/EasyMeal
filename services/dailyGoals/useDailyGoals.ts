@@ -2,13 +2,18 @@ import { doc, getDoc, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
+import { DailyGoalType } from './types';
 
 export const useDailyGoals = () => {
   const { currentUser } = useAuthContext();
-  const [dailyGoal, setDailyGoal] = useState(undefined);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dailyGoal, setDailyGoal] = useState<DailyGoalType | undefined>(
+    undefined,
+  );
 
-  const getDailyGoal = useCallback(async () => {
+  const getDailyGoals = useCallback(async () => {
     if (currentUser) {
+      setIsLoading(true);
       const date = new Date().toISOString().split('T')[0];
       const dailyGoalProfile = doc(db, 'daily_goals', currentUser?.uid);
       const docSnap = await getDoc(dailyGoalProfile);
@@ -16,7 +21,7 @@ export const useDailyGoals = () => {
       if (docSnap.exists() && docSnap.get(date)) {
         setDailyGoal(docSnap.get(date));
       } else {
-        const payload = {
+        const payload: DailyGoalType = {
           [date]: {
             calories: {
               goal: 0,
@@ -41,12 +46,13 @@ export const useDailyGoals = () => {
 
         await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
       }
+      setIsLoading(false);
     }
   }, [currentUser]);
 
   useEffect(() => {
-    getDailyGoal();
-  }, [getDailyGoal]);
+    getDailyGoals();
+  }, [getDailyGoals]);
 
-  return {};
+  return { dailyGoal, isLoading, getDailyGoals };
 };
