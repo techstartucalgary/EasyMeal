@@ -22,10 +22,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 
+import useDebounce from 'hooks/useDebounce';
 import { pantryTypes } from './pantry-types';
 import { pantryItems } from './test-pantry';
 
-import useDebounce from 'hooks/useDebounce';
 import { useSearchIngredient } from '../../services/ingredients/useSearchIngredients';
 import {
   useInventoryIngredients,
@@ -106,20 +106,23 @@ const PantryPage = () => {
 
   const getPantryCount = (type: string) => {
     if (
-      fridgeCount == undefined ||
-      freezerCount == undefined ||
-      dryPanCount == undefined
+      fridgeCount === undefined ||
+      freezerCount === undefined ||
+      dryPanCount === undefined
     ) {
       return '0';
     }
 
     if (type === 'all') {
       return (fridgeCount + freezerCount + dryPanCount).toString();
-    } else if (type === 'fridge') {
+    }
+    if (type === 'fridge') {
       return fridgeCount.toString();
-    } else if (type === 'freezer') {
+    }
+    if (type === 'freezer') {
       return freezerCount.toString();
-    } else if (type === 'dryPan') {
+    }
+    if (type === 'dryPan') {
       return dryPanCount.toString();
     }
 
@@ -137,6 +140,7 @@ const PantryPage = () => {
     }
 
     let addCount = 1;
+
     if (addItemAmount.length > 0) {
       addCount = +addItemAmount;
     }
@@ -167,7 +171,7 @@ const PantryPage = () => {
     itemCount: number,
     itemType: StorageType,
   ) => {
-    let newCount = itemCount + change;
+    const newCount = itemCount + change;
 
     if (newCount < 0) {
       return;
@@ -187,12 +191,15 @@ const PantryPage = () => {
   const decodeIngredientText = (type: string, input: string) => {
     if (type === 'ingredientName') {
       return input.charAt(0).toUpperCase() + input.slice(1);
-    } else if (type === 'pantryName') {
+    }
+    if (type === 'pantryName') {
       if (input === 'fridge') {
         return 'Fridge';
-      } else if (input === 'freezer') {
+      }
+      if (input === 'freezer') {
         return 'Freezer';
-      } else if (input === 'dryPan') {
+      }
+      if (input === 'dryPan') {
         return 'Dry pantry';
       }
     }
@@ -294,29 +301,27 @@ const PantryPage = () => {
                     friction={1.5}
                     rightThreshold={80}
                     overshootFriction={8}
-                    renderRightActions={(progress, dragX) => {
-                      return (
-                        <Pressable
-                          onPress={() =>
-                            deleteAllFromInventory({
-                              id: item.id,
-                              storage: item.storage,
-                            }).then(() => {
-                              getInventory();
-                            })
-                          }
-                        >
-                          <View style={styles.deleteButton}>
-                            <Feather
-                              name="trash-2"
-                              size={24}
-                              color="white"
-                              style={styles.deleteIcon}
-                            />
-                          </View>
-                        </Pressable>
-                      );
-                    }}
+                    renderRightActions={(progress, dragX) => (
+                      <Pressable
+                        onPress={() =>
+                          deleteAllFromInventory({
+                            id: item.id,
+                            storage: item.storage,
+                          }).then(() => {
+                            getInventory();
+                          })
+                        }
+                      >
+                        <View style={styles.deleteButton}>
+                          <Feather
+                            name="trash-2"
+                            size={24}
+                            color="white"
+                            style={styles.deleteIcon}
+                          />
+                        </View>
+                      </Pressable>
+                    )}
                   >
                     <View
                       style={[
@@ -367,9 +372,8 @@ const PantryPage = () => {
                     </View>
                   </Swipeable>
                 );
-              } else {
-                return <></>;
               }
+              return null;
             }}
             initialNumToRender={20}
             ListFooterComponent={<View style={styles.pantryResultsFooter} />}
@@ -440,7 +444,7 @@ const PantryPage = () => {
                         </Pressable>
                       ),
                       ItemSeparatorComponent: () => (
-                        <View style={styles.autocompleteDivider}></View>
+                        <View style={styles.autocompleteDivider} />
                       ),
                       style: styles.autocompleteList,
                     }}
