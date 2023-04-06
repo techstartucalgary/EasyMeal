@@ -10,11 +10,16 @@ import RenderHtml from 'react-native-render-html';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Svg, { G, Circle } from 'react-native-svg';
-import React from 'react';
+import React, { useState } from 'react';
 import { ParamList } from 'pages';
 import ViewMoreText from 'react-native-view-more-text';
 import { useRecipeInformation } from 'services/recipeInformation';
-import { useAddFavorites } from 'services/favorites';
+import {
+  FavoriteRecipeType,
+  useAddFavorites,
+  useFavoriteDetail,
+} from 'services/favorites';
+import { useRemoveFavorites } from 'services/favorites/useRemoveFavorites';
 
 const RecipeOverview = () => {
   const route = useRoute<RouteProp<ParamList, 'RecipeOverview'>>();
@@ -23,6 +28,10 @@ const RecipeOverview = () => {
     enabled: !!route.params?.itemId,
   });
   const { addFavorites, isLoading } = useAddFavorites();
+  const { favorite, getFavoriteDetail } = useFavoriteDetail(
+    route.params?.itemId || 0,
+  );
+  const { removeFavorites } = useRemoveFavorites();
   const { goBack } = useNavigation();
   const radius = 60;
   const circleCircumference = 2 * Math.PI * radius;
@@ -49,6 +58,7 @@ const RecipeOverview = () => {
   const proteinAngle = (protein / total) * 360;
   const carbsAngle = (carbs / total) * 360;
   const fatsAngle = proteinAngle + carbsAngle;
+  const [isFavorited, setIsFavorited] = useState(favorite);
 
   return (
     <ScrollView>
@@ -59,34 +69,59 @@ const RecipeOverview = () => {
         </Pressable>
       </View>
       <View style={styles.favorite}>
-        <Pressable
-          onPress={() =>
-            addFavorites({
-              cuisines: recipeInformation?.cuisines || [],
-              dishTypes: recipeInformation?.dishTypes || [],
-              id: recipeInformation?.id || 0,
-              image: recipeInformation?.image || '',
-              imageType: recipeInformation?.imageType || '',
-              pricePerServing: recipeInformation?.pricePerServing || 0,
-              readyInMinutes: recipeInformation?.readyInMinutes || 0,
-              title: recipeInformation?.title || '',
-            })
-          }
-        >
-          <MaterialIcons name="favorite" size={24} color="#000000" />
-        </Pressable>
+        {isFavorited != null ? (
+          <Pressable
+            onPress={() => {
+              removeFavorites(route.params?.itemId || 0);
+              setIsFavorited(null);
+            }}
+          >
+            <MaterialIcons name="remove" size={24} color="#000000" />
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => {
+              addFavorites({
+                cuisines: recipeInformation?.cuisines || [],
+                dishTypes: recipeInformation?.dishTypes || [],
+                id: recipeInformation?.id || 0,
+                image: recipeInformation?.image || '',
+                imageType: recipeInformation?.imageType || '',
+                pricePerServing: recipeInformation?.pricePerServing || 0,
+                readyInMinutes: recipeInformation?.readyInMinutes || 0,
+                title: recipeInformation?.title || '',
+              });
+              setIsFavorited(favorite);
+            }}
+          >
+            <MaterialIcons name="favorite" size={24} color="#000000" />
+          </Pressable>
+        )}
       </View>
       <View style={styles.card}>
         <View style={styles.hcontainer}>
           <Text style={styles.h1}>{recipeInformation?.title}</Text>
+        </View>
+        <View style={styles.infocontainer}>
           <View style={styles.timecontainer}>
             <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
             <Text style={styles.time}>
-              {recipeInformation?.readyInMinutes} mins
+              {recipeInformation?.readyInMinutes} Mins
+            </Text>
+          </View>
+          <View style={styles.timecontainer}>
+            <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
+            <Text style={styles.time}>
+              {recipeInformation?.servings} Servings
+            </Text>
+          </View>
+          <View style={styles.timecontainer}>
+            <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
+            <Text style={styles.time}>
+              {recipeInformation?.pricePerServing}/ Serving
             </Text>
           </View>
         </View>
-
         <RenderHtml source={{ html: recipeInformation?.summary || '' }} />
 
         <View style={styles.macrowrapper}>
@@ -214,7 +249,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 15,
   },
   h1: {
     color: '#474747',
@@ -354,5 +388,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#727272',
     marginTop: 5,
+  },
+  infocontainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    marginBottom: 15,
+    marginTop: 10,
   },
 });

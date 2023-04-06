@@ -11,6 +11,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
 import HomePage from 'components/HomePage/HomePage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Settings from 'components/Profile/Settings';
 import { publicPages, privatePages, ParamList } from './pages';
 
 const Tab = createBottomTabNavigator<ParamList>();
@@ -68,6 +69,7 @@ const Navigator = () => {
         component={RecipeOverview}
         initialParams={{ itemId: 0 }}
       />
+      <Stack.Screen name="Settings" component={Settings} />
     </Stack.Navigator>
   );
 };
