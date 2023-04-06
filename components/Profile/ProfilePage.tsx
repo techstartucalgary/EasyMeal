@@ -28,13 +28,14 @@ import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
-
+import { useNavigation } from '@react-navigation/native';
 import DetailedCookingGoal from './DetailedCookingGoal';
+import Settings from './Settings';
 
 const ProfilePage = () => {
   const [notificationsAvailable, setNotificationsAvailable] = useState(true);
   const slidePosition = useRef(new Animated.Value(0)).current;
-
+  const navigation = useNavigation();
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
     'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -91,7 +92,12 @@ const ProfilePage = () => {
                 color="#273B4A"
               />
             </Pressable>
-            <Pressable style={styles.circleButtonL}>
+            <Pressable
+              style={styles.circleButtonL}
+              onPress={() => {
+                navigation.navigate('Settings' as never);
+              }}
+            >
               <Ionicons name="settings-sharp" size={20} color="#273B4A" />
             </Pressable>
           </View>
@@ -120,7 +126,7 @@ const ProfilePage = () => {
             <Image
               source={require('../../assets/images/emoji-bullseye.png')}
               style={styles.smallEmoji}
-            ></Image>
+            />
             <Text style={styles.sectionHeader1}>
               Your weekly Goal{' '}
               <Text style={styles.sectionSubHeader1}>(Level 3)</Text>
@@ -160,7 +166,7 @@ const ProfilePage = () => {
                 styles.progressBarFilled,
                 { backgroundColor: '#74CF82', width: '50%' },
               ]}
-            ></View>
+            />
           </View>
           <Text style={[styles.sectionSubHeader2, styles.sectionTopMargin1]}>
             Complete your goal to reach Level 4!
@@ -187,7 +193,7 @@ const ProfilePage = () => {
             <Image
               source={require('../../assets/images/emoji-fire.png')}
               style={[styles.smallEmoji]}
-            ></Image>
+            />
             <View style={[styles.flexColumn, styles.flexFill]}>
               <View
                 style={[
@@ -208,7 +214,7 @@ const ProfilePage = () => {
                     styles.progressBarFilled,
                     { backgroundColor: '#74CF82', width: '80%' },
                   ]}
-                ></View>
+                />
               </View>
             </View>
           </View>
@@ -224,7 +230,7 @@ const ProfilePage = () => {
             <Image
               source={require('../../assets/images/emoji-poultryleg.png')}
               style={[styles.smallEmoji]}
-            ></Image>
+            />
             <View style={[styles.flexColumn, styles.flexFill]}>
               <View
                 style={[
@@ -245,7 +251,7 @@ const ProfilePage = () => {
                     styles.progressBarFilled,
                     { backgroundColor: '#C05CC2', width: '68%' },
                   ]}
-                ></View>
+                />
               </View>
             </View>
           </View>
@@ -261,7 +267,7 @@ const ProfilePage = () => {
             <Image
               source={require('../../assets/images/emoji-bread.png')}
               style={[styles.smallEmoji]}
-            ></Image>
+            />
             <View style={[styles.flexColumn, styles.flexFill]}>
               <View
                 style={[
@@ -282,7 +288,7 @@ const ProfilePage = () => {
                     styles.progressBarFilled,
                     { backgroundColor: '#E3B428', width: '44%' },
                   ]}
-                ></View>
+                />
               </View>
             </View>
           </View>
@@ -298,7 +304,7 @@ const ProfilePage = () => {
             <Image
               source={require('../../assets/images/emoji-avocado.png')}
               style={[styles.smallEmoji]}
-            ></Image>
+            />
             <View style={[styles.flexColumn, styles.flexFill]}>
               <View
                 style={[
@@ -319,15 +325,13 @@ const ProfilePage = () => {
                     styles.progressBarFilled,
                     { backgroundColor: '#39C3B3', width: '43%' },
                   ]}
-                ></View>
+                />
               </View>
             </View>
           </View>
         </View>
       </SafeAreaView>
-      <DetailedCookingGoal
-        animateFunction={slideProfilePage}
-      ></DetailedCookingGoal>
+      <DetailedCookingGoal animateFunction={slideProfilePage} />
     </Animated.View>
   );
 };

@@ -29,6 +29,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 
 import { weeklyGoals } from './test-profile';
+import CalendarSection from './Calendar';
 
 type DetailedCookingGoalProps = PropsWithChildren<{
   animateFunction: (slideLeft: boolean) => void;
@@ -112,7 +113,7 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
               styles.progressBar,
               { width: '50%', backgroundColor: '#74CF82' },
             ]}
-          ></View>
+          />
         </View>
         <View
           style={[
@@ -121,22 +122,20 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
             styles.sectionTopMargin1,
           ]}
         >
-          {weeklyGoals.map((goal) => {
-            return (
-              <View key={goal.title} style={styles.flexColumn}>
-                <Text style={styles.goalText}>{goal.title}</Text>
-                {goal.completed ? (
-                  <View style={styles.goalCompleted}>
-                    <Feather name="check" size={20} color="#FFFFFF" />
-                  </View>
-                ) : (
-                  <View style={styles.goalNotCompleted}>
-                    <Feather name="plus" size={20} color="#757678" />
-                  </View>
-                )}
-              </View>
-            );
-          })}
+          {weeklyGoals.map((goal) => (
+            <View key={goal.title} style={styles.flexColumn}>
+              <Text style={styles.goalText}>{goal.title}</Text>
+              {goal.completed ? (
+                <View style={styles.goalCompleted}>
+                  <Feather name="check" size={20} color="#FFFFFF" />
+                </View>
+              ) : (
+                <View style={styles.goalNotCompleted}>
+                  <Feather name="plus" size={20} color="#757678" />
+                </View>
+              )}
+            </View>
+          ))}
         </View>
 
         <Text
@@ -149,6 +148,27 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
         >
           Complete your goal to reach Level 4!
         </Text>
+      </View>
+      <View style={styles.profileSectionContainer}>
+        <View
+          style={[
+            styles.rowSpaceBetween,
+            styles.sectionHorizontalMargin,
+            styles.sectionTopMargin3,
+          ]}
+        >
+          <View style={styles.flexRow}>
+            <Image
+              source={require('../../assets/images/emoji-medal.png')}
+              style={styles.mediumEmoji}
+            />
+            <View style={styles.flexColumn}>
+              <Text style={styles.sectionHeader2}>Previous Achievements</Text>
+              <Text style={styles.sectionSubHeader2}>Days cooked</Text>
+            </View>
+          </View>
+        </View>
+        <CalendarSection />
       </View>
 
       <Modal
@@ -377,6 +397,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#474747',
   },
+  sectionHeader2: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: '#474747',
+  },
   sectionHorizontalMargin: {
     marginHorizontal: 24,
   },
@@ -406,5 +431,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     fontSize: 16,
     color: '#808080',
+  },
+  sectionSubHeader2: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 14,
+    color: '#A7A7A7',
+    marginRight: 'auto',
   },
 });

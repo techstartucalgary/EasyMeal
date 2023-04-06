@@ -6,6 +6,7 @@ import LoginPage from 'components/Authentication/LoginPage';
 import SignUpPage from 'components/Authentication/SignUpPage';
 import PantryPage from 'components/Pantry/PantryPage';
 import ProfilePage from 'components/Profile/ProfilePage';
+import Settings from 'components/Profile/Settings';
 
 export const publicPages = [
   {
@@ -55,4 +56,5 @@ export type ParamList = {
   Pantry: undefined;
   Search: undefined;
   Profile: undefined;
+  Settings: undefined;
 };

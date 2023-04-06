@@ -20,12 +20,14 @@
     "expo": "~46.0.16",
     "expo-linear-gradient": "~11.4.0",
     "expo-status-bar": "~1.4.0",
+    "expo-updates": "~0.14.7",
     "firebase": "^9.14.0",
     "process": "^0.11.10",
     "react": "18.0.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.6",
     "react-native-autocomplete-input": "^5.3.2",
+    "react-native-calendars": "^1.1294.0",
     "react-native-gesture-handler": "~2.5.0",
     "react-native-progress": "^5.0.0",
     "react-native-render-html": "^6.3.4",
@@ -36,8 +38,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-more-text": "^2.2.0",
     "react-native-web": "~0.18.7",
-    "react-native-webview": "11.23.0",
-    "expo-updates": "~0.14.7"
+    "react-native-webview": "11.23.0"
   },
   "devDependencies": {
     "@expo/webpack-config": "^0.17.4",
