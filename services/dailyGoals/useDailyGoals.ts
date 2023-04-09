@@ -2,6 +2,7 @@ import { doc, getDoc, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
+import { format } from 'utils/date';
 import { DailyGoalType } from './types';
 
 export const useDailyGoals = () => {
@@ -14,7 +15,7 @@ export const useDailyGoals = () => {
   const getDailyGoals = useCallback(async () => {
     if (currentUser) {
       setIsLoading(true);
-      const date = new Date().toISOString().split('T')[0];
+      const date = format(new Date(), 'YYYY-MM-DD');
       const dailyGoalProfile = doc(db, 'daily_goals', currentUser?.uid);
       const docSnap = await getDoc(dailyGoalProfile);
 
@@ -39,7 +40,7 @@ export const useDailyGoals = () => {
               goal: 0,
               count: 0,
             },
-            completed: 0,
+            completed: false,
             cookedTimes: 0,
           },
         };
