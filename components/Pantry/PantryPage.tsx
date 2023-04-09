@@ -482,8 +482,10 @@ const PantryPage = () => {
             <TextInput
               keyboardType="numeric"
               maxLength={6}
+              defaultValue={''}
+              value={addItemAmount}
               onChangeText={(text) => {
-                setAddItemAmount(text.replace('/[^0-9]/g', ''));
+                setAddItemAmount(text.replace(/\D/g, ''));
               }}
               placeholder="e.g. 4"
               style={styles.addItemAmountInput}
