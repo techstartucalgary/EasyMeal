@@ -34,8 +34,7 @@ import DetailedCookingGoal from './DetailedCookingGoal';
 import Settings from './Settings';
 
 import { goals } from './test-profile';
-import { useDailyGoals } from '../../services/dailyGoals/useDailyGoals';
-import { useUpdateDailyGoals } from '../../services/dailyGoals/useUpdateDailyGoals';
+import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
 
 const ProfilePage = () => {
   const [notificationsAvailable, setNotificationsAvailable] = useState(true);
@@ -56,6 +55,7 @@ const ProfilePage = () => {
     dailyGoal,
     isLoading: getDailyIsLoading,
     getDailyGoals,
+    date,
   } = useDailyGoals();
   const { updateDailyGoal, isLoading: setDailyIsLoading } =
     useUpdateDailyGoals();
@@ -121,7 +121,6 @@ const ProfilePage = () => {
   };
 
   const updateEditDiet = () => {
-    dailyGoal?.
     let prevCaloric = dailyGoal['calories'].goal;
     let prevCarb = Math.floor(
       ((dailyGoal['carbs'].goal * 4) / prevCaloric) * 100,
@@ -178,7 +177,31 @@ const ProfilePage = () => {
     newDiet['fat'].goal =
       ((fatPercentage / 100.0) * parseInt(editCaloricGoal)) / 9;
 
-    updateDailyGoal(newDiet);
+    if (dailyGoal) {
+      updateDailyGoal({
+        ...dailyGoal,
+        [date]: {
+          ...dailyGoal[date],
+          calories: {
+            ...dailyGoal[date].calories,
+            goal: 0,
+          },
+          carbs: {
+            ...dailyGoal[date].carbs,
+            goal: 0,
+          },
+          fat: {
+            ...dailyGoal[date].fat,
+            goal: 0,
+          },
+          protein: {
+            ...dailyGoal[date].protein,
+            goal: 0,
+          },
+        },
+      });
+    }
+
     getDailyGoals();
 
     updateEditDiet();
@@ -297,14 +320,15 @@ const ProfilePage = () => {
             <Text style={styles.sectionHeader1}>Daily diet goals</Text>
             <Pressable
               onPress={() => {
-                getDailyGoals();
-                updateEditDiet();
+                //getDailyGoals();
+                // console.log(dailyGoal);
+                //updateEditDiet();
                 setEditDietVisible((prevVal) => !prevVal);
                 //let tmp = dailyGoal;
                 //tmp['calories'].count = 1200;
                 //updateDailyGoal(tmp);
 
-                console.log(dailyGoal['calories'].count);
+                //console.log(dailyGoal['calories'].count);
               }}
               style={styles.editDietButton}
             >
