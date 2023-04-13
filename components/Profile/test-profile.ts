@@ -28,3 +28,11 @@ export const weeklyGoals = [
     completed: false,
   },
 ];
+
+export const goals = {
+  caloric: '1500',
+  carb: '30%',
+  protein: '40%',
+  fat: '30%',
+  cooking: '5',
+};

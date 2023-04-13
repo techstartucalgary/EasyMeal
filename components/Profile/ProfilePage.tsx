@@ -23,6 +23,7 @@ import {
   Ionicons,
   MaterialCommunityIcons,
   FontAwesome5,
+  MaterialIcons,
 } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -32,10 +33,33 @@ import { useNavigation } from '@react-navigation/native';
 import DetailedCookingGoal from './DetailedCookingGoal';
 import Settings from './Settings';
 
+import { goals } from './test-profile';
+import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
+
 const ProfilePage = () => {
   const [notificationsAvailable, setNotificationsAvailable] = useState(true);
   const slidePosition = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+
+  const [editDietVisible, setEditDietVisible] = useState(false);
+  const [editCaloricGoal, setEditCaloricGoal] = useState(goals.caloric);
+  const [editCarbGoal, setEditCarbGoal] = useState(goals.carb);
+  const [editProteinGoal, setEditProteinGoal] = useState(goals.protein);
+  const [editFatGoal, setEditFatGoal] = useState(goals.fat);
+
+  const [editCarbGrams, setEditCarbGrams] = useState(0);
+  const [editProteinGrams, setEditProteinGrams] = useState(0);
+  const [editFatGrams, setEditFatGrams] = useState(0);
+
+  const {
+    dailyGoal,
+    isLoading: getDailyIsLoading,
+    getDailyGoals,
+    date,
+  } = useDailyGoals();
+  const { updateDailyGoal, isLoading: setDailyIsLoading } =
+    useUpdateDailyGoals();
+
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
     'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -66,6 +90,123 @@ const ProfilePage = () => {
     }
   };
 
+  const updateEditMacroGrams = (type: string) => {
+    if (type === 'carbs' || type === 'all') {
+      setEditCarbGrams(
+        Math.floor(
+          ((parseInt(editCarbGoal.slice(0, -1)) / 100.0) *
+            parseInt(editCaloricGoal)) /
+            4,
+        ),
+      );
+    }
+    if (type === 'protein' || type === 'all') {
+      setEditProteinGrams(
+        Math.floor(
+          ((parseInt(editProteinGoal.slice(0, -1)) / 100.0) *
+            parseInt(editCaloricGoal)) /
+            4,
+        ),
+      );
+    }
+    if (type === 'fat' || type === 'all') {
+      setEditFatGrams(
+        Math.floor(
+          ((parseInt(editFatGoal.slice(0, -1)) / 100.0) *
+            parseInt(editCaloricGoal)) /
+            9,
+        ),
+      );
+    }
+  };
+
+  const updateEditDiet = () => {
+    let prevCaloric = dailyGoal['calories'].goal;
+    let prevCarb = Math.floor(
+      ((dailyGoal['carbs'].goal * 4) / prevCaloric) * 100,
+    );
+    let prevProtein = Math.floor(
+      ((dailyGoal['protein'].goal * 4) / prevCaloric) * 100,
+    );
+    let prevFat = Math.floor(((dailyGoal['fat'].goal * 9) / prevCaloric) * 100);
+
+    setEditCaloricGoal(prevCaloric);
+    setEditCarbGoal(prevCarb + '%');
+    setEditProteinGoal(prevProtein + '%');
+    setEditFatGoal(prevFat + '%');
+
+    updateEditMacroGrams('all');
+  };
+
+  const saveDietChanges = () => {
+    let carbPercentage = 0;
+    if (editCarbGoal.length >= 0 && editCarbGoal.slice(-1) === '%') {
+      carbPercentage = parseInt(editCarbGoal.slice(0, -1));
+    } else if (editCarbGoal.length >= 0) {
+      carbPercentage = parseInt(editCarbGoal);
+    }
+
+    let proteinPercentage = 0;
+    if (editProteinGoal.length >= 0 && editProteinGoal.slice(-1) === '%') {
+      proteinPercentage = parseInt(editProteinGoal.slice(0, -1));
+    } else if (editProteinGoal.length >= 0) {
+      proteinPercentage = parseInt(editProteinGoal);
+    }
+
+    let fatPercentage = 0;
+    if (editFatGoal.length >= 0 && editFatGoal.slice(-1) === '%') {
+      fatPercentage = parseInt(editFatGoal.slice(0, -1));
+    } else if (editFatGoal.length >= 0) {
+      fatPercentage = parseInt(editFatGoal);
+    }
+
+    if (carbPercentage + proteinPercentage + fatPercentage != 100) {
+      return;
+    }
+
+    if (editCaloricGoal.length <= 0) {
+      setEditCaloricGoal('0');
+    }
+
+    let newDiet = dailyGoal;
+    newDiet['calories'].goal = editCaloricGoal;
+    newDiet['carbs'].goal =
+      ((carbPercentage / 100.0) * parseInt(editCaloricGoal)) / 4;
+    newDiet['protein'].goal =
+      ((proteinPercentage / 100.0) * parseInt(editCaloricGoal)) / 4;
+    newDiet['fat'].goal =
+      ((fatPercentage / 100.0) * parseInt(editCaloricGoal)) / 9;
+
+    if (dailyGoal) {
+      updateDailyGoal({
+        ...dailyGoal,
+        [date]: {
+          ...dailyGoal[date],
+          calories: {
+            ...dailyGoal[date].calories,
+            goal: 0,
+          },
+          carbs: {
+            ...dailyGoal[date].carbs,
+            goal: 0,
+          },
+          fat: {
+            ...dailyGoal[date].fat,
+            goal: 0,
+          },
+          protein: {
+            ...dailyGoal[date].protein,
+            goal: 0,
+          },
+        },
+      });
+    }
+
+    getDailyGoals();
+
+    updateEditDiet();
+  };
+
   return (
     <Animated.View
       style={{
@@ -76,7 +217,7 @@ const ProfilePage = () => {
       }}
     >
       <SafeAreaView style={styles.profilePageContainer}>
-        {false && <View style={styles.backgroundDim} />}
+        {editDietVisible && <View style={styles.backgroundDim} />}
         <View style={styles.profilePageHeader}>
           <Text style={styles.header1Text}>Profile</Text>
           <View style={[styles.flexRow, styles.alignCenter]}>
@@ -177,7 +318,20 @@ const ProfilePage = () => {
         >
           <View style={[styles.flexRow, styles.justifySpaceBetween]}>
             <Text style={styles.sectionHeader1}>Daily diet goals</Text>
-            <Pressable style={styles.editDietButton}>
+            <Pressable
+              onPress={() => {
+                //getDailyGoals();
+                // console.log(dailyGoal);
+                //updateEditDiet();
+                setEditDietVisible((prevVal) => !prevVal);
+                //let tmp = dailyGoal;
+                //tmp['calories'].count = 1200;
+                //updateDailyGoal(tmp);
+
+                //console.log(dailyGoal['calories'].count);
+              }}
+              style={styles.editDietButton}
+            >
               <FontAwesome5 name="pen" size={12} color="black" />
             </Pressable>
           </View>
@@ -330,6 +484,198 @@ const ProfilePage = () => {
             </View>
           </View>
         </View>
+
+        <Modal
+          animationType="slide"
+          visible={editDietVisible}
+          transparent
+          onRequestClose={() => {
+            setEditDietVisible((prevValue) => !prevValue);
+          }}
+        >
+          <View style={styles.editDietContainer}>
+            <View style={styles.editDietHeader}>
+              <MaterialIcons
+                name="arrow-back-ios"
+                size={24}
+                color="black"
+                style={styles.closeEditDietButton}
+                onPress={() => setEditDietVisible((prevVal) => !prevVal)}
+              />
+              <Text style={styles.editDietHeaderText}>Edit diet goal</Text>
+            </View>
+
+            <View
+              style={[
+                styles.rowSpaceBetween,
+                styles.sectionHorizontalMargin,
+                styles.editDietTopMargin2,
+              ]}
+            >
+              <Text style={styles.editDietText1}>Caloric Goal</Text>
+              <TextInput
+                keyboardType="numeric"
+                maxLength={6}
+                placeholder="e.g. 1500"
+                value={editCaloricGoal}
+                onChangeText={(text) => {
+                  setEditCaloricGoal(text.replace(/\D/g, ''));
+                }}
+                onBlur={() => {
+                  if (editCaloricGoal.length <= 0) {
+                    setEditCaloricGoal('0');
+                  }
+                }}
+                style={styles.sectionTextInput}
+              ></TextInput>
+            </View>
+
+            <Text
+              style={[
+                styles.sectionHorizontalMargin,
+                styles.editDietTopMargin3,
+                styles.editDietText1,
+              ]}
+            >
+              Macros
+            </Text>
+
+            <View
+              style={[
+                styles.rowSpaceBetween,
+                styles.sectionHorizontalMargin,
+                styles.editDietTopMargin4,
+              ]}
+            >
+              <Text style={styles.editDietText2}>
+                Carbohydrates <Text style={styles.editDietText3}>113 g</Text>
+              </Text>
+              <TextInput
+                keyboardType="numeric"
+                maxLength={3}
+                placeholder="e.g. 30%"
+                value={editCarbGoal}
+                onChangeText={(text) => {
+                  setEditCarbGoal(text.replace(/\D/g, ''));
+                }}
+                onFocus={() => {
+                  setEditCarbGoal((prevText) => {
+                    return prevText.slice(0, -1);
+                  });
+                }}
+                onBlur={() => {
+                  if (editCarbGoal.length <= 0) {
+                    setEditCarbGoal('0%');
+                  } else {
+                    setEditCarbGoal((prevText) => {
+                      return prevText + '%';
+                    });
+                  }
+                }}
+                style={styles.sectionTextInput}
+              ></TextInput>
+            </View>
+
+            <View
+              style={[
+                styles.rowSpaceBetween,
+                styles.sectionHorizontalMargin,
+                styles.editDietTopMargin4,
+              ]}
+            >
+              <Text style={styles.editDietText2}>
+                Protein <Text style={styles.editDietText3}>150 g</Text>
+              </Text>
+              <TextInput
+                keyboardType="numeric"
+                maxLength={3}
+                placeholder="e.g. 30%"
+                value={editProteinGoal}
+                onChangeText={(text) => {
+                  setEditProteinGoal(text.replace(/\D/g, ''));
+                }}
+                onFocus={() => {
+                  setEditProteinGoal((prevText) => {
+                    return prevText.slice(0, -1);
+                  });
+                }}
+                onBlur={() => {
+                  if (editProteinGoal.length <= 0) {
+                    setEditProteinGoal('0%');
+                  } else {
+                    setEditProteinGoal((prevText) => {
+                      return prevText + '%';
+                    });
+                  }
+                }}
+                style={styles.sectionTextInput}
+              ></TextInput>
+            </View>
+
+            <View
+              style={[
+                styles.rowSpaceBetween,
+                styles.sectionHorizontalMargin,
+                styles.editDietTopMargin4,
+              ]}
+            >
+              <Text style={styles.editDietText2}>
+                Fat <Text style={styles.editDietText3}>50 g</Text>
+              </Text>
+              <TextInput
+                keyboardType="numeric"
+                maxLength={3}
+                placeholder="e.g. 30%"
+                value={editFatGoal}
+                onChangeText={(text) => {
+                  setEditFatGoal(text.replace(/\D/g, ''));
+                }}
+                onFocus={() => {
+                  setEditFatGoal((prevText) => {
+                    return prevText.slice(0, -1);
+                  });
+                }}
+                onBlur={() => {
+                  if (editFatGoal.length <= 0) {
+                    setEditFatGoal('0%');
+                  } else {
+                    setEditFatGoal((prevText) => {
+                      return prevText + '%';
+                    });
+                  }
+                }}
+                style={styles.sectionTextInput}
+              ></TextInput>
+            </View>
+
+            <View
+              style={[
+                styles.rowSpaceBetween,
+                styles.sectionHorizontalMargin,
+                styles.editDietTopMargin1,
+              ]}
+            >
+              <Pressable
+                onPress={() => {
+                  setEditDietVisible((prevVal) => !prevVal);
+                  updateEditDiet();
+                }}
+                style={styles.sectionButtonLight}
+              >
+                <Text style={styles.sectionButtonLightText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  saveDietChanges();
+                  setEditDietVisible((prevVal) => !prevVal);
+                }}
+                style={styles.sectionButtonDark}
+              >
+                <Text style={styles.sectionButtonDarkText}>Save Changes</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
       <DetailedCookingGoal animateFunction={slideProfilePage} />
     </Animated.View>
@@ -365,6 +711,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  closeEditDietButton: {
+    position: 'absolute',
+    top: 4,
+    left: 40,
+  },
   editDietButton: {
     height: 24,
     width: 24,
@@ -373,6 +724,52 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3E3E3',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  editDietContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    marginTop: 0,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    backgroundColor: '#fff',
+  },
+  editDietHeader: {
+    marginTop: 24,
+
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  editDietHeaderText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 24,
+    color: '#353535',
+  },
+  editDietText1: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 17,
+    color: '#5D6066',
+  },
+  editDietText2: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: '#323131',
+  },
+  editDietText3: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: '#737373',
+  },
+  editDietTopMargin1: {
+    marginTop: 56,
+  },
+  editDietTopMargin2: {
+    marginTop: 44,
+  },
+  editDietTopMargin3: {
+    marginTop: 36,
+  },
+  editDietTopMargin4: {
+    marginTop: 20,
   },
   flexColumn: {
     flexDirection: 'column',
@@ -445,6 +842,11 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
   },
+  rowSpaceBetween: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   savingsImage: {
     height: 56,
     width: 56,
@@ -469,6 +871,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  sectionButtonDark: {
+    flex: 1,
+    marginLeft: 16,
+    height: 56,
+
+    borderRadius: 28,
+    backgroundColor: '#6536F9',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  sectionButtonDarkText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
+    color: '#FFFFFF',
+  },
+  sectionButtonLight: {
+    flex: 1,
+    height: 56,
+
+    borderRadius: 28,
+    backgroundColor: '#EEE5FF',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  sectionButtonLightText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
+    color: '#6536F9',
+  },
   sectionHeader1: {
     fontFamily: 'Inter-Bold',
     fontSize: 15,
@@ -483,6 +918,26 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 11,
     color: '#000000',
+  },
+  sectionHorizontalMargin: {
+    marginHorizontal: 24,
+  },
+  sectionTextInput: {
+    flex: 1,
+    marginLeft: 20,
+    paddingRight: 16,
+    height: 32,
+    maxWidth: 120,
+    width: 120,
+
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#D0DBEA',
+    borderStyle: 'solid',
+
+    textAlign: 'right',
+    fontFamily: 'Inter-Medium',
+    color: '#3D3D40',
   },
   sectionTopMargin1: {
     marginTop: 12,

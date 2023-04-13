@@ -152,12 +152,6 @@ const RecipeSearchPage = () => {
                   <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
                     {item.title}
                   </Text>
-                  <View style={styles.recipeCardSubHeader}>
-                    <Text style={styles.recipeCardTextSubHeader}>
-                      Breakfast ·{' '}
-                    </Text>
-                    <Text style={styles.recipeCardTextSubHeader}>0 mins</Text>
-                  </View>
                 </View>
               </Pressable>
             )}
@@ -590,6 +584,7 @@ const styles = StyleSheet.create({
   },
   recipeCardTextHeader: {
     marginTop: 12,
+    marginBottom: 20,
     marginLeft: 12,
     marginRight: 12,
 

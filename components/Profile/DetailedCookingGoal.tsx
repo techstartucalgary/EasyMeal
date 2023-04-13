@@ -28,7 +28,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 
-import { weeklyGoals } from './test-profile';
+import { weeklyGoals, goals } from './test-profile';
 import CalendarSection from './Calendar';
 
 type DetailedCookingGoalProps = PropsWithChildren<{
@@ -39,6 +39,7 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
   animateFunction,
 }) => {
   const [editGoalVisible, setEditGoalVisible] = useState(false);
+  const [editGoalValue, setEditGoalValue] = useState(goals.cooking);
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -192,11 +193,48 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
           </View>
 
           <View
-            style={[styles.rowSpaceBetween, styles.sectionHorizontalMargin]}
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionVerticalMargin1,
+            ]}
           >
             <Text style={styles.editGoalText}>
               How many times do you want to home cook per week?
             </Text>
+            <TextInput
+              keyboardType="numeric"
+              maxLength={1}
+              placeholder="e.g. 7"
+              defaultValue={goals.cooking}
+              value={editGoalValue}
+              onChangeText={(text) => {
+                setEditGoalValue(text.replace(/\D/g, ''));
+              }}
+              style={styles.sectionTextInput}
+            />
+          </View>
+
+          <View
+            style={[styles.rowSpaceBetween, styles.sectionHorizontalMargin]}
+          >
+            <Pressable
+              onPress={() => {
+                setEditGoalVisible((prevVal) => !prevVal);
+                setEditGoalValue(goals.cooking);
+              }}
+              style={styles.sectionButtonLight}
+            >
+              <Text style={styles.sectionButtonLightText}>Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setEditGoalVisible((prevVal) => !prevVal);
+              }}
+              style={styles.sectionButtonDark}
+            >
+              <Text style={styles.sectionButtonDarkText}>Save Changes</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -254,6 +292,7 @@ const styles = StyleSheet.create({
     color: '#353535',
   },
   editGoalText: {
+    flex: 1,
     fontFamily: 'Inter-Bold',
     fontSize: 16,
     color: '#5D6066',
@@ -392,6 +431,39 @@ const styles = StyleSheet.create({
   sectionBottomMargin1: {
     marginBottom: 20,
   },
+  sectionButtonDark: {
+    flex: 1,
+    marginLeft: 16,
+    height: 56,
+
+    borderRadius: 28,
+    backgroundColor: '#6536F9',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  sectionButtonDarkText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
+    color: '#FFFFFF',
+  },
+  sectionButtonLight: {
+    flex: 1,
+    height: 56,
+
+    borderRadius: 28,
+    backgroundColor: '#EEE5FF',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+  sectionButtonLightText: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
+    color: '#6536F9',
+  },
   sectionHeader1: {
     fontFamily: 'Inter-Medium',
     fontSize: 20,
@@ -415,6 +487,23 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#000000',
   },
+  sectionTextInput: {
+    flex: 1,
+    marginLeft: 36,
+    paddingRight: 16,
+    height: 32,
+    maxWidth: 120,
+    width: 120,
+
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#D0DBEA',
+    borderStyle: 'solid',
+
+    textAlign: 'right',
+    fontFamily: 'Inter-Medium',
+    color: '#3D3D40',
+  },
   sectionTopMargin1: {
     marginTop: 28,
   },
@@ -426,6 +515,10 @@ const styles = StyleSheet.create({
   },
   sectionTopMargin4: {
     marginTop: 4,
+  },
+  sectionVerticalMargin1: {
+    marginTop: 52,
+    marginBottom: 80,
   },
   sectionSubHeader1: {
     fontFamily: 'Inter-Bold',

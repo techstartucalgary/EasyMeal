@@ -12,15 +12,16 @@ export const useDailyGoals = () => {
     undefined,
   );
 
+  const date = format(new Date(), 'YYYY-MM-DD');
+
   const getDailyGoals = useCallback(async () => {
     if (currentUser) {
       setIsLoading(true);
-      const date = format(new Date(), 'YYYY-MM-DD');
       const dailyGoalProfile = doc(db, 'daily_goals', currentUser?.uid);
       const docSnap = await getDoc(dailyGoalProfile);
 
-      if (docSnap.exists() && docSnap.get(date)) {
-        setDailyGoal(docSnap.get(date));
+      if (docSnap.exists()) {
+        setDailyGoal(docSnap.data());
       } else {
         const payload: DailyGoalType = {
           [date]: {
@@ -46,6 +47,7 @@ export const useDailyGoals = () => {
         };
 
         await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
+        setDailyGoal(payload);
       }
       setIsLoading(false);
     }
@@ -55,5 +57,10 @@ export const useDailyGoals = () => {
     getDailyGoals();
   }, [getDailyGoals]);
 
-  return { dailyGoal, isLoading, getDailyGoals };
+  return {
+    dailyGoal,
+    isLoading,
+    getDailyGoals,
+    date,
+  };
 };
