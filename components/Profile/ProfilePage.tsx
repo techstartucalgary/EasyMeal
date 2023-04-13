@@ -121,6 +121,7 @@ const ProfilePage = () => {
   };
 
   const updateEditDiet = () => {
+    dailyGoal?.
     let prevCaloric = dailyGoal['calories'].goal;
     let prevCarb = Math.floor(
       ((dailyGoal['carbs'].goal * 4) / prevCaloric) * 100,
