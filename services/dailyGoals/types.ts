@@ -16,7 +16,7 @@ export type DailyGoalType = {
       goal: number;
       count: number;
     };
-    completed: number;
+    completed: boolean;
     cookedTimes: number;
   };
 };
