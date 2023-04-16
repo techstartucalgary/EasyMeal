@@ -5,6 +5,30 @@ import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
 import { DailyGoalType } from './types';
 
+const getClosestPreviousElement = (obj: DailyGoalType) => {
+  const currentDate = new Date();
+
+  const closestDate = Object.keys(obj).reduce((a, b) => {
+    const dateA = new Date(a);
+    const dateB = new Date(b);
+
+    // Only consider dates that are before or equal to the current date
+    if (dateA <= currentDate && dateB <= currentDate) {
+      const diffA = Math.abs(currentDate.valueOf() - dateA.valueOf());
+      const diffB = Math.abs(currentDate.valueOf() - dateB.valueOf());
+
+      return diffA < diffB ? a : b;
+    }
+
+    return a;
+  });
+
+  return {
+    date: closestDate,
+    value: obj[closestDate],
+  };
+};
+
 export const useDailyGoals = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +45,19 @@ export const useDailyGoals = () => {
       const docSnap = await getDoc(dailyGoalProfile);
 
       if (docSnap.exists()) {
-        setDailyGoal(docSnap.data());
+        if (!docSnap.get(date)) {
+          const prevElement = getClosestPreviousElement(docSnap.data());
+
+          const payload: DailyGoalType = {
+            ...docSnap.data(),
+            [date]: prevElement.value,
+          };
+
+          await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
+          setDailyGoal(payload);
+        } else {
+          setDailyGoal(docSnap.data());
+        }
       } else {
         const payload: DailyGoalType = {
           [date]: {
@@ -43,6 +79,7 @@ export const useDailyGoals = () => {
             },
             completed: false,
             cookedTimes: 0,
+            timestamp: new Date().getTime(),
           },
         };
 
@@ -51,7 +88,7 @@ export const useDailyGoals = () => {
       }
       setIsLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, date]);
 
   useEffect(() => {
     getDailyGoals();
