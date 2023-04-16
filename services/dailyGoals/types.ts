@@ -18,5 +18,6 @@ export type DailyGoalType = {
     };
     completed: boolean;
     cookedTimes: number;
+    timestamp: number;
   };
 };
