@@ -104,8 +104,8 @@ const ProfilePage = () => {
     if (type === 'carbs' || type === 'all') {
       setEditCarbGrams(
         Math.floor(
-          ((parseInt(editCarbGoal.slice(0, -1), 10) / 100.0) *
-            parseInt(editCaloricGoal, 10)) /
+          ((parseInt(updatedGoals.carbs.slice(0, -1), 10) / 100.0) *
+            parseInt(updatedGoals.caloric, 10)) /
             4,
         ),
       );
@@ -113,8 +113,8 @@ const ProfilePage = () => {
     if (type === 'protein' || type === 'all') {
       setEditProteinGrams(
         Math.floor(
-          ((parseInt(editProteinGoal.slice(0, -1), 10) / 100.0) *
-            parseInt(editCaloricGoal, 10)) /
+          ((parseInt(updatedGoals.protein.slice(0, -1), 10) / 100.0) *
+            parseInt(updatedGoals.caloric, 10)) /
             4,
         ),
       );
@@ -122,8 +122,8 @@ const ProfilePage = () => {
     if (type === 'fat' || type === 'all') {
       setEditFatGrams(
         Math.floor(
-          ((parseInt(editFatGoal.slice(0, -1), 10) / 100.0) *
-            parseInt(editCaloricGoal, 10)) /
+          ((parseInt(updatedGoals.fat.slice(0, -1), 10) / 100.0) *
+            parseInt(updatedGoals.caloric, 10)) /
             9,
         ),
       );
@@ -356,7 +356,7 @@ const ProfilePage = () => {
               onPress={() => {
                 // getDailyGoals();
                 // console.log(dailyGoal);
-                // updateEditDiet();
+                updateEditDiet();
                 setEditDietVisible((prevVal) => !prevVal);
                 // let tmp = dailyGoal;
                 // tmp['calories'].count = 1200;
