@@ -30,11 +30,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 import { useNavigation } from '@react-navigation/native';
+import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
 import DetailedCookingGoal from './DetailedCookingGoal';
 import Settings from './Settings';
 
 import { goals } from './test-profile';
-import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
 
 const ProfilePage = () => {
   const [notificationsAvailable, setNotificationsAvailable] = useState(true);
@@ -59,6 +59,8 @@ const ProfilePage = () => {
   } = useDailyGoals();
   const { updateDailyGoal, isLoading: setDailyIsLoading } =
     useUpdateDailyGoals();
+
+  // console.log(dailyGoal);
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -102,8 +104,8 @@ const ProfilePage = () => {
     if (type === 'carbs' || type === 'all') {
       setEditCarbGrams(
         Math.floor(
-          ((parseInt(updatedGoals.carbs.slice(0, -1)) / 100.0) *
-            parseInt(updatedGoals.caloric)) /
+          ((parseInt(editCarbGoal.slice(0, -1), 10) / 100.0) *
+            parseInt(editCaloricGoal, 10)) /
             4,
         ),
       );
@@ -111,8 +113,8 @@ const ProfilePage = () => {
     if (type === 'protein' || type === 'all') {
       setEditProteinGrams(
         Math.floor(
-          ((parseInt(updatedGoals.protein.slice(0, -1)) / 100.0) *
-            parseInt(updatedGoals.caloric)) /
+          ((parseInt(editProteinGoal.slice(0, -1), 10) / 100.0) *
+            parseInt(editCaloricGoal, 10)) /
             4,
         ),
       );
@@ -120,8 +122,8 @@ const ProfilePage = () => {
     if (type === 'fat' || type === 'all') {
       setEditFatGrams(
         Math.floor(
-          ((parseInt(updatedGoals.fat.slice(0, -1)) / 100.0) *
-            parseInt(updatedGoals.caloric)) /
+          ((parseInt(editFatGoal.slice(0, -1), 10) / 100.0) *
+            parseInt(editCaloricGoal, 10)) /
             9,
         ),
       );
@@ -129,63 +131,80 @@ const ProfilePage = () => {
   };
 
   const updateEditDiet = () => {
-    const currentDailyGoal = dailyGoal ? dailyGoal[date] : undefined;
+    if (dailyGoal) {
+      const prevCaloric = dailyGoal[date].calories.goal;
+      const prevCarb = Math.floor(
+        ((dailyGoal[date].carbs.goal * 4) / prevCaloric) * 100,
+      );
+      const prevProtein = Math.floor(
+        ((dailyGoal[date].protein.goal * 4) / prevCaloric) * 100,
+      );
+      const prevFat = Math.floor(
+        ((dailyGoal[date].fat.goal * 9) / prevCaloric) * 100,
+      );
 
-    let prevCaloric = currentDailyGoal?.calories.goal || 0;
-    let prevCarb = Math.floor(
-      (((currentDailyGoal?.carbs.goal || 0) * 4) / prevCaloric) * 100,
-    );
-    let prevProtein = Math.floor(
-      (((currentDailyGoal?.protein.goal || 0) * 4) / prevCaloric) * 100,
-    );
-    let prevFat = Math.floor(
-      (((currentDailyGoal?.fat.goal || 0) * 9) / prevCaloric) * 100,
-    );
+      setEditCaloricGoal(`${prevCaloric}`);
+      setEditCarbGoal(`${prevCarb}%`);
+      setEditProteinGoal(`${prevProtein}%`);
+      setEditFatGoal(`${prevFat}%`);
 
-    setEditCaloricGoal(prevCaloric + '');
-    setEditCarbGoal(prevCarb + '%');
-    setEditProteinGoal(prevProtein + '%');
-    setEditFatGoal(prevFat + '%');
-
-    updateEditMacroGrams('all', {
-      caloric: prevCaloric + '',
-      carbs: prevCarb + '%',
-      protein: prevProtein + '%',
-      fat: prevFat + '%',
-    });
+      updateEditMacroGrams('all', {
+        caloric: `${prevCaloric}`,
+        carbs: `${prevCarb}%`,
+        protein: `${prevProtein}%`,
+        fat: `${prevFat}%`,
+      });
+    }
   };
 
   const saveDietChanges = async () => {
     let carbPercentage = 0;
+
     if (editCarbGoal.length >= 0 && editCarbGoal.slice(-1) === '%') {
-      carbPercentage = parseInt(editCarbGoal.slice(0, -1));
+      carbPercentage = parseInt(editCarbGoal.slice(0, -1), 10);
     } else if (editCarbGoal.length >= 0) {
-      carbPercentage = parseInt(editCarbGoal);
+      carbPercentage = parseInt(editCarbGoal, 10);
     }
 
     let proteinPercentage = 0;
+
     if (editProteinGoal.length >= 0 && editProteinGoal.slice(-1) === '%') {
-      proteinPercentage = parseInt(editProteinGoal.slice(0, -1));
+      proteinPercentage = parseInt(editProteinGoal.slice(0, -1), 10);
     } else if (editProteinGoal.length >= 0) {
-      proteinPercentage = parseInt(editProteinGoal);
+      proteinPercentage = parseInt(editProteinGoal, 10);
     }
 
     let fatPercentage = 0;
+
     if (editFatGoal.length >= 0 && editFatGoal.slice(-1) === '%') {
-      fatPercentage = parseInt(editFatGoal.slice(0, -1));
+      fatPercentage = parseInt(editFatGoal.slice(0, -1), 10);
     } else if (editFatGoal.length >= 0) {
-      fatPercentage = parseInt(editFatGoal);
+      fatPercentage = parseInt(editFatGoal, 10);
     }
 
     if (carbPercentage + proteinPercentage + fatPercentage != 100) {
       return;
     }
 
-    if (editCaloricGoal.length <= 0) {
-      setEditCaloricGoal('0');
+    let newCaloricGoal = '0';
+    if (editCaloricGoal.length > 0) {
+      newCaloricGoal = editCaloricGoal;
+    } else {
+      setEditCaloricGoal(newCaloricGoal);
     }
 
     /*
+    const newDiet = dailyGoal;
+
+    newDiet.calories.goal = editCaloricGoal;
+    newDiet.carbs.goal =
+      ((carbPercentage / 100.0) * parseInt(editCaloricGoal, 10)) / 4;
+    newDiet.protein.goal =
+      ((proteinPercentage / 100.0) * parseInt(editCaloricGoal, 10)) / 4;
+    newDiet.fat.goal =
+      ((fatPercentage / 100.0) * parseInt(editCaloricGoal, 10)) / 9;
+    */
+
     if (dailyGoal) {
       await updateDailyGoal({
         ...dailyGoal,
@@ -193,29 +212,29 @@ const ProfilePage = () => {
           ...dailyGoal[date],
           calories: {
             ...dailyGoal[date].calories,
-            goal: parseInt(editCaloricGoal),
+            goal: parseInt(newCaloricGoal),
           },
           carbs: {
             ...dailyGoal[date].carbs,
             goal: Math.floor(
-              ((carbPercentage / 100.0) * parseInt(editCaloricGoal)) / 4,
+              ((carbPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
             ),
           },
           fat: {
             ...dailyGoal[date].fat,
             goal: Math.floor(
-              ((fatPercentage / 100.0) * parseInt(editCaloricGoal)) / 9,
+              ((fatPercentage / 100.0) * parseInt(newCaloricGoal)) / 9,
             ),
           },
           protein: {
             ...dailyGoal[date].protein,
             goal: Math.floor(
-              ((proteinPercentage / 100.0) * parseInt(editCaloricGoal)) / 4,
+              ((proteinPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
             ),
           },
         },
       });
-    }*/
+    }
 
     await getDailyGoals();
 
@@ -335,15 +354,15 @@ const ProfilePage = () => {
             <Text style={styles.sectionHeader1}>Daily diet goals</Text>
             <Pressable
               onPress={() => {
-                //getDailyGoals();
+                // getDailyGoals();
                 // console.log(dailyGoal);
-                updateEditDiet();
+                // updateEditDiet();
                 setEditDietVisible((prevVal) => !prevVal);
-                //let tmp = dailyGoal;
-                //tmp['calories'].count = 1200;
-                //updateDailyGoal(tmp);
+                // let tmp = dailyGoal;
+                // tmp['calories'].count = 1200;
+                // updateDailyGoal(tmp);
 
-                //console.log(dailyGoal['calories'].count);
+                // console.log(dailyGoal['calories'].count);
               }}
               style={styles.editDietButton}
             >
@@ -560,7 +579,7 @@ const ProfilePage = () => {
                   }
                 }}
                 style={styles.sectionTextInput}
-              ></TextInput>
+              />
             </View>
 
             <Text
@@ -593,9 +612,7 @@ const ProfilePage = () => {
                   setEditCarbGoal(text.replace(/\D/g, ''));
                 }}
                 onFocus={() => {
-                  setEditCarbGoal((prevText) => {
-                    return prevText.slice(0, -1);
-                  });
+                  setEditCarbGoal((prevText) => prevText.slice(0, -1));
                 }}
                 onBlur={() => {
                   let newVal = '0%';
@@ -603,7 +620,7 @@ const ProfilePage = () => {
                     setEditCarbGoal(newVal);
                   } else {
                     setEditCarbGoal((prevText) => {
-                      newVal = prevText + '%';
+                      newVal = `${prevText}%`;
                       return newVal;
                     });
                   }
@@ -616,7 +633,7 @@ const ProfilePage = () => {
                   });
                 }}
                 style={styles.sectionTextInput}
-              ></TextInput>
+              />
             </View>
 
             <View
@@ -639,9 +656,7 @@ const ProfilePage = () => {
                   setEditProteinGoal(text.replace(/\D/g, ''));
                 }}
                 onFocus={() => {
-                  setEditProteinGoal((prevText) => {
-                    return prevText.slice(0, -1);
-                  });
+                  setEditProteinGoal((prevText) => prevText.slice(0, -1));
                 }}
                 onBlur={() => {
                   let newVal = '0%';
@@ -649,7 +664,7 @@ const ProfilePage = () => {
                     setEditProteinGoal(newVal);
                   } else {
                     setEditProteinGoal((prevText) => {
-                      newVal = prevText + '%';
+                      newVal = `${prevText}%`;
                       return newVal;
                     });
                   }
@@ -662,7 +677,7 @@ const ProfilePage = () => {
                   });
                 }}
                 style={styles.sectionTextInput}
-              ></TextInput>
+              />
             </View>
 
             <View
@@ -684,9 +699,7 @@ const ProfilePage = () => {
                   setEditFatGoal(text.replace(/\D/g, ''));
                 }}
                 onFocus={() => {
-                  setEditFatGoal((prevText) => {
-                    return prevText.slice(0, -1);
-                  });
+                  setEditFatGoal((prevText) => prevText.slice(0, -1));
                 }}
                 onBlur={() => {
                   let newVal = '0%';
@@ -694,7 +707,7 @@ const ProfilePage = () => {
                     setEditFatGoal(newVal);
                   } else {
                     setEditFatGoal((prevText) => {
-                      newVal = prevText + '%';
+                      newVal = `${prevText}%`;
                       return newVal;
                     });
                   }
@@ -707,7 +720,7 @@ const ProfilePage = () => {
                   });
                 }}
                 style={styles.sectionTextInput}
-              ></TextInput>
+              />
             </View>
 
             <View
