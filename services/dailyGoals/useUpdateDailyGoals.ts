@@ -3,6 +3,7 @@ import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useState } from 'react';
 import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
+import { useWeeklyGoals } from 'services/weeklyGoals';
 import { DailyGoalType } from './types';
 import { useDailyGoals } from './useDailyGoals';
 
@@ -10,6 +11,7 @@ export const useUpdateDailyGoals = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const { getDailyGoals } = useDailyGoals();
+  const { weeklyGoal } = useWeeklyGoals();
 
   const updateDailyGoal = useCallback(
     async (payload: DailyGoalType) => {

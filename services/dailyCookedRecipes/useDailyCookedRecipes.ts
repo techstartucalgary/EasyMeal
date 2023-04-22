@@ -5,6 +5,8 @@ import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
 import { DailyCookedRecipe, RecipeList } from './types';
 
+const date = format(new Date(), 'YYYY-MM-DD');
+
 export const useDailyCookedRecipes = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +17,6 @@ export const useDailyCookedRecipes = () => {
   const getDailyCookedRecipes = useCallback(async () => {
     if (currentUser) {
       setIsLoading(true);
-      const date = format(new Date(), 'YYYY-MM-DD');
       const dailyCookedRecipesProfile = doc(
         db,
         'daily_cooked_recipes',
@@ -42,5 +43,5 @@ export const useDailyCookedRecipes = () => {
     getDailyCookedRecipes();
   }, [getDailyCookedRecipes]);
 
-  return { dailyCookedRecipes, isLoading, getDailyCookedRecipes };
+  return { dailyCookedRecipes, isLoading, getDailyCookedRecipes, date };
 };
