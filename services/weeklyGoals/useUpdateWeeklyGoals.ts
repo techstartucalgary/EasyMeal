@@ -1,5 +1,5 @@
 import { useAuthContext } from 'contexts/AuthContext';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   collection,
   getDocs,
@@ -7,23 +7,55 @@ import {
   where,
   limit,
   updateDoc,
-  setDoc,
   doc,
-  getDoc,
 } from '@firebase/firestore';
 import { db } from 'utils/firebase-config';
 import { useWeekRange } from './useWeekRange';
 import { WeeklyGoal } from './types';
+import { useWeeklyGoals } from './useWeeklyGoals';
 
 export const useUpdateWeeklyGoals = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [weeklyGoal, setWeeklyGoal] = useState<WeeklyGoal | undefined>(
-    undefined,
-  );
   const { firstDay, lastDay } = useWeekRange();
 
-  const updateWeeklyGoal = useCallback(async () => {
+  useWeeklyGoals();
+
+  const updateWeeklyGoal = useCallback(
+    async (count: number) => {
+      if (currentUser) {
+        setIsLoading(true);
+        const weeklyGoalsCollectionRef = collection(
+          db,
+          'weekly_goals',
+          currentUser?.uid,
+          'goals',
+        );
+        const currentWeeklyGoalQ = query(
+          weeklyGoalsCollectionRef,
+          where('firstDay', '==', firstDay),
+          where('lastDay', '==', lastDay),
+          limit(1),
+        );
+
+        const currentWeeklyGoalSnapshot = await getDocs(currentWeeklyGoalQ);
+
+        currentWeeklyGoalSnapshot.forEach(async (document) => {
+          await updateDoc(
+            doc(db, 'weekly_goals', currentUser?.uid, 'goals', document.id),
+            {
+              ...(document.data() as WeeklyGoal),
+              count,
+            },
+          );
+        });
+      }
+      setIsLoading(false);
+    },
+    [currentUser, firstDay, lastDay],
+  );
+
+  const completedTodaysGoal = useCallback(async () => {
     if (currentUser) {
       setIsLoading(true);
       const weeklyGoalsCollectionRef = collection(
@@ -41,39 +73,22 @@ export const useUpdateWeeklyGoals = () => {
 
       const currentWeeklyGoalSnapshot = await getDocs(currentWeeklyGoalQ);
 
-      let currentWeeklyGoal: WeeklyGoal | undefined;
+      currentWeeklyGoalSnapshot.forEach(async (document) => {
+        const weeklyGoal = document.data() as WeeklyGoal;
 
-      currentWeeklyGoalSnapshot.forEach((doc) => {
-        currentWeeklyGoal = doc.data() as WeeklyGoal;
-      });
+        const payload = {
+          ...weeklyGoal,
+          goal: weeklyGoal.goal + 1,
+        };
 
-      if (currentWeeklyGoal) {
-        const { id } = weeklyGoalsCollectionRef;
-
-        const currentDoc = doc(
-          db,
-          'weekly_goals',
-          currentUser?.uid,
-          'goals',
-          'DDBuqAxPabbilR7nex5E',
+        await updateDoc(
+          doc(db, 'weekly_goals', currentUser?.uid, 'goals', document.id),
+          payload,
         );
-        const docSnap = await getDoc(currentDoc);
-
-        // await setDoc(
-        //   currentDoc,
-        //   {
-        //     goal: 5,
-        //     count: 5,
-        //   },
-        //   { merge: true },
-        // );
-      }
+      });
     }
+    setIsLoading(false);
   }, [currentUser, firstDay, lastDay]);
 
-  useEffect(() => {
-    updateWeeklyGoal();
-  }, [updateWeeklyGoal]);
-
-  return { updateWeeklyGoal, weeklyGoal, isLoading };
+  return { updateWeeklyGoal, completedTodaysGoal, isLoading };
 };
