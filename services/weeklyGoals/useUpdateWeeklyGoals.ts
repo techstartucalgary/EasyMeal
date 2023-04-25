@@ -10,19 +10,23 @@ import {
   doc,
 } from '@firebase/firestore';
 import { db } from 'utils/firebase-config';
+import { useUpdateProfile } from 'services/Profile/useUpdateProfile';
+import { format } from 'utils/date';
 import { useWeekRange } from './useWeekRange';
 import { WeeklyGoal } from './types';
 import { useWeeklyGoals } from './useWeeklyGoals';
+
+const date = format(new Date(), 'YYYY-MM-DD');
 
 export const useUpdateWeeklyGoals = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const { firstDay, lastDay } = useWeekRange();
-
-  useWeeklyGoals();
+  const { getWeeklyGoals } = useWeeklyGoals();
+  const { levelUp } = useUpdateProfile();
 
   const updateWeeklyGoal = useCallback(
-    async (count: number) => {
+    async ({ count, goal }: { count?: number; goal?: number }) => {
       if (currentUser) {
         setIsLoading(true);
         const weeklyGoalsCollectionRef = collection(
@@ -41,18 +45,26 @@ export const useUpdateWeeklyGoals = () => {
         const currentWeeklyGoalSnapshot = await getDocs(currentWeeklyGoalQ);
 
         currentWeeklyGoalSnapshot.forEach(async (document) => {
+          const payload = {
+            ...(document.data() as WeeklyGoal),
+            ...(count ? { count } : undefined),
+            ...(goal ? { goal } : undefined),
+          };
+
+          if (payload.count === payload.goal) {
+            levelUp();
+          }
+
           await updateDoc(
             doc(db, 'weekly_goals', currentUser?.uid, 'goals', document.id),
-            {
-              ...(document.data() as WeeklyGoal),
-              count,
-            },
+            payload,
           );
         });
       }
+      await getWeeklyGoals();
       setIsLoading(false);
     },
-    [currentUser, firstDay, lastDay],
+    [currentUser, firstDay, getWeeklyGoals, lastDay, levelUp],
   );
 
   const completedTodaysGoal = useCallback(async () => {
@@ -78,7 +90,8 @@ export const useUpdateWeeklyGoals = () => {
 
         const payload = {
           ...weeklyGoal,
-          goal: weeklyGoal.goal + 1,
+          count: weeklyGoal.count + 1,
+          updatedAt: date,
         };
 
         await updateDoc(

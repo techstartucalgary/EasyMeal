@@ -17,7 +17,7 @@ export const useRecipeInformation = ({ id, enabled }: RecipeType) => {
     if (enabled) {
       setIsLoading(true);
       fetch(
-        `https://api.spoonacular.com/recipes/${id}/information?apiKey=${SPOON_API_KEY}&includeNutrition=true`,
+        `https://api.spoonacular.com/recipes/${id}/information?&includeNutrition=true&apiKey=${SPOON_API_KEY}`,
       )
         .then((response) => response.json())
         .then((data) => {

@@ -10,8 +10,11 @@ import {
   addDoc,
 } from '@firebase/firestore';
 import { db } from 'utils/firebase-config';
+import { format } from 'utils/date';
 import { useWeekRange } from './useWeekRange';
 import { WeeklyGoal } from './types';
+
+const date = format(new Date(), 'YYYY-MM-DD');
 
 export const useWeeklyGoals = () => {
   const { currentUser } = useAuthContext();
@@ -66,6 +69,7 @@ export const useWeeklyGoals = () => {
           firstDay,
           lastDay,
           timestamp: new Date().getTime(),
+          updatedAt: date,
         };
 
         await addDoc(weeklyGoalsCollectionRef, {
@@ -83,5 +87,11 @@ export const useWeeklyGoals = () => {
     getWeeklyGoals();
   }, [getWeeklyGoals]);
 
-  return { getWeeklyGoals, weeklyGoal, isLoading };
+  const progress = Math.round(
+    weeklyGoal?.count && weeklyGoal?.goal
+      ? (weeklyGoal.count / weeklyGoal.goal) * 100
+      : 0,
+  );
+
+  return { getWeeklyGoals, weeklyGoal, isLoading, progress };
 };

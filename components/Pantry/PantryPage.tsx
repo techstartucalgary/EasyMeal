@@ -417,7 +417,7 @@ const PantryPage = () => {
               >
                 {selectedAddItem.id === 0 ? (
                   <Autocomplete
-                    data={ingredientSearchResult?.results.slice(0, 6) || []}
+                    data={ingredientSearchResult?.results?.slice(0, 6) || []}
                     onChangeText={(text) => {
                       setAddItemName(text);
                       setHideAutocomplete(false);
@@ -428,7 +428,7 @@ const PantryPage = () => {
                     autoCorrect={false}
                     inputContainerStyle={styles.autocompleteContainer}
                     listContainerStyle={
-                      ingredientSearchResult?.results.length === 0
+                      ingredientSearchResult?.results?.length === 0
                         ? styles.autocompleteEmpty
                         : styles.autocompleteListContainer
                     }
@@ -482,7 +482,7 @@ const PantryPage = () => {
             <TextInput
               keyboardType="numeric"
               maxLength={6}
-              defaultValue={''}
+              defaultValue=""
               value={addItemAmount}
               onChangeText={(text) => {
                 setAddItemAmount(text.replace(/\D/g, ''));

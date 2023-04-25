@@ -31,6 +31,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 import { useNavigation } from '@react-navigation/native';
 import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
+import { useWeeklyGoals } from 'services/weeklyGoals';
 import DetailedCookingGoal from './DetailedCookingGoal';
 import Settings from './Settings';
 
@@ -50,6 +51,8 @@ const ProfilePage = () => {
   const [editCarbGrams, setEditCarbGrams] = useState(0);
   const [editProteinGrams, setEditProteinGrams] = useState(0);
   const [editFatGrams, setEditFatGrams] = useState(0);
+
+  const { weeklyGoal, progress } = useWeeklyGoals();
 
   const {
     dailyGoal,
@@ -106,7 +109,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.carbs.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-            4,
+          4,
         ),
       );
     }
@@ -115,7 +118,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.protein.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-            4,
+          4,
         ),
       );
     }
@@ -124,7 +127,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.fat.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-            9,
+          9,
         ),
       );
     }
@@ -187,6 +190,7 @@ const ProfilePage = () => {
     }
 
     let newCaloricGoal = '0';
+
     if (editCaloricGoal.length > 0) {
       newCaloricGoal = editCaloricGoal;
     } else {
@@ -212,24 +216,24 @@ const ProfilePage = () => {
           ...dailyGoal[date],
           calories: {
             ...dailyGoal[date].calories,
-            goal: parseInt(newCaloricGoal),
+            goal: parseInt(newCaloricGoal, 10),
           },
           carbs: {
             ...dailyGoal[date].carbs,
             goal: Math.floor(
-              ((carbPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
+              ((carbPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 4,
             ),
           },
           fat: {
             ...dailyGoal[date].fat,
             goal: Math.floor(
-              ((fatPercentage / 100.0) * parseInt(newCaloricGoal)) / 9,
+              ((fatPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 9,
             ),
           },
           protein: {
             ...dailyGoal[date].protein,
             goal: Math.floor(
-              ((proteinPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
+              ((proteinPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 4,
             ),
           },
         },
@@ -316,9 +320,10 @@ const ProfilePage = () => {
               styles.sectionRightMargin1,
             ]}
           >
-            <Text style={styles.sectionHeader2}>60% complete</Text>
+            <Text style={styles.sectionHeader2}>{progress}% complete</Text>
             <Text style={styles.sectionHeader3}>
-              Cook <Text style={styles.sectionHeader2}>5</Text> times/ week
+              Cook <Text style={styles.sectionHeader2}>{weeklyGoal?.goal}</Text>{' '}
+              times/ week
             </Text>
           </View>
           <View style={styles.sectionArrowIcon}>
@@ -339,7 +344,7 @@ const ProfilePage = () => {
             <View
               style={[
                 styles.progressBarFilled,
-                { backgroundColor: '#74CF82', width: '50%' },
+                { backgroundColor: '#74CF82', width: `${progress}%` },
               ]}
             />
           </View>
@@ -616,6 +621,7 @@ const ProfilePage = () => {
                 }}
                 onBlur={() => {
                   let newVal = '0%';
+
                   if (editCarbGoal.length <= 0) {
                     setEditCarbGoal(newVal);
                   } else {
@@ -660,6 +666,7 @@ const ProfilePage = () => {
                 }}
                 onBlur={() => {
                   let newVal = '0%';
+
                   if (editProteinGoal.length <= 0) {
                     setEditProteinGoal(newVal);
                   } else {
@@ -703,6 +710,7 @@ const ProfilePage = () => {
                 }}
                 onBlur={() => {
                   let newVal = '0%';
+
                   if (editFatGoal.length <= 0) {
                     setEditFatGoal(newVal);
                   } else {

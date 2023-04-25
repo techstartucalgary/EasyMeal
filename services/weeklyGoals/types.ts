@@ -4,4 +4,5 @@ export type WeeklyGoal = {
   lastDay: string;
   goal: number;
   timestamp: number;
+  updatedAt: string;
 };

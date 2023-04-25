@@ -1,4 +1,4 @@
-import React, { useState, PropsWithChildren } from 'react';
+import React, { useState, PropsWithChildren, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -40,10 +40,16 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
   animateFunction,
 }) => {
   const [editGoalVisible, setEditGoalVisible] = useState(false);
-  const [editGoalValue, setEditGoalValue] = useState(goals.cooking);
+  const [editGoalValue, setEditGoalValue] = useState('0');
 
-  // useWeeklyGoals();
-  useUpdateWeeklyGoals();
+  const { updateWeeklyGoal } = useUpdateWeeklyGoals();
+  const { weeklyGoal, progress } = useWeeklyGoals();
+
+  useEffect(() => {
+    if (weeklyGoal?.goal) {
+      setEditGoalValue(weeklyGoal?.goal.toString());
+    }
+  }, [weeklyGoal?.goal]);
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -101,9 +107,10 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
             styles.sectionTopMargin2,
           ]}
         >
-          <Text style={styles.sectionText1}>60% complete</Text>
+          <Text style={styles.sectionText1}>{progress}% complete</Text>
           <Text style={styles.sectionText2}>
-            Cook <Text style={styles.sectionText1}>5</Text> times/ week
+            Cook <Text style={styles.sectionText1}>{weeklyGoal?.goal}</Text>{' '}
+            times/ week
           </Text>
         </View>
         <View
@@ -210,7 +217,7 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
               keyboardType="numeric"
               maxLength={1}
               placeholder="e.g. 7"
-              defaultValue={goals.cooking}
+              defaultValue={weeklyGoal?.goal.toString() || '0'}
               value={editGoalValue}
               onChangeText={(text) => {
                 setEditGoalValue(text.replace(/\D/g, ''));
@@ -225,7 +232,6 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
             <Pressable
               onPress={() => {
                 setEditGoalVisible((prevVal) => !prevVal);
-                setEditGoalValue(goals.cooking);
               }}
               style={styles.sectionButtonLight}
             >
@@ -234,6 +240,11 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
             <Pressable
               onPress={() => {
                 setEditGoalVisible((prevVal) => !prevVal);
+                if (editGoalValue) {
+                  updateWeeklyGoal({
+                    goal: parseInt(editGoalValue, 10),
+                  });
+                }
               }}
               style={styles.sectionButtonDark}
             >

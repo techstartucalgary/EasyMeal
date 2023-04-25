@@ -1,5 +1,5 @@
 export interface IngredientsResponse {
-  results: Result[];
+  results?: Result[];
   offset: number;
   number: number;
   totalResults: number;

@@ -153,15 +153,18 @@ const RecipeOverview = () => {
         ) : (
           <Pressable
             onPress={() => {
-              tooggleRecipe(
-                recipeInformation?.id || 0,
-                recipeInformation?.pricePerServing *
-                  recipeInformation?.servings || 0,
-                total,
-                carbs,
-                fats,
-                protein,
-              );
+              if (recipeInformation) {
+                tooggleRecipe({
+                  id: recipeInformation?.id || 0,
+                  calories: total,
+                  carbs,
+                  fat: fats,
+                  price:
+                    recipeInformation.pricePerServing *
+                    recipeInformation.servings,
+                  protein,
+                });
+              }
             }}
           >
             <Image
