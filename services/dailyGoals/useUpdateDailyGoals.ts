@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
 import { useUpdateWeeklyGoals } from 'services/weeklyGoals';
+import { useUpdateProfile } from 'services/Profile/useUpdateProfile';
 import { DailyGoalType } from './types';
 import { useDailyGoals } from './useDailyGoals';
 
@@ -24,8 +25,8 @@ export const useUpdateDailyGoals = () => {
         if (docSnap.exists() && docSnap.get(date)) {
           await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
         }
-        if (payload[date].completed) {
-          completedTodaysGoal();
+        if (!payload[date].completed) {
+          await completedTodaysGoal();
         }
         await getDailyGoals();
         setIsLoading(false);

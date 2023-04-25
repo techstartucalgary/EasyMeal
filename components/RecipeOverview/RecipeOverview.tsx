@@ -35,7 +35,7 @@ const RecipeOverview = () => {
     route.params?.itemId || 0,
   );
   const { removeFavorites } = useRemoveFavorites();
-  const { toogleRecipe, isLoading: isLoadingDaily } =
+  const { tooggleRecipe, isLoading: isLoadingDaily } =
     useUpdateDailyCookedRecipes();
   const { goBack } = useNavigation();
   const radius = 60;
@@ -128,15 +128,18 @@ const RecipeOverview = () => {
         ) : (
           <Pressable
             onPress={() => {
-              toogleRecipe(
-                recipeInformation?.id || 0,
-                recipeInformation?.pricePerServing *
-                  recipeInformation?.servings || 0,
-                total,
-                carbs,
-                fats,
-                protein,
-              );
+              if (recipeInformation) {
+                tooggleRecipe({
+                  id: recipeInformation?.id || 0,
+                  calories: total,
+                  carbs,
+                  fat: fats,
+                  price:
+                    recipeInformation.pricePerServing *
+                    recipeInformation.servings,
+                  protein,
+                });
+              }
             }}
           >
             <Image

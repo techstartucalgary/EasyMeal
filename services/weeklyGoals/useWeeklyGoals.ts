@@ -83,5 +83,10 @@ export const useWeeklyGoals = () => {
     getWeeklyGoals();
   }, [getWeeklyGoals]);
 
-  return { getWeeklyGoals, weeklyGoal, isLoading };
+  const progress =
+    weeklyGoal?.count && weeklyGoal?.goal
+      ? (weeklyGoal.count / weeklyGoal.goal) * 100
+      : 0;
+
+  return { getWeeklyGoals, weeklyGoal, isLoading, progress };
 };

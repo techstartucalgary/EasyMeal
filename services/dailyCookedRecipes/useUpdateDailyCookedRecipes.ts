@@ -6,12 +6,19 @@ import { format } from 'utils/date';
 import { useUpdateDailyGoals } from 'services/dailyGoals/useUpdateDailyGoals';
 import { useDailyGoals } from 'services/dailyGoals/useDailyGoals';
 import { DailyCookedRecipe } from './types';
+import { useDailyCookedRecipes } from './useDailyCookedRecipes';
 
 export const useUpdateDailyCookedRecipes = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
-  const { dailyGoal, isLoading: isLoadingDailyGoal } = useDailyGoals();
+  const {
+    dailyGoal,
+    isLoading: isLoadingDailyGoal,
+    getDailyGoals,
+  } = useDailyGoals();
   const { updateDailyGoal } = useUpdateDailyGoals();
+
+  useDailyCookedRecipes();
 
   const updateDailyGoalIfExist = useCallback(
     async ({
@@ -62,9 +69,10 @@ export const useUpdateDailyCookedRecipes = () => {
             completed,
           },
         });
+        await getDailyGoals();
       }
     },
-    [dailyGoal, updateDailyGoal],
+    [dailyGoal, getDailyGoals, updateDailyGoal],
   );
 
   const tooggleRecipe = useCallback(
@@ -97,7 +105,7 @@ export const useUpdateDailyCookedRecipes = () => {
         const docSnap = await getDoc(dailyCookedRecipesProfile);
 
         if (docSnap.exists() && docSnap.get(date)) {
-          const currentDate = docSnap.get(date) as DailyCookedRecipe;
+          const currentDate = docSnap.data();
 
           let { recipes } = currentDate[date];
 

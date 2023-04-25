@@ -15,6 +15,7 @@ import { useFavorites } from 'services/favorites';
 import { AntDesign, MaterialIcons, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
+import { useWeeklyGoals } from 'services/weeklyGoals';
 
 const HomePage = () => {
   const { currentUser } = useAuthContext();
@@ -27,6 +28,7 @@ const HomePage = () => {
     'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
     'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
   });
+  const { progress } = useWeeklyGoals();
 
   if (!fontsLoaded) {
     return null;
@@ -43,14 +45,14 @@ const HomePage = () => {
       <View style={styles.goalWrapper}>
         <Text style={styles.goalHText}>Your Weekly Goal</Text>
         <View style={styles.progressContainer}>
-          <Text style={styles.progressText}>60% complete</Text>
+          <Text style={styles.progressText}>{progress}% complete</Text>
           <Text style={styles.statusText}>
             <Text style={styles.timesText}>5</Text> times/ week
           </Text>
         </View>
         <Progress.Bar
           width={340}
-          progress={0.6}
+          progress={progress / 100}
           color="#74CF82"
           unfilledColor="#D9D9D9"
           borderWidth={0}
