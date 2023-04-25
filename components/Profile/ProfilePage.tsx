@@ -29,6 +29,7 @@ import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
+import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import { useNavigation } from '@react-navigation/native';
 import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
 import DetailedCookingGoal from './DetailedCookingGoal';
@@ -304,20 +305,39 @@ const ProfilePage = () => {
               styles.sectionTopMargin1,
             ]}
           >
-            <View
-              style={[
-                styles.featuredBadgeContainer,
-                styles.sectionRightMargin1,
-              ]}
-            >
-              <Image
-                source={require('../../assets/temp-images/testbadge01.png')}
-                resizeMode={'center'}
-                style={styles.featuredBadgeImage}
-              />
-              <View style={styles.flexColumn}>
-                <Text style={styles.sectionHeader1}>Pro in the kitchen</Text>
-                <Text style={styles.featuredBadgeProgressText}>
+            <View style={styles.featuredBadgeContainer}>
+              <View style={styles.featuredBadgeProgressCircle}>
+                <CircularProgressBase
+                  value={40}
+                  radius={38}
+                  activeStrokeColor={'#6536F9'}
+                  inActiveStrokeColor={'#E0E0E0'}
+                  activeStrokeWidth={4}
+                  inActiveStrokeWidth={4}
+                >
+                  <Image
+                    source={require('../../assets/temp-images/testbadge03.png')}
+                    resizeMode={'center'}
+                    style={styles.featuredBadgeImage}
+                  />
+                </CircularProgressBase>
+              </View>
+
+              <View style={[styles.flexColumn, styles.sectionRightMargin3]}>
+                <Text
+                  style={[
+                    styles.sectionHeader1,
+                    styles.featuredBadgeTextMargin,
+                  ]}
+                >
+                  Pro in the kitchen
+                </Text>
+                <Text
+                  style={[
+                    styles.featuredBadgeProgressText,
+                    styles.featuredBadgeTextMargin,
+                  ]}
+                >
                   Cook 3 more meals to earn this badge!
                 </Text>
               </View>
@@ -907,17 +927,23 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   featuredBadgeImage: {
-    marginRight: 32,
-
     height: 48,
     width: 48,
   },
+  featuredBadgeProgressCircle: {
+    marginRight: 24,
+  },
   featuredBadgeProgressText: {
-    marginTop: 8,
+    marginTop: 4,
 
     fontFamily: 'Inter-SemiBold',
     fontSize: 11,
     color: '#797979',
+  },
+  featuredBadgeTextMargin: {
+    marginRight: 0,
+
+    flexWrap: 'wrap',
   },
   flexColumn: {
     flexDirection: 'column',
@@ -1103,6 +1129,10 @@ const styles = StyleSheet.create({
   },
   sectionRightMargin2: {
     marginRight: 8,
+  },
+  sectionRightMargin3: {
+    marginRight: 24,
+    flexShrink: 1,
   },
   sectionSubHeader1: {
     fontFamily: 'Inter-SemiBold',
