@@ -13,7 +13,7 @@ export const useFavoriteDetail = (id: number) => {
 
   const getFavoriteDetail = useCallback(async () => {
     if (currentUser) {
-      const favoritesCollectionRef = doc(db, 'favorites', 'userId');
+      const favoritesCollectionRef = doc(db, 'favorites', currentUser.uid);
 
       setIsLoading(true);
       const docSnap = await getDoc(favoritesCollectionRef);

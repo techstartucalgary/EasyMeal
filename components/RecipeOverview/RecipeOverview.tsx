@@ -72,9 +72,6 @@ const RecipeOverview = () => {
   const proteinAngle = (protein / total) * 360;
   const carbsAngle = (carbs / total) * 360;
   const fatsAngle = proteinAngle + carbsAngle;
-  const [isFavorited, setIsFavorited] = useState<
-    undefined | FavoriteRecipeType
-  >(favorite);
 
   const {
     ingredients: pantryIngredients,
@@ -84,11 +81,6 @@ const RecipeOverview = () => {
     freezerCount,
     dryPanCount,
   } = useInventoryIngredients({ storageType: undefined });
-
-  useEffect(() => {
-    console.log(isFavorited);
-    setIsFavorited(favorite);
-  }, [favorite]);
 
   return (
     <ScrollView>
@@ -110,12 +102,14 @@ const RecipeOverview = () => {
               />
             </View>
           </View>
-        ) : isFavorited !== undefined ? (
+        ) : favorite ? (
           <Pressable
             style={styles.favoriteButton}
-            onPress={() => {
-              removeFavorites(route.params?.itemId || 0);
-              setIsFavorited(undefined);
+            onPress={async () => {
+              if (route.params?.itemId) {
+                await removeFavorites(route.params.itemId);
+                await getFavoriteDetail();
+              }
             }}
           >
             <MaterialIcons name="remove" size={24} color="#000000" />
@@ -123,8 +117,8 @@ const RecipeOverview = () => {
         ) : (
           <Pressable
             style={styles.favoriteButton}
-            onPress={() => {
-              addFavorites({
+            onPress={async () => {
+              await addFavorites({
                 cuisines: recipeInformation?.cuisines || [],
                 dishTypes: recipeInformation?.dishTypes || [],
                 id: recipeInformation?.id || 0,
@@ -134,7 +128,7 @@ const RecipeOverview = () => {
                 readyInMinutes: recipeInformation?.readyInMinutes || 0,
                 title: recipeInformation?.title || '',
               });
-              setIsFavorited(favorite);
+              await getFavoriteDetail();
             }}
           >
             <MaterialIcons name="favorite" size={24} color="#000000" />
