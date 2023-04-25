@@ -82,10 +82,6 @@ const RecipeSearchPage = () => {
           size={16}
           color="#3E5481"
           style={styles.searchIcon}
-          onPress={() => {
-            logout();
-            navigate('Hero' as never, {} as never);
-          }}
         />
         <TouchableWithoutFeedback
           onPress={() => setFilterVisible(!filterVisible)}
@@ -149,7 +145,7 @@ const RecipeSearchPage = () => {
                     ]}
                   />
 
-                  <Text style={styles.recipeCardTextHeader} numberOfLines={1}>
+                  <Text style={styles.recipeCardTextHeader} numberOfLines={2}>
                     {item.title}
                   </Text>
                 </View>
@@ -550,6 +546,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   recipeCard: {
+    height: 240,
     backgroundColor: '#ffffff',
     marginLeft: 10,
     marginTop: 0,
@@ -588,6 +585,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     marginRight: 12,
 
+    textAlign: 'left',
     fontFamily: 'Inter-Bold',
     fontSize: 17,
     color: '#474747',

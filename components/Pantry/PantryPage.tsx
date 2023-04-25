@@ -334,7 +334,7 @@ const PantryPage = () => {
                         style={styles.pantryCardImage}
                       />
                       <View style={styles.pantryCardTextContainer}>
-                        <Text style={styles.pantryCardTitle}>
+                        <Text style={styles.pantryCardTitle} numberOfLines={1}>
                           {decodeIngredientText('ingredientName', item.name)}
                         </Text>
                         <Text style={styles.pantryCardType}>
@@ -935,7 +935,9 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   pantryCardTextContainer: {
+    flexShrink: 1,
     marginLeft: 16,
+    marginRight: 120,
 
     flexDirection: 'column',
   },

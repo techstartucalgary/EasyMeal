@@ -30,14 +30,17 @@ import Autocomplete from 'react-native-autocomplete-input';
 
 import { useUpdateWeeklyGoals, useWeeklyGoals } from 'services/weeklyGoals';
 import { weeklyGoals, goals } from './test-profile';
+import DetailedBadges from './DetailedBadges';
 import CalendarSection from './Calendar';
 
 type DetailedCookingGoalProps = PropsWithChildren<{
   animateFunction: (slideLeft: boolean) => void;
+  badgesPageVisible: boolean;
 }>;
 
 const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
   animateFunction,
+  badgesPageVisible,
 }) => {
   const [editGoalVisible, setEditGoalVisible] = useState(false);
   const [editGoalValue, setEditGoalValue] = useState('0');
@@ -63,198 +66,203 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
     return null;
   }
 
-  return (
-    <SafeAreaView style={styles.profilePageContainer}>
-      {editGoalVisible && <View style={styles.backgroundDim} />}
-      <View style={styles.profilePageHeader}>
-        <Pressable
-          onPress={() => animateFunction(false)}
-          style={styles.profileButton}
-        >
-          <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          <Text style={styles.profileButtonText}>Profile</Text>
-        </Pressable>
-        <Text style={styles.headerText}>Your weekly goal</Text>
-      </View>
-      <View style={styles.profileSectionContainer}>
-        <View
-          style={[
-            styles.rowSpaceBetween,
-            styles.sectionHorizontalMargin,
-            styles.sectionTopMargin3,
-          ]}
-        >
-          <View style={styles.flexRow}>
-            <Image
-              source={require('../../assets/images/emoji-bullseye.png')}
-              style={styles.mediumEmoji}
-            />
-            <Text style={styles.sectionHeader1}>
-              Currently at <Text style={styles.boldText}>Level 3</Text>
-            </Text>
-          </View>
+  if (badgesPageVisible) {
+    return <DetailedBadges animateFunction={animateFunction} />;
+  } else {
+    return (
+      <SafeAreaView style={styles.profilePageContainer}>
+        {editGoalVisible && <View style={styles.backgroundDim} />}
+        <View style={styles.profilePageHeader}>
           <Pressable
-            onPress={() => setEditGoalVisible((prevValue) => !prevValue)}
-            style={styles.editGoalButton}
+            onPress={() => animateFunction(false)}
+            style={styles.profileButton}
           >
-            <FontAwesome5 name="pen" size={14} color="black" />
+            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
+            <Text style={styles.profileButtonText}>Profile</Text>
           </Pressable>
+          <Text style={styles.headerText}>Your weekly goal</Text>
         </View>
-        <View
-          style={[
-            styles.rowSpaceBetween,
-            styles.sectionHorizontalMargin,
-            styles.sectionTopMargin2,
-          ]}
-        >
-          <Text style={styles.sectionText1}>{progress}% complete</Text>
-          <Text style={styles.sectionText2}>
-            Cook <Text style={styles.sectionText1}>{weeklyGoal?.goal}</Text>{' '}
-            times/ week
-          </Text>
-        </View>
-        <View
-          style={[
-            styles.progressBar,
-            styles.sectionHorizontalMargin,
-            styles.sectionTopMargin4,
-          ]}
-        >
-          <View
-            style={[
-              styles.progressBar,
-              { width: '50%', backgroundColor: '#74CF82' },
-            ]}
-          />
-        </View>
-        <View
-          style={[
-            styles.rowSpaceBetween,
-            styles.sectionHorizontalMargin,
-            styles.sectionTopMargin1,
-          ]}
-        >
-          {weeklyGoals.map((goal) => (
-            <View key={goal.title} style={styles.flexColumn}>
-              <Text style={styles.goalText}>{goal.title}</Text>
-              {goal.completed ? (
-                <View style={styles.goalCompleted}>
-                  <Feather name="check" size={20} color="#FFFFFF" />
-                </View>
-              ) : (
-                <View style={styles.goalNotCompleted}>
-                  <Feather name="plus" size={20} color="#757678" />
-                </View>
-              )}
-            </View>
-          ))}
-        </View>
-
-        <Text
-          style={[
-            styles.sectionSubHeader1,
-            styles.sectionHorizontalMargin,
-            styles.sectionTopMargin2,
-            styles.sectionBottomMargin1,
-          ]}
-        >
-          Complete your goal to reach Level 4!
-        </Text>
-      </View>
-      <View style={styles.profileSectionContainer}>
-        <View
-          style={[
-            styles.rowSpaceBetween,
-            styles.sectionHorizontalMargin,
-            styles.sectionTopMargin3,
-          ]}
-        >
-          <View style={styles.flexRow}>
-            <Image
-              source={require('../../assets/images/emoji-medal.png')}
-              style={styles.mediumEmoji}
-            />
-            <View style={styles.flexColumn}>
-              <Text style={styles.sectionHeader2}>Previous Achievements</Text>
-              <Text style={styles.sectionSubHeader2}>Days cooked</Text>
-            </View>
-          </View>
-        </View>
-        <CalendarSection />
-      </View>
-
-      <Modal
-        animationType="slide"
-        visible={editGoalVisible}
-        transparent
-        onRequestClose={() => {
-          setEditGoalVisible((prevValue) => !prevValue);
-        }}
-      >
-        <View style={styles.editGoalContainer}>
-          <View style={styles.editGoalHeader}>
-            <MaterialIcons
-              name="arrow-back-ios"
-              size={24}
-              color="black"
-              style={styles.closeEditGoalButton}
-              onPress={() => setEditGoalVisible((prevVal) => !prevVal)}
-            />
-            <Text style={styles.editGoalHeaderText}>Edit cooking goal</Text>
-          </View>
-
+        <View style={styles.profileSectionContainer}>
           <View
             style={[
               styles.rowSpaceBetween,
               styles.sectionHorizontalMargin,
-              styles.sectionVerticalMargin1,
+              styles.sectionTopMargin3,
             ]}
           >
-            <Text style={styles.editGoalText}>
-              How many times do you want to home cook per week?
+            <View style={styles.flexRow}>
+              <Image
+                source={require('../../assets/images/emoji-bullseye.png')}
+                style={styles.mediumEmoji}
+              />
+              <Text style={styles.sectionHeader1}>
+                Currently at <Text style={styles.boldText}>Level 3</Text>
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => setEditGoalVisible((prevValue) => !prevValue)}
+              style={styles.editGoalButton}
+            >
+              <FontAwesome5 name="pen" size={14} color="black" />
+            </Pressable>
+          </View>
+          <View
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin2,
+            ]}
+          >
+            <Text style={styles.sectionText1}>{progress}% complete</Text>
+            <Text style={styles.sectionText2}>
+              Cook <Text style={styles.sectionText1}>{weeklyGoal?.goal}</Text>{' '}
+              times/ week
             </Text>
-            <TextInput
-              keyboardType="numeric"
-              maxLength={1}
-              placeholder="e.g. 7"
-              defaultValue={weeklyGoal?.goal.toString() || '0'}
-              value={editGoalValue}
-              onChangeText={(text) => {
-                setEditGoalValue(text.replace(/\D/g, ''));
-              }}
-              style={styles.sectionTextInput}
+          </View>
+          <View
+            style={[
+              styles.progressBar,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin4,
+            ]}
+          >
+            <View
+              style={[
+                styles.progressBar,
+                { width: '50%', backgroundColor: '#74CF82' },
+              ]}
             />
           </View>
-
           <View
-            style={[styles.rowSpaceBetween, styles.sectionHorizontalMargin]}
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin1,
+            ]}
           >
-            <Pressable
-              onPress={() => {
-                setEditGoalVisible((prevVal) => !prevVal);
-              }}
-              style={styles.sectionButtonLight}
-            >
-              <Text style={styles.sectionButtonLightText}>Cancel</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                setEditGoalVisible((prevVal) => !prevVal);
-                if (editGoalValue) {
-                  updateWeeklyGoal({
-                    goal: parseInt(editGoalValue, 10),
-                  });
-                }
-              }}
-              style={styles.sectionButtonDark}
-            >
-              <Text style={styles.sectionButtonDarkText}>Save Changes</Text>
-            </Pressable>
+            {weeklyGoals.map((goal) => (
+              <View key={goal.title} style={styles.flexColumn}>
+                <Text style={styles.goalText}>{goal.title}</Text>
+                {goal.completed ? (
+                  <View style={styles.goalCompleted}>
+                    <Feather name="check" size={20} color="#FFFFFF" />
+                  </View>
+                ) : (
+                  <View style={styles.goalNotCompleted}>
+                    <Feather name="plus" size={20} color="#757678" />
+                  </View>
+                )}
+              </View>
+            ))}
           </View>
+
+          <Text
+            style={[
+              styles.sectionSubHeader1,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin2,
+              styles.sectionBottomMargin1,
+            ]}
+          >
+            Complete your goal to reach Level 4!
+          </Text>
         </View>
-      </Modal>
-    </SafeAreaView>
-  );
+
+        <View style={styles.profileSectionContainer}>
+          <View
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin3,
+            ]}
+          >
+            <View style={styles.flexRow}>
+              <Image
+                source={require('../../assets/images/emoji-medal.png')}
+                style={styles.mediumEmoji}
+              />
+              <View style={styles.flexColumn}>
+                <Text style={styles.sectionHeader2}>Previous Achievements</Text>
+                <Text style={styles.sectionSubHeader2}>Days cooked</Text>
+              </View>
+            </View>
+          </View>
+          <CalendarSection />
+        </View>
+
+        <Modal
+          animationType="slide"
+          visible={editGoalVisible}
+          transparent
+          onRequestClose={() => {
+            setEditGoalVisible((prevValue) => !prevValue);
+          }}
+        >
+          <View style={styles.editGoalContainer}>
+            <View style={styles.editGoalHeader}>
+              <MaterialIcons
+                name="arrow-back-ios"
+                size={24}
+                color="black"
+                style={styles.closeEditGoalButton}
+                onPress={() => setEditGoalVisible((prevVal) => !prevVal)}
+              />
+              <Text style={styles.editGoalHeaderText}>Edit cooking goal</Text>
+            </View>
+
+            <View
+              style={[
+                styles.rowSpaceBetween,
+                styles.sectionHorizontalMargin,
+                styles.sectionVerticalMargin1,
+              ]}
+            >
+              <Text style={styles.editGoalText}>
+                How many times do you want to home cook per week?
+              </Text>
+              <TextInput
+                keyboardType="numeric"
+                maxLength={1}
+                placeholder="e.g. 7"
+                defaultValue={weeklyGoal?.goal.toString() || '0'}
+                value={editGoalValue}
+                onChangeText={(text) => {
+                  setEditGoalValue(text.replace(/\D/g, ''));
+                }}
+                style={styles.sectionTextInput}
+              />
+            </View>
+
+            <View
+              style={[styles.rowSpaceBetween, styles.sectionHorizontalMargin]}
+            >
+              <Pressable
+                onPress={() => {
+                  setEditGoalVisible((prevVal) => !prevVal);
+                }}
+                style={styles.sectionButtonLight}
+              >
+                <Text style={styles.sectionButtonLightText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setEditGoalVisible((prevVal) => !prevVal);
+                  if (editGoalValue) {
+                    updateWeeklyGoal({
+                      goal: parseInt(editGoalValue, 10),
+                    });
+                  }
+                }}
+                style={styles.sectionButtonDark}
+              >
+                <Text style={styles.sectionButtonDarkText}>Save Changes</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    );
+  }
 };
 
 export default DetailedCookingGoal;
@@ -382,12 +390,6 @@ const styles = StyleSheet.create({
     width: 32,
     marginRight: 12,
   },
-  profileButtonText: {
-    marginLeft: 0,
-    fontFamily: 'Inter-Regular',
-    fontSize: 12,
-    color: '#000000',
-  },
   profileButton: {
     position: 'absolute',
     top: 12,
@@ -396,6 +398,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  },
+  profileButtonText: {
+    marginLeft: 0,
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    color: '#000000',
   },
   profilePageContainer: {
     height: Dimensions.get('screen').height,
