@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {
   Image,
   StyleSheet,
@@ -5,6 +6,7 @@ import {
   View,
   ScrollView,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
@@ -20,6 +22,7 @@ import {
   useFavoriteDetail,
 } from 'services/favorites';
 import { useRemoveFavorites } from 'services/favorites/useRemoveFavorites';
+import { useUpdateDailyCookedRecipes } from 'services/dailyCookedRecipes';
 
 const RecipeOverview = () => {
   const route = useRoute<RouteProp<ParamList, 'RecipeOverview'>>();
@@ -32,6 +35,8 @@ const RecipeOverview = () => {
     route.params?.itemId || 0,
   );
   const { removeFavorites } = useRemoveFavorites();
+  const { toogleRecipe, isLoading: isLoadingDaily } =
+    useUpdateDailyCookedRecipes();
   const { goBack } = useNavigation();
   const radius = 60;
   const circleCircumference = 2 * Math.PI * radius;
@@ -68,9 +73,21 @@ const RecipeOverview = () => {
           <Ionicons name="ios-chevron-back" size={24} color="#000000" />
         </Pressable>
       </View>
+
       <View style={styles.favorite}>
-        {isFavorited != null ? (
+        {isLoading ? (
+          <View style={styles.loadingOverlayContainer}>
+            <View style={styles.loadingIconContainer}>
+              <ActivityIndicator
+                size="large"
+                color="#6536f9"
+                style={styles.loadingIcon}
+              />
+            </View>
+          </View>
+        ) : isFavorited != null ? (
           <Pressable
+            style={styles.favoriteButton}
             onPress={() => {
               removeFavorites(route.params?.itemId || 0);
               setIsFavorited(null);
@@ -80,6 +97,7 @@ const RecipeOverview = () => {
           </Pressable>
         ) : (
           <Pressable
+            style={styles.favoriteButton}
             onPress={() => {
               addFavorites({
                 cuisines: recipeInformation?.cuisines || [],
@@ -95,6 +113,36 @@ const RecipeOverview = () => {
             }}
           >
             <MaterialIcons name="favorite" size={24} color="#000000" />
+          </Pressable>
+        )}
+        {isLoadingDaily ? (
+          <View style={styles.loadingOverlayContainer}>
+            <View style={styles.loadingIconContainer}>
+              <ActivityIndicator
+                size="large"
+                color="#6536f9"
+                style={styles.loadingIcon}
+              />
+            </View>
+          </View>
+        ) : (
+          <Pressable
+            onPress={() => {
+              toogleRecipe(
+                recipeInformation?.id || 0,
+                recipeInformation?.pricePerServing *
+                  recipeInformation?.servings || 0,
+                total,
+                carbs,
+                fats,
+                protein,
+              );
+            }}
+          >
+            <Image
+              source={require('../../assets/Logo.png')}
+              style={styles.image}
+            />
           </Pressable>
         )}
       </View>
@@ -222,6 +270,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
   },
+  image: {
+    width: '100%',
+    height: 45,
+    padding: 10,
+    borderRadius: 100,
+  },
   back: {
     borderRadius: 100,
     padding: 10,
@@ -231,12 +285,15 @@ const styles = StyleSheet.create({
     left: 20,
   },
   favorite: {
-    borderRadius: 100,
-    padding: 10,
-    backgroundColor: '#fff',
     position: 'absolute',
     top: 60,
     right: 20,
+  },
+  favoriteButton: {
+    borderRadius: 100,
+    marginBottom: 20,
+    padding: 10,
+    backgroundColor: '#fff',
   },
   card: {
     backgroundColor: '#fff',
@@ -271,6 +328,25 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#9F9F9F',
     fontSize: 15,
+    marginBottom: 20,
+  },
+  loadingIcon: {
+    scaleX: 1,
+    scaleY: 1,
+  },
+  loadingIconContainer: {
+    padding: 2,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    borderRadius: 100,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingOverlayContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(236, 236, 236, 0.4)',
+    zIndex: 10,
     marginBottom: 20,
   },
   macrowrapper: {
