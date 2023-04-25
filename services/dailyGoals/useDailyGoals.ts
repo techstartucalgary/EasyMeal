@@ -3,6 +3,7 @@ import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
+import { MarkedDates } from 'react-native-calendars/src/types';
 import { DailyGoalType } from './types';
 
 const getClosestPreviousElement = (obj: DailyGoalType) => {
@@ -29,14 +30,14 @@ const getClosestPreviousElement = (obj: DailyGoalType) => {
   };
 };
 
+const date = format(new Date(), 'YYYY-MM-DD');
+
 export const useDailyGoals = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [dailyGoal, setDailyGoal] = useState<DailyGoalType | undefined>(
     undefined,
   );
-
-  const date = format(new Date(), 'YYYY-MM-DD');
 
   const getDailyGoals = useCallback(async () => {
     if (currentUser) {
@@ -88,14 +89,32 @@ export const useDailyGoals = () => {
       }
       setIsLoading(false);
     }
-  }, [currentUser, date]);
+  }, [currentUser]);
 
   useEffect(() => {
     getDailyGoals();
   }, [getDailyGoals]);
 
+  const markedDates = dailyGoal
+    ? Object.keys(dailyGoal).reduce(
+        (acc, key) =>
+          dailyGoal[key].cookedTimes > 0
+            ? {
+                ...acc,
+                [key]: {
+                  selected: true,
+                  selectedColor: '#6536F9',
+                  disableTouchEvent: true,
+                },
+              }
+            : acc,
+        {} as MarkedDates,
+      )
+    : undefined;
+
   return {
     dailyGoal,
+    markedDates,
     isLoading,
     getDailyGoals,
     date,

@@ -28,6 +28,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 
+import { useUpdateWeeklyGoals, useWeeklyGoals } from 'services/weeklyGoals';
 import { weeklyGoals, goals } from './test-profile';
 import DetailedBadges from './DetailedBadges';
 import CalendarSection from './Calendar';
@@ -43,6 +44,9 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
 }) => {
   const [editGoalVisible, setEditGoalVisible] = useState(false);
   const [editGoalValue, setEditGoalValue] = useState(goals.cooking);
+
+  // useWeeklyGoals();
+  useUpdateWeeklyGoals();
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),

@@ -1,26 +1,17 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React from 'react';
-import { Calendar, CalendarUtils } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
+import { useDailyGoals } from 'services/dailyGoals';
 
-const CalendarSection = () => (
-  <View style={styles.calendarSectionContainer}>
-    <Calendar
-      enableSwipeMonths
-      markedDates={{
-        '2023-04-16': {
-          selected: true,
-          selectedColor: '#6536F9',
-          disableTouchEvent: true,
-        },
-        '2023-04-17': {
-          selected: true,
-          selectedColor: '#6536F9',
-          disableTouchEvent: true,
-        },
-      }}
-    />
-  </View>
-);
+const CalendarSection = () => {
+  const { markedDates } = useDailyGoals();
+
+  return (
+    <View style={styles.calendarSectionContainer}>
+      <Calendar enableSwipeMonths markedDates={markedDates} />
+    </View>
+  );
+};
 
 export default CalendarSection;
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {
   Image,
   StyleSheet,
@@ -5,21 +6,32 @@ import {
   View,
   ScrollView,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
-import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons';
+import {
+  MaterialIcons,
+  MaterialCommunityIcons,
+  Ionicons,
+  FontAwesome,
+  Feather,
+} from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Svg, { G, Circle } from 'react-native-svg';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ParamList } from 'pages';
-import ViewMoreText from 'react-native-view-more-text';
-import { useRecipeInformation } from 'services/recipeInformation';
+import {
+  ExtendedIngredient,
+  useRecipeInformation,
+} from 'services/recipeInformation';
 import {
   FavoriteRecipeType,
   useAddFavorites,
   useFavoriteDetail,
 } from 'services/favorites';
 import { useRemoveFavorites } from 'services/favorites/useRemoveFavorites';
+import { useUpdateDailyCookedRecipes } from 'services/dailyCookedRecipes';
+import { useInventoryIngredients } from 'services/inventory/inventory';
 
 const RecipeOverview = () => {
   const route = useRoute<RouteProp<ParamList, 'RecipeOverview'>>();
@@ -32,6 +44,8 @@ const RecipeOverview = () => {
     route.params?.itemId || 0,
   );
   const { removeFavorites } = useRemoveFavorites();
+  const { tooggleRecipe, isLoading: isLoadingDaily } =
+    useUpdateDailyCookedRecipes();
   const { goBack } = useNavigation();
   const radius = 60;
   const circleCircumference = 2 * Math.PI * radius;
@@ -58,7 +72,23 @@ const RecipeOverview = () => {
   const proteinAngle = (protein / total) * 360;
   const carbsAngle = (carbs / total) * 360;
   const fatsAngle = proteinAngle + carbsAngle;
-  const [isFavorited, setIsFavorited] = useState(favorite);
+  const [isFavorited, setIsFavorited] = useState<
+    undefined | FavoriteRecipeType
+  >(favorite);
+
+  const {
+    ingredients: pantryIngredients,
+    isLoading: inventoryLoading,
+    getInventory,
+    fridgeCount,
+    freezerCount,
+    dryPanCount,
+  } = useInventoryIngredients({ storageType: undefined });
+
+  useEffect(() => {
+    console.log(isFavorited);
+    setIsFavorited(favorite);
+  }, [favorite]);
 
   return (
     <ScrollView>
@@ -68,18 +98,31 @@ const RecipeOverview = () => {
           <Ionicons name="ios-chevron-back" size={24} color="#000000" />
         </Pressable>
       </View>
+
       <View style={styles.favorite}>
-        {isFavorited != null ? (
+        {isLoading ? (
+          <View style={styles.loadingOverlayContainer}>
+            <View style={styles.loadingIconContainer}>
+              <ActivityIndicator
+                size="large"
+                color="#6536f9"
+                style={styles.loadingIcon}
+              />
+            </View>
+          </View>
+        ) : isFavorited !== undefined ? (
           <Pressable
+            style={styles.favoriteButton}
             onPress={() => {
               removeFavorites(route.params?.itemId || 0);
-              setIsFavorited(null);
+              setIsFavorited(undefined);
             }}
           >
             <MaterialIcons name="remove" size={24} color="#000000" />
           </Pressable>
         ) : (
           <Pressable
+            style={styles.favoriteButton}
             onPress={() => {
               addFavorites({
                 cuisines: recipeInformation?.cuisines || [],
@@ -97,6 +140,36 @@ const RecipeOverview = () => {
             <MaterialIcons name="favorite" size={24} color="#000000" />
           </Pressable>
         )}
+        {isLoadingDaily ? (
+          <View style={styles.loadingOverlayContainer}>
+            <View style={styles.loadingIconContainer}>
+              <ActivityIndicator
+                size="large"
+                color="#6536f9"
+                style={styles.loadingIcon}
+              />
+            </View>
+          </View>
+        ) : (
+          <Pressable
+            onPress={() => {
+              tooggleRecipe(
+                recipeInformation?.id || 0,
+                recipeInformation?.pricePerServing *
+                  recipeInformation?.servings || 0,
+                total,
+                carbs,
+                fats,
+                protein,
+              );
+            }}
+          >
+            <Image
+              source={require('../../assets/Logo.png')}
+              style={styles.image}
+            />
+          </Pressable>
+        )}
       </View>
       <View style={styles.card}>
         <View style={styles.hcontainer}>
@@ -104,19 +177,23 @@ const RecipeOverview = () => {
         </View>
         <View style={styles.infocontainer}>
           <View style={styles.timecontainer}>
-            <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
+            <MaterialIcons name="access-time" size={18} color="#000001" />
             <Text style={styles.time}>
               {recipeInformation?.readyInMinutes} Mins
             </Text>
           </View>
           <View style={styles.timecontainer}>
-            <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
+            <MaterialCommunityIcons
+              name="silverware-fork-knife"
+              size={18}
+              color="#000001"
+            />
             <Text style={styles.time}>
               {recipeInformation?.servings} Servings
             </Text>
           </View>
           <View style={styles.timecontainer}>
-            <MaterialIcons name="access-time" size={18} color="#9F9F9F" />
+            <Feather name="dollar-sign" size={18} color="#000001" />
             <Text style={styles.time}>
               {recipeInformation?.pricePerServing}/ Serving
             </Text>
@@ -196,12 +273,20 @@ const RecipeOverview = () => {
         <View style={styles.ingwrapper}>
           <Text style={styles.ingheading}>Ingredients</Text>
 
-          {recipeInformation?.extendedIngredients.map((ingredient: any) => (
-            <View style={styles.ing} key={ingredient}>
-              <Entypo name="circle" size={20} color="#888888" />
-              <Text style={styles.ingtext}>{ingredient.original}</Text>
-            </View>
-          ))}
+          {recipeInformation?.extendedIngredients.map(
+            (ingredient: ExtendedIngredient) => (
+              <View style={styles.ing} key={ingredient.id}>
+                {pantryIngredients.some(
+                  (pantryIngredient) => pantryIngredient.id === ingredient.id,
+                ) ? (
+                  <FontAwesome name="check-circle" size={20} color="#6536F9" />
+                ) : (
+                  <FontAwesome name="circle-thin" size={20} color="#888888" />
+                )}
+                <Text style={styles.ingtext}>{ingredient.original} </Text>
+              </View>
+            ),
+          )}
         </View>
         <View style={styles.instrwrapper}>
           <Text style={styles.instrheading}>Instructions</Text>
@@ -222,6 +307,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 300,
   },
+  image: {
+    width: '100%',
+    height: 45,
+    padding: 10,
+    borderRadius: 100,
+  },
   back: {
     borderRadius: 100,
     padding: 10,
@@ -231,12 +322,15 @@ const styles = StyleSheet.create({
     left: 20,
   },
   favorite: {
-    borderRadius: 100,
-    padding: 10,
-    backgroundColor: '#fff',
     position: 'absolute',
     top: 60,
     right: 20,
+  },
+  favoriteButton: {
+    borderRadius: 100,
+    marginBottom: 20,
+    padding: 10,
+    backgroundColor: '#fff',
   },
   card: {
     backgroundColor: '#fff',
@@ -271,6 +365,25 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#9F9F9F',
     fontSize: 15,
+    marginBottom: 20,
+  },
+  loadingIcon: {
+    scaleX: 1,
+    scaleY: 1,
+  },
+  loadingIconContainer: {
+    padding: 2,
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    borderRadius: 100,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingOverlayContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(236, 236, 236, 0.4)',
+    zIndex: 10,
     marginBottom: 20,
   },
   macrowrapper: {
