@@ -22,6 +22,7 @@ export function useUpdateProfile() {
       await getProfile();
     }
   }
+
   async function updateProfileCook() {
     setIsLoading(true);
     await getProfile();
@@ -35,6 +36,21 @@ export function useUpdateProfile() {
             profile.weeklyDaysCooked >= profile.weeklyGoal
               ? profile.level + 1
               : profile.level,
+        });
+      }
+      await getProfile();
+      setIsLoading(false);
+    }
+  }
+
+  async function levelUp() {
+    setIsLoading(true);
+    await getProfile();
+    if (currentUser) {
+      if (profile) {
+        await updateProfileData({
+          ...profile,
+          level: profile.level + 1,
         });
       }
       await getProfile();
@@ -58,5 +74,5 @@ export function useUpdateProfile() {
       setIsLoading(false);
     }
   }
-  return { updateProfileCook, updateProfileGoal, isLoading };
+  return { updateProfileCook, updateProfileGoal, levelUp, isLoading };
 }

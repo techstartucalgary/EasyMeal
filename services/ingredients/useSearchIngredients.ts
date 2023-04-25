@@ -11,7 +11,7 @@ export const useSearchIngredient = ({ query }: SearchIngredientsProps) => {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `https://api.spoonacular.com/food/ingredients/search?apiKey=${SPOON_API_KEY}&query=${query}`,
+      `https://api.spoonacular.com/food/ingredients/search?query=${query}&apiKey=${SPOON_API_KEY}`,
     )
       .then((response) => response.json())
       .then((data) => {

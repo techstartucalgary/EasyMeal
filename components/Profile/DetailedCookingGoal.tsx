@@ -1,4 +1,4 @@
-import React, { useState, PropsWithChildren } from 'react';
+import React, { useState, PropsWithChildren, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -43,10 +43,16 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
   badgesPageVisible,
 }) => {
   const [editGoalVisible, setEditGoalVisible] = useState(false);
-  const [editGoalValue, setEditGoalValue] = useState(goals.cooking);
+  const [editGoalValue, setEditGoalValue] = useState('0');
 
-  // useWeeklyGoals();
-  useUpdateWeeklyGoals();
+  const { updateWeeklyGoal } = useUpdateWeeklyGoals();
+  const { weeklyGoal, progress } = useWeeklyGoals();
+
+  useEffect(() => {
+    if (weeklyGoal?.goal) {
+      setEditGoalValue(weeklyGoal?.goal.toString());
+    }
+  }, [weeklyGoal?.goal]);
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -66,124 +72,122 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
     return (
       <SafeAreaView style={styles.profilePageContainer}>
         {editGoalVisible && <View style={styles.backgroundDim} />}
-        <View>
-          <View style={styles.profilePageHeader}>
-            <Pressable
-              onPress={() => animateFunction(false)}
-              style={styles.profileButton}
-            >
-              <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-              <Text style={styles.profileButtonText}>Profile</Text>
-            </Pressable>
-            <Text style={styles.headerText}>Your weekly goal</Text>
-          </View>
-          <View style={styles.profileSectionContainer}>
-            <View
-              style={[
-                styles.rowSpaceBetween,
-                styles.sectionHorizontalMargin,
-                styles.sectionTopMargin3,
-              ]}
-            >
-              <View style={styles.flexRow}>
-                <Image
-                  source={require('../../assets/images/emoji-bullseye.png')}
-                  style={styles.mediumEmoji}
-                />
-                <Text style={styles.sectionHeader1}>
-                  Currently at <Text style={styles.boldText}>Level 3</Text>
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => setEditGoalVisible((prevValue) => !prevValue)}
-                style={styles.editGoalButton}
-              >
-                <FontAwesome5 name="pen" size={14} color="black" />
-              </Pressable>
-            </View>
-            <View
-              style={[
-                styles.rowSpaceBetween,
-                styles.sectionHorizontalMargin,
-                styles.sectionTopMargin2,
-              ]}
-            >
-              <Text style={styles.sectionText1}>60% complete</Text>
-              <Text style={styles.sectionText2}>
-                Cook <Text style={styles.sectionText1}>5</Text> times/ week
+        <View style={styles.profilePageHeader}>
+          <Pressable
+            onPress={() => animateFunction(false)}
+            style={styles.profileButton}
+          >
+            <MaterialIcons name="arrow-back-ios" size={24} color="black" />
+            <Text style={styles.profileButtonText}>Profile</Text>
+          </Pressable>
+          <Text style={styles.headerText}>Your weekly goal</Text>
+        </View>
+        <View style={styles.profileSectionContainer}>
+          <View
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin3,
+            ]}
+          >
+            <View style={styles.flexRow}>
+              <Image
+                source={require('../../assets/images/emoji-bullseye.png')}
+                style={styles.mediumEmoji}
+              />
+              <Text style={styles.sectionHeader1}>
+                Currently at <Text style={styles.boldText}>Level 3</Text>
               </Text>
             </View>
+            <Pressable
+              onPress={() => setEditGoalVisible((prevValue) => !prevValue)}
+              style={styles.editGoalButton}
+            >
+              <FontAwesome5 name="pen" size={14} color="black" />
+            </Pressable>
+          </View>
+          <View
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin2,
+            ]}
+          >
+            <Text style={styles.sectionText1}>{progress}% complete</Text>
+            <Text style={styles.sectionText2}>
+              Cook <Text style={styles.sectionText1}>{weeklyGoal?.goal}</Text>{' '}
+              times/ week
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.progressBar,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin4,
+            ]}
+          >
             <View
               style={[
                 styles.progressBar,
-                styles.sectionHorizontalMargin,
-                styles.sectionTopMargin4,
+                { width: '50%', backgroundColor: '#74CF82' },
               ]}
-            >
-              <View
-                style={[
-                  styles.progressBar,
-                  { width: '50%', backgroundColor: '#74CF82' },
-                ]}
-              />
-            </View>
-            <View
-              style={[
-                styles.rowSpaceBetween,
-                styles.sectionHorizontalMargin,
-                styles.sectionTopMargin1,
-              ]}
-            >
-              {weeklyGoals.map((goal) => (
-                <View key={goal.title} style={styles.flexColumn}>
-                  <Text style={styles.goalText}>{goal.title}</Text>
-                  {goal.completed ? (
-                    <View style={styles.goalCompleted}>
-                      <Feather name="check" size={20} color="#FFFFFF" />
-                    </View>
-                  ) : (
-                    <View style={styles.goalNotCompleted}>
-                      <Feather name="plus" size={20} color="#757678" />
-                    </View>
-                  )}
-                </View>
-              ))}
-            </View>
-
-            <Text
-              style={[
-                styles.sectionSubHeader1,
-                styles.sectionHorizontalMargin,
-                styles.sectionTopMargin2,
-                styles.sectionBottomMargin1,
-              ]}
-            >
-              Complete your goal to reach Level 4!
-            </Text>
+            />
           </View>
-          <View style={styles.profileSectionContainer}>
-            <View
-              style={[
-                styles.rowSpaceBetween,
-                styles.sectionHorizontalMargin,
-                styles.sectionTopMargin3,
-              ]}
-            >
-              <View style={styles.flexRow}>
-                <Image
-                  source={require('../../assets/images/emoji-medal.png')}
-                  style={styles.mediumEmoji}
-                />
-                <View style={styles.flexColumn}>
-                  <Text style={styles.sectionHeader2}>
-                    Previous Achievements
-                  </Text>
-                  <Text style={styles.sectionSubHeader2}>Days cooked</Text>
-                </View>
+          <View
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin1,
+            ]}
+          >
+            {weeklyGoals.map((goal) => (
+              <View key={goal.title} style={styles.flexColumn}>
+                <Text style={styles.goalText}>{goal.title}</Text>
+                {goal.completed ? (
+                  <View style={styles.goalCompleted}>
+                    <Feather name="check" size={20} color="#FFFFFF" />
+                  </View>
+                ) : (
+                  <View style={styles.goalNotCompleted}>
+                    <Feather name="plus" size={20} color="#757678" />
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+
+          <Text
+            style={[
+              styles.sectionSubHeader1,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin2,
+              styles.sectionBottomMargin1,
+            ]}
+          >
+            Complete your goal to reach Level 4!
+          </Text>
+        </View>
+
+        <View style={styles.profileSectionContainer}>
+          <View
+            style={[
+              styles.rowSpaceBetween,
+              styles.sectionHorizontalMargin,
+              styles.sectionTopMargin3,
+            ]}
+          >
+            <View style={styles.flexRow}>
+              <Image
+                source={require('../../assets/images/emoji-medal.png')}
+                style={styles.mediumEmoji}
+              />
+              <View style={styles.flexColumn}>
+                <Text style={styles.sectionHeader2}>Previous Achievements</Text>
+                <Text style={styles.sectionSubHeader2}>Days cooked</Text>
               </View>
             </View>
-            <CalendarSection />
           </View>
+          <CalendarSection />
         </View>
 
         <Modal
@@ -220,7 +224,7 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
                 keyboardType="numeric"
                 maxLength={1}
                 placeholder="e.g. 7"
-                defaultValue={goals.cooking}
+                defaultValue={weeklyGoal?.goal.toString() || '0'}
                 value={editGoalValue}
                 onChangeText={(text) => {
                   setEditGoalValue(text.replace(/\D/g, ''));
@@ -235,7 +239,6 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
               <Pressable
                 onPress={() => {
                   setEditGoalVisible((prevVal) => !prevVal);
-                  setEditGoalValue(goals.cooking);
                 }}
                 style={styles.sectionButtonLight}
               >
@@ -244,6 +247,11 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
               <Pressable
                 onPress={() => {
                   setEditGoalVisible((prevVal) => !prevVal);
+                  if (editGoalValue) {
+                    updateWeeklyGoal({
+                      goal: parseInt(editGoalValue, 10),
+                    });
+                  }
                 }}
                 style={styles.sectionButtonDark}
               >

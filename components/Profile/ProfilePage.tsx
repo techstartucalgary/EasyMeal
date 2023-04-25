@@ -32,6 +32,7 @@ import Autocomplete from 'react-native-autocomplete-input';
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import { useNavigation } from '@react-navigation/native';
 import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
+import { useWeeklyGoals } from 'services/weeklyGoals';
 import DetailedCookingGoal from './DetailedCookingGoal';
 import Settings from './Settings';
 
@@ -52,6 +53,8 @@ const ProfilePage = () => {
   const [editCarbGrams, setEditCarbGrams] = useState(0);
   const [editProteinGrams, setEditProteinGrams] = useState(0);
   const [editFatGrams, setEditFatGrams] = useState(0);
+
+  const { weeklyGoal, progress } = useWeeklyGoals();
 
   const {
     dailyGoal,
@@ -189,6 +192,7 @@ const ProfilePage = () => {
     }
 
     let newCaloricGoal = '0';
+
     if (editCaloricGoal.length > 0) {
       newCaloricGoal = editCaloricGoal;
     } else {
@@ -214,24 +218,24 @@ const ProfilePage = () => {
           ...dailyGoal[date],
           calories: {
             ...dailyGoal[date].calories,
-            goal: parseInt(newCaloricGoal),
+            goal: parseInt(newCaloricGoal, 10),
           },
           carbs: {
             ...dailyGoal[date].carbs,
             goal: Math.floor(
-              ((carbPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
+              ((carbPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 4,
             ),
           },
           fat: {
             ...dailyGoal[date].fat,
             goal: Math.floor(
-              ((fatPercentage / 100.0) * parseInt(newCaloricGoal)) / 9,
+              ((fatPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 9,
             ),
           },
           protein: {
             ...dailyGoal[date].protein,
             goal: Math.floor(
-              ((proteinPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
+              ((proteinPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 4,
             ),
           },
         },
@@ -380,11 +384,32 @@ const ProfilePage = () => {
                 styles.sectionRightMargin1,
               ]}
             >
-              <Text style={styles.sectionHeader2}>60% complete</Text>
+              <Text style={styles.sectionHeader2}>{progress}% complete</Text>
               <Text style={styles.sectionHeader3}>
-                Cook <Text style={styles.sectionHeader2}>5</Text> times/ week
+                Cook{' '}
+                <Text style={styles.sectionHeader2}>{weeklyGoal?.goal}</Text>{' '}
+                times/ week
               </Text>
             </View>
+
+            <View
+              style={[
+                styles.progressBar,
+                styles.sectionTopMargin2,
+                styles.sectionRightMargin1,
+              ]}
+            >
+              <View
+                style={[
+                  styles.progressBarFilled,
+                  { backgroundColor: '#74CF82', width: `${progress}%` },
+                ]}
+              />
+            </View>
+
+            <Text style={[styles.sectionSubHeader2, styles.sectionTopMargin1]}>
+              Complete your goal to reach Level 4!
+            </Text>
             <View style={styles.sectionArrowIcon}>
               <Feather
                 name="chevron-right"
@@ -396,23 +421,6 @@ const ProfilePage = () => {
                 }}
               />
             </View>
-            <View
-              style={[
-                styles.progressBar,
-                styles.sectionTopMargin2,
-                styles.sectionRightMargin1,
-              ]}
-            >
-              <View
-                style={[
-                  styles.progressBarFilled,
-                  { backgroundColor: '#74CF82', width: '50%' },
-                ]}
-              />
-            </View>
-            <Text style={[styles.sectionSubHeader2, styles.sectionTopMargin1]}>
-              Complete your goal to reach Level 4!
-            </Text>
           </View>
 
           <View
@@ -465,8 +473,10 @@ const ProfilePage = () => {
                   <Text style={styles.sectionHeader2}>Calories</Text>
                   <View>
                     <Text style={styles.sectionSubHeader3}>
-                      {dailyGoal ? dailyGoal[date].calories.count : 0} /{' '}
-                      {dailyGoal ? dailyGoal[date].calories.goal : 0} CAL
+                      {dailyGoal
+                        ? Math.floor(dailyGoal[date].calories.count)
+                        : 0}{' '}
+                      / {dailyGoal ? dailyGoal[date].calories.goal : 0} CAL
                     </Text>
                   </View>
                 </View>
@@ -505,8 +515,10 @@ const ProfilePage = () => {
                   <Text style={styles.sectionHeader2}>Protein</Text>
                   <View>
                     <Text style={styles.sectionSubHeader3}>
-                      {dailyGoal ? dailyGoal[date].protein.count : 0} /{' '}
-                      {dailyGoal ? dailyGoal[date].protein.goal : 0} G
+                      {dailyGoal
+                        ? Math.floor(dailyGoal[date].protein.count)
+                        : 0}{' '}
+                      / {dailyGoal ? dailyGoal[date].protein.goal : 0} G
                     </Text>
                   </View>
                 </View>
@@ -545,8 +557,8 @@ const ProfilePage = () => {
                   <Text style={styles.sectionHeader2}>Carbs</Text>
                   <View>
                     <Text style={styles.sectionSubHeader3}>
-                      {dailyGoal ? dailyGoal[date].carbs.count : 0} /{' '}
-                      {dailyGoal ? dailyGoal[date].carbs.goal : 0} G
+                      {dailyGoal ? Math.floor(dailyGoal[date].carbs.count) : 0}{' '}
+                      / {dailyGoal ? dailyGoal[date].carbs.goal : 0} G
                     </Text>
                   </View>
                 </View>
@@ -585,7 +597,7 @@ const ProfilePage = () => {
                   <Text style={styles.sectionHeader2}>Fat</Text>
                   <View>
                     <Text style={styles.sectionSubHeader3}>
-                      {dailyGoal ? dailyGoal[date].fat.count : 0} /{' '}
+                      {dailyGoal ? Math.floor(dailyGoal[date].fat.count) : 0} /{' '}
                       {dailyGoal ? dailyGoal[date].fat.goal : 0} G
                     </Text>
                   </View>
@@ -688,6 +700,7 @@ const ProfilePage = () => {
                 }}
                 onBlur={() => {
                   let newVal = '0%';
+
                   if (editCarbGoal.length <= 0) {
                     setEditCarbGoal(newVal);
                   } else {
@@ -732,6 +745,7 @@ const ProfilePage = () => {
                 }}
                 onBlur={() => {
                   let newVal = '0%';
+
                   if (editProteinGoal.length <= 0) {
                     setEditProteinGoal(newVal);
                   } else {
@@ -775,6 +789,7 @@ const ProfilePage = () => {
                 }}
                 onBlur={() => {
                   let newVal = '0%';
+
                   if (editFatGoal.length <= 0) {
                     setEditFatGoal(newVal);
                   } else {
@@ -1125,7 +1140,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   sectionRightMargin1: {
-    marginRight: 64,
+    marginRight: 40,
   },
   sectionRightMargin2: {
     marginRight: 8,

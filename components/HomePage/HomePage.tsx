@@ -15,6 +15,7 @@ import { useFavorites } from 'services/favorites';
 import { AntDesign, MaterialIcons, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
+import { useWeeklyGoals } from 'services/weeklyGoals';
 import { useProfile } from 'services/Profile';
 
 const HomePage = () => {
@@ -22,13 +23,14 @@ const HomePage = () => {
   const [recipeCardWidth, setRecipeCardWidth] = useState(0);
   const { navigate } = useNavigation();
   const { favorites, isLoading, getFavorites } = useFavorites();
-  const { profile, isLoading: isProfileLoading } = useProfile();
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
     'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
     'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
     'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
   });
+  const { profile } = useProfile();
+  const { progress, weeklyGoal } = useWeeklyGoals();
 
   if (!fontsLoaded) {
     return null;
@@ -68,12 +70,9 @@ const HomePage = () => {
             styles.sectionTopMargin2,
           ]}
         >
-          <Text style={styles.sectionText1}>
-            {(profile?.weeklyDaysCooked || 0 / profile?.weeklyGoal || 0) * 100}%
-            complete
-          </Text>
+          <Text style={styles.sectionText1}>{progress}% complete</Text>
           <Text style={styles.sectionText2}>
-            Cook <Text style={styles.sectionText1}>{profile?.weeklyGoal}</Text>{' '}
+            Cook <Text style={styles.sectionText1}>{weeklyGoal?.goal}</Text>{' '}
             times/ week
           </Text>
         </View>
@@ -87,7 +86,7 @@ const HomePage = () => {
           <View
             style={[
               styles.progressBar,
-              { width: '50%', backgroundColor: '#74CF82' },
+              { width: `${progress}%`, backgroundColor: '#74CF82' },
             ]}
           />
         </View>
@@ -122,7 +121,7 @@ const HomePage = () => {
             styles.sectionBottomMargin1,
           ]}
         >
-          Complete your goal to reach Level {profile?.level + 1}!
+          Complete your goal to reach Level {(profile?.level || 0) + 1}!
         </Text>
       </View>
       <Text style={styles.favouritesHText}>Favourites</Text>

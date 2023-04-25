@@ -116,7 +116,13 @@ const Settings = () => {
       <View style={styles.changeButton}>
         <Text style={styles.changeText}>Change Password</Text>
       </View>
-      <Pressable style={styles.logoutButton} onPress={() => logout()}>
+      <Pressable
+        style={styles.logoutButton}
+        onPress={async () => {
+          await logout();
+          navigation.navigate('Hero' as never);
+        }}
+      >
         <Text style={styles.logoutText}>Log Out</Text>
       </Pressable>
     </SafeAreaView>
