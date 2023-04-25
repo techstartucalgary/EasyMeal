@@ -3,7 +3,7 @@ import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useState } from 'react';
 import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
-import { useUpdateWeeklyGoals } from 'services/weeklyGoals';
+import { useUpdateWeeklyGoals, useWeeklyGoals } from 'services/weeklyGoals';
 import { useUpdateProfile } from 'services/Profile/useUpdateProfile';
 import { DailyGoalType } from './types';
 import { useDailyGoals } from './useDailyGoals';
@@ -12,6 +12,7 @@ export const useUpdateDailyGoals = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const { getDailyGoals } = useDailyGoals();
+  const { weeklyGoal } = useWeeklyGoals();
   const { completedTodaysGoal } = useUpdateWeeklyGoals();
 
   const updateDailyGoal = useCallback(
@@ -25,14 +26,14 @@ export const useUpdateDailyGoals = () => {
         if (docSnap.exists() && docSnap.get(date)) {
           await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
         }
-        if (!payload[date].completed) {
+        if (payload[date].completed && weeklyGoal?.updatedAt !== date) {
           await completedTodaysGoal();
         }
         await getDailyGoals();
         setIsLoading(false);
       }
     },
-    [currentUser, getDailyGoals, completedTodaysGoal],
+    [completedTodaysGoal, currentUser, getDailyGoals, weeklyGoal?.updatedAt],
   );
 
   return { updateDailyGoal, isLoading };

@@ -11,7 +11,7 @@ export const useRandomRecipe = ({ numberRecipes }: RandomRecipeType) => {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `https://api.spoonacular.com/recipes/random?apiKey=${SPOON_API_KEY}number=${numberRecipes}`,
+      `https://api.spoonacular.com/recipes/random?number=${numberRecipes}&apiKey=${SPOON_API_KEY}`,
     )
       .then((response) => response.json())
       .then((data) => {

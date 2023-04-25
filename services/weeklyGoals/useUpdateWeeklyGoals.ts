@@ -11,9 +11,12 @@ import {
 } from '@firebase/firestore';
 import { db } from 'utils/firebase-config';
 import { useUpdateProfile } from 'services/Profile/useUpdateProfile';
+import { format } from 'utils/date';
 import { useWeekRange } from './useWeekRange';
 import { WeeklyGoal } from './types';
 import { useWeeklyGoals } from './useWeeklyGoals';
+
+const date = format(new Date(), 'YYYY-MM-DD');
 
 export const useUpdateWeeklyGoals = () => {
   const { currentUser } = useAuthContext();
@@ -88,6 +91,7 @@ export const useUpdateWeeklyGoals = () => {
         const payload = {
           ...weeklyGoal,
           count: weeklyGoal.count + 1,
+          updatedAt: date,
         };
 
         await updateDoc(

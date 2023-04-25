@@ -216,24 +216,24 @@ const ProfilePage = () => {
           ...dailyGoal[date],
           calories: {
             ...dailyGoal[date].calories,
-            goal: parseInt(newCaloricGoal),
+            goal: parseInt(newCaloricGoal, 10),
           },
           carbs: {
             ...dailyGoal[date].carbs,
             goal: Math.floor(
-              ((carbPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
+              ((carbPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 4,
             ),
           },
           fat: {
             ...dailyGoal[date].fat,
             goal: Math.floor(
-              ((fatPercentage / 100.0) * parseInt(newCaloricGoal)) / 9,
+              ((fatPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 9,
             ),
           },
           protein: {
             ...dailyGoal[date].protein,
             goal: Math.floor(
-              ((proteinPercentage / 100.0) * parseInt(newCaloricGoal)) / 4,
+              ((proteinPercentage / 100.0) * parseInt(newCaloricGoal, 10)) / 4,
             ),
           },
         },
