@@ -39,6 +39,7 @@ import { goals } from './test-profile';
 const ProfilePage = () => {
   const [notificationsAvailable, setNotificationsAvailable] = useState(true);
   const slidePosition = useRef(new Animated.Value(0)).current;
+  const [badgesVisible, setBadgesVisible] = useState(true);
   const navigation = useNavigation();
 
   const [editDietVisible, setEditDietVisible] = useState(false);
@@ -294,242 +295,293 @@ const ProfilePage = () => {
           </Text>
         </View>
         <Text style={styles.header2Text}>Your Progress</Text>
-        <View
-          style={[styles.profileSectionContainer, styles.profileSectionPadding]}
-        >
-          <View style={[styles.flexRow, styles.alignCenter]}>
-            <Image
-              source={require('../../assets/images/emoji-bullseye.png')}
-              style={styles.smallEmoji}
-            />
-            <Text style={styles.sectionHeader1}>
-              Your weekly Goal{' '}
-              <Text style={styles.sectionSubHeader1}>(Level 3)</Text>
-            </Text>
-          </View>
+
+        <ScrollView horizontal={false} style={styles.progressScrollContainer}>
           <View
             style={[
-              styles.flexRow,
-              styles.alignCenter,
-              styles.justifySpaceBetween,
+              styles.profileSectionContainer,
+              styles.profileSectionPadding,
               styles.sectionTopMargin1,
-              styles.sectionRightMargin1,
-            ]}
-          >
-            <Text style={styles.sectionHeader2}>60% complete</Text>
-            <Text style={styles.sectionHeader3}>
-              Cook <Text style={styles.sectionHeader2}>5</Text> times/ week
-            </Text>
-          </View>
-          <View style={styles.sectionArrowIcon}>
-            <Feather
-              name="chevron-right"
-              size={20}
-              color="#6536F9"
-              onPress={() => slideProfilePage(true)}
-            />
-          </View>
-          <View
-            style={[
-              styles.progressBar,
-              styles.sectionTopMargin2,
-              styles.sectionRightMargin1,
             ]}
           >
             <View
               style={[
-                styles.progressBarFilled,
-                { backgroundColor: '#74CF82', width: '50%' },
+                styles.featuredBadgeContainer,
+                styles.sectionRightMargin1,
               ]}
-            />
-          </View>
-          <Text style={[styles.sectionSubHeader2, styles.sectionTopMargin1]}>
-            Complete your goal to reach Level 4!
-          </Text>
-        </View>
-        <View
-          style={[styles.profileSectionContainer, styles.profileSectionPadding]}
-        >
-          <View style={[styles.flexRow, styles.justifySpaceBetween]}>
-            <Text style={styles.sectionHeader1}>Daily diet goals</Text>
-            <Pressable
-              onPress={() => {
-                // getDailyGoals();
-                // console.log(dailyGoal);
-                updateEditDiet();
-                setEditDietVisible((prevVal) => !prevVal);
-                // let tmp = dailyGoal;
-                // tmp['calories'].count = 1200;
-                // updateDailyGoal(tmp);
-
-                // console.log(dailyGoal['calories'].count);
-              }}
-              style={styles.editDietButton}
             >
-              <FontAwesome5 name="pen" size={12} color="black" />
-            </Pressable>
+              <Image
+                source={require('../../assets/temp-images/testbadge01.png')}
+                resizeMode={'center'}
+                style={styles.featuredBadgeImage}
+              />
+              <View style={styles.flexColumn}>
+                <Text style={styles.sectionHeader1}>Pro in the kitchen</Text>
+                <Text style={styles.featuredBadgeProgressText}>
+                  Cook 3 more meals to earn this badge!
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.sectionArrowIcon}>
+              <Feather
+                name="chevron-right"
+                size={20}
+                color="#6536F9"
+                onPress={() => {
+                  setBadgesVisible(true);
+                  slideProfilePage(true);
+                }}
+              />
+            </View>
+          </View>
+          <View
+            style={[
+              styles.profileSectionContainer,
+              styles.profileSectionPadding,
+            ]}
+          >
+            <View style={[styles.flexRow, styles.alignCenter]}>
+              <Image
+                source={require('../../assets/images/emoji-bullseye.png')}
+                style={styles.smallEmoji}
+              />
+              <Text style={styles.sectionHeader1}>
+                Your weekly Goal{' '}
+                <Text style={styles.sectionSubHeader1}>(Level 3)</Text>
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.flexRow,
+                styles.alignCenter,
+                styles.justifySpaceBetween,
+                styles.sectionTopMargin1,
+                styles.sectionRightMargin1,
+              ]}
+            >
+              <Text style={styles.sectionHeader2}>60% complete</Text>
+              <Text style={styles.sectionHeader3}>
+                Cook <Text style={styles.sectionHeader2}>5</Text> times/ week
+              </Text>
+            </View>
+            <View style={styles.sectionArrowIcon}>
+              <Feather
+                name="chevron-right"
+                size={20}
+                color="#6536F9"
+                onPress={() => {
+                  setBadgesVisible(false);
+                  slideProfilePage(true);
+                }}
+              />
+            </View>
+            <View
+              style={[
+                styles.progressBar,
+                styles.sectionTopMargin2,
+                styles.sectionRightMargin1,
+              ]}
+            >
+              <View
+                style={[
+                  styles.progressBarFilled,
+                  { backgroundColor: '#74CF82', width: '50%' },
+                ]}
+              />
+            </View>
+            <Text style={[styles.sectionSubHeader2, styles.sectionTopMargin1]}>
+              Complete your goal to reach Level 4!
+            </Text>
           </View>
 
           <View
             style={[
-              styles.flexRow,
-              styles.alignCenter,
-              styles.sectionTopMargin2,
-              styles.sectionRightMargin2,
+              styles.profileSectionContainer,
+              styles.profileSectionPadding,
             ]}
           >
-            <Image
-              source={require('../../assets/images/emoji-fire.png')}
-              style={[styles.smallEmoji]}
-            />
-            <View style={[styles.flexColumn, styles.flexFill]}>
-              <View
-                style={[
-                  styles.flexRow,
-                  styles.alignCenter,
-                  styles.justifySpaceBetween,
-                  styles.sectionRightMargin2,
-                ]}
-              >
-                <Text style={styles.sectionHeader2}>Calories</Text>
-                <View>
-                  <Text style={styles.sectionSubHeader3}>
-                    {dailyGoal ? dailyGoal[date].calories.count : 0} /{' '}
-                    {dailyGoal ? dailyGoal[date].calories.goal : 0} CAL
-                  </Text>
-                </View>
-              </View>
-              <View style={[styles.progressBar, styles.sectionTopMargin2]}>
-                <View
-                  style={[
-                    styles.progressBarFilled,
-                    { backgroundColor: '#74CF82', width: '80%' },
-                  ]}
-                />
-              </View>
-            </View>
-          </View>
+            <View style={[styles.flexRow, styles.justifySpaceBetween]}>
+              <Text style={styles.sectionHeader1}>Daily diet goals</Text>
+              <Pressable
+                onPress={() => {
+                  // getDailyGoals();
+                  // console.log(dailyGoal);
+                  updateEditDiet();
+                  setEditDietVisible((prevVal) => !prevVal);
+                  // let tmp = dailyGoal;
+                  // tmp['calories'].count = 1200;
+                  // updateDailyGoal(tmp);
 
-          <View
-            style={[
-              styles.flexRow,
-              styles.alignCenter,
-              styles.sectionTopMargin1,
-              styles.sectionRightMargin2,
-            ]}
-          >
-            <Image
-              source={require('../../assets/images/emoji-poultryleg.png')}
-              style={[styles.smallEmoji]}
-            />
-            <View style={[styles.flexColumn, styles.flexFill]}>
-              <View
-                style={[
-                  styles.flexRow,
-                  styles.alignCenter,
-                  styles.justifySpaceBetween,
-                  styles.sectionRightMargin2,
-                ]}
+                  // console.log(dailyGoal['calories'].count);
+                }}
+                style={styles.editDietButton}
               >
-                <Text style={styles.sectionHeader2}>Protein</Text>
-                <View>
-                  <Text style={styles.sectionSubHeader3}>
-                    {dailyGoal ? dailyGoal[date].protein.count : 0} /{' '}
-                    {dailyGoal ? dailyGoal[date].protein.goal : 0} G
-                  </Text>
-                </View>
-              </View>
-              <View style={[styles.progressBar, styles.sectionTopMargin2]}>
-                <View
-                  style={[
-                    styles.progressBarFilled,
-                    { backgroundColor: '#C05CC2', width: '68%' },
-                  ]}
-                />
-              </View>
+                <FontAwesome5 name="pen" size={12} color="black" />
+              </Pressable>
             </View>
-          </View>
 
-          <View
-            style={[
-              styles.flexRow,
-              styles.alignCenter,
-              styles.sectionTopMargin1,
-              styles.sectionRightMargin2,
-            ]}
-          >
-            <Image
-              source={require('../../assets/images/emoji-bread.png')}
-              style={[styles.smallEmoji]}
-            />
-            <View style={[styles.flexColumn, styles.flexFill]}>
-              <View
-                style={[
-                  styles.flexRow,
-                  styles.alignCenter,
-                  styles.justifySpaceBetween,
-                  styles.sectionRightMargin2,
-                ]}
-              >
-                <Text style={styles.sectionHeader2}>Carbs</Text>
-                <View>
-                  <Text style={styles.sectionSubHeader3}>
-                    {dailyGoal ? dailyGoal[date].carbs.count : 0} /{' '}
-                    {dailyGoal ? dailyGoal[date].carbs.goal : 0} G
-                  </Text>
-                </View>
-              </View>
-              <View style={[styles.progressBar, styles.sectionTopMargin2]}>
+            <View
+              style={[
+                styles.flexRow,
+                styles.alignCenter,
+                styles.sectionTopMargin2,
+                styles.sectionRightMargin2,
+              ]}
+            >
+              <Image
+                source={require('../../assets/images/emoji-fire.png')}
+                style={[styles.smallEmoji]}
+              />
+              <View style={[styles.flexColumn, styles.flexFill]}>
                 <View
                   style={[
-                    styles.progressBarFilled,
-                    { backgroundColor: '#E3B428', width: '44%' },
+                    styles.flexRow,
+                    styles.alignCenter,
+                    styles.justifySpaceBetween,
+                    styles.sectionRightMargin2,
                   ]}
-                />
+                >
+                  <Text style={styles.sectionHeader2}>Calories</Text>
+                  <View>
+                    <Text style={styles.sectionSubHeader3}>
+                      {dailyGoal ? dailyGoal[date].calories.count : 0} /{' '}
+                      {dailyGoal ? dailyGoal[date].calories.goal : 0} CAL
+                    </Text>
+                  </View>
+                </View>
+                <View style={[styles.progressBar, styles.sectionTopMargin2]}>
+                  <View
+                    style={[
+                      styles.progressBarFilled,
+                      { backgroundColor: '#74CF82', width: '80%' },
+                    ]}
+                  />
+                </View>
               </View>
             </View>
-          </View>
 
-          <View
-            style={[
-              styles.flexRow,
-              styles.alignCenter,
-              styles.sectionTopMargin1,
-              styles.sectionRightMargin2,
-            ]}
-          >
-            <Image
-              source={require('../../assets/images/emoji-avocado.png')}
-              style={[styles.smallEmoji]}
-            />
-            <View style={[styles.flexColumn, styles.flexFill]}>
-              <View
-                style={[
-                  styles.flexRow,
-                  styles.alignCenter,
-                  styles.justifySpaceBetween,
-                  styles.sectionRightMargin2,
-                ]}
-              >
-                <Text style={styles.sectionHeader2}>Fat</Text>
-                <View>
-                  <Text style={styles.sectionSubHeader3}>
-                    {dailyGoal ? dailyGoal[date].fat.count : 0} /{' '}
-                    {dailyGoal ? dailyGoal[date].fat.goal : 0} G
-                  </Text>
-                </View>
-              </View>
-              <View style={[styles.progressBar, styles.sectionTopMargin2]}>
+            <View
+              style={[
+                styles.flexRow,
+                styles.alignCenter,
+                styles.sectionTopMargin1,
+                styles.sectionRightMargin2,
+              ]}
+            >
+              <Image
+                source={require('../../assets/images/emoji-poultryleg.png')}
+                style={[styles.smallEmoji]}
+              />
+              <View style={[styles.flexColumn, styles.flexFill]}>
                 <View
                   style={[
-                    styles.progressBarFilled,
-                    { backgroundColor: '#39C3B3', width: '43%' },
+                    styles.flexRow,
+                    styles.alignCenter,
+                    styles.justifySpaceBetween,
+                    styles.sectionRightMargin2,
                   ]}
-                />
+                >
+                  <Text style={styles.sectionHeader2}>Protein</Text>
+                  <View>
+                    <Text style={styles.sectionSubHeader3}>
+                      {dailyGoal ? dailyGoal[date].protein.count : 0} /{' '}
+                      {dailyGoal ? dailyGoal[date].protein.goal : 0} G
+                    </Text>
+                  </View>
+                </View>
+                <View style={[styles.progressBar, styles.sectionTopMargin2]}>
+                  <View
+                    style={[
+                      styles.progressBarFilled,
+                      { backgroundColor: '#C05CC2', width: '68%' },
+                    ]}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.flexRow,
+                styles.alignCenter,
+                styles.sectionTopMargin1,
+                styles.sectionRightMargin2,
+              ]}
+            >
+              <Image
+                source={require('../../assets/images/emoji-bread.png')}
+                style={[styles.smallEmoji]}
+              />
+              <View style={[styles.flexColumn, styles.flexFill]}>
+                <View
+                  style={[
+                    styles.flexRow,
+                    styles.alignCenter,
+                    styles.justifySpaceBetween,
+                    styles.sectionRightMargin2,
+                  ]}
+                >
+                  <Text style={styles.sectionHeader2}>Carbs</Text>
+                  <View>
+                    <Text style={styles.sectionSubHeader3}>
+                      {dailyGoal ? dailyGoal[date].carbs.count : 0} /{' '}
+                      {dailyGoal ? dailyGoal[date].carbs.goal : 0} G
+                    </Text>
+                  </View>
+                </View>
+                <View style={[styles.progressBar, styles.sectionTopMargin2]}>
+                  <View
+                    style={[
+                      styles.progressBarFilled,
+                      { backgroundColor: '#E3B428', width: '44%' },
+                    ]}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.flexRow,
+                styles.alignCenter,
+                styles.sectionTopMargin1,
+                styles.sectionRightMargin2,
+              ]}
+            >
+              <Image
+                source={require('../../assets/images/emoji-avocado.png')}
+                style={[styles.smallEmoji]}
+              />
+              <View style={[styles.flexColumn, styles.flexFill]}>
+                <View
+                  style={[
+                    styles.flexRow,
+                    styles.alignCenter,
+                    styles.justifySpaceBetween,
+                    styles.sectionRightMargin2,
+                  ]}
+                >
+                  <Text style={styles.sectionHeader2}>Fat</Text>
+                  <View>
+                    <Text style={styles.sectionSubHeader3}>
+                      {dailyGoal ? dailyGoal[date].fat.count : 0} /{' '}
+                      {dailyGoal ? dailyGoal[date].fat.goal : 0} G
+                    </Text>
+                  </View>
+                </View>
+                <View style={[styles.progressBar, styles.sectionTopMargin2]}>
+                  <View
+                    style={[
+                      styles.progressBarFilled,
+                      { backgroundColor: '#39C3B3', width: '43%' },
+                    ]}
+                  />
+                </View>
               </View>
             </View>
           </View>
-        </View>
+        </ScrollView>
 
         <Modal
           animationType="slide"
@@ -752,7 +804,10 @@ const ProfilePage = () => {
           </View>
         </Modal>
       </SafeAreaView>
-      <DetailedCookingGoal animateFunction={slideProfilePage} />
+      <DetailedCookingGoal
+        animateFunction={slideProfilePage}
+        badgesPageVisible={badgesVisible}
+      />
     </Animated.View>
   );
 };
@@ -846,6 +901,24 @@ const styles = StyleSheet.create({
   editDietTopMargin4: {
     marginTop: 20,
   },
+  featuredBadgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  featuredBadgeImage: {
+    marginRight: 32,
+
+    height: 48,
+    width: 48,
+  },
+  featuredBadgeProgressText: {
+    marginTop: 8,
+
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 11,
+    color: '#797979',
+  },
   flexColumn: {
     flexDirection: 'column',
   },
@@ -861,7 +934,7 @@ const styles = StyleSheet.create({
     color: '#33363F',
   },
   header2Text: {
-    marginTop: 44,
+    marginTop: 20,
     marginLeft: 28,
 
     fontFamily: 'Inter-SemiBold',
@@ -872,7 +945,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   profilePageContainer: {
-    height: Dimensions.get('screen').height,
     maxWidth: Dimensions.get('screen').width,
     width: Dimensions.get('screen').width,
     backgroundColor: '#F8F8F8',
@@ -884,11 +956,12 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
 
     paddingTop: 12,
+    marginBottom: 20,
     marginLeft: 24,
     marginRight: 24,
   },
   profileSectionContainer: {
-    marginTop: 28,
+    marginBottom: 20,
     marginHorizontal: 16,
     borderRadius: 22,
 
@@ -916,6 +989,11 @@ const styles = StyleSheet.create({
   progressBarFilled: {
     height: 8,
     borderRadius: 4,
+  },
+  progressScrollContainer: {
+    flex: 1,
+    marginTop: 4,
+    marginBottom: 64,
   },
   rowSpaceBetween: {
     flexDirection: 'row',
