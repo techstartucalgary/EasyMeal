@@ -287,9 +287,10 @@ const RecipeOverview = () => {
         </View>
         <View style={styles.instrwrapper}>
           <Text style={styles.instrheading}>Instructions</Text>
-
           <View style={styles.stepdesc}>
-            <RenderHtml source={{ html: recipeInformation?.instructions }} />
+            <RenderHtml
+              source={{ html: recipeInformation?.instructions || '' }}
+            />
           </View>
         </View>
       </View>
