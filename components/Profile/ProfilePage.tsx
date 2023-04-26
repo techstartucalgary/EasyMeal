@@ -65,8 +65,6 @@ const ProfilePage = () => {
   const { updateDailyGoal, isLoading: setDailyIsLoading } =
     useUpdateDailyGoals();
 
-  // console.log(dailyGoal);
-
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
     'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
@@ -187,7 +185,7 @@ const ProfilePage = () => {
       fatPercentage = parseInt(editFatGoal, 10);
     }
 
-    if (carbPercentage + proteinPercentage + fatPercentage != 100) {
+    if (carbPercentage + proteinPercentage + fatPercentage !== 100) {
       return;
     }
 
@@ -314,14 +312,14 @@ const ProfilePage = () => {
                 <CircularProgressBase
                   value={40}
                   radius={38}
-                  activeStrokeColor={'#6536F9'}
-                  inActiveStrokeColor={'#E0E0E0'}
+                  activeStrokeColor="#6536F9"
+                  inActiveStrokeColor="#E0E0E0"
                   activeStrokeWidth={4}
                   inActiveStrokeWidth={4}
                 >
                   <Image
                     source={require('../../assets/temp-images/testbadge03.png')}
-                    resizeMode={'center'}
+                    resizeMode="center"
                     style={styles.featuredBadgeImage}
                   />
                 </CircularProgressBase>

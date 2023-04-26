@@ -94,6 +94,10 @@ export const useUpdateWeeklyGoals = () => {
           updatedAt: date,
         };
 
+        if (weeklyGoal.count + 1 === weeklyGoal.goal) {
+          levelUp();
+        }
+
         await updateDoc(
           doc(db, 'weekly_goals', currentUser?.uid, 'goals', document.id),
           payload,
@@ -101,7 +105,7 @@ export const useUpdateWeeklyGoals = () => {
       });
     }
     setIsLoading(false);
-  }, [currentUser, firstDay, lastDay]);
+  }, [currentUser, firstDay, lastDay, levelUp]);
 
   return { updateWeeklyGoal, completedTodaysGoal, isLoading };
 };
