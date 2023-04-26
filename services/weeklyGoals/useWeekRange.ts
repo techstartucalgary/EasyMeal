@@ -8,5 +8,36 @@ export const useWeekRange = () => {
   const firstDay = format(new Date(curr.setDate(first)), 'YYYY-MM-DD');
   const lastDay = format(new Date(curr.setDate(last)), 'YYYY-MM-DD');
 
-  return { firstDay, lastDay };
+  const weekDaysArray = [
+    {
+      title: 'MON',
+      value: format(new Date(curr.setDate(first)), 'YYYY-MM-DD'),
+    },
+    {
+      title: 'TUE',
+      value: format(new Date(curr.setDate(first + 1)), 'YYYY-MM-DD'),
+    },
+    {
+      title: 'WED',
+      value: format(new Date(curr.setDate(first + 2)), 'YYYY-MM-DD'),
+    },
+    {
+      title: 'THU',
+      value: format(new Date(curr.setDate(first + 3)), 'YYYY-MM-DD'),
+    },
+    {
+      title: 'FRI',
+      value: format(new Date(curr.setDate(first + 4)), 'YYYY-MM-DD'),
+    },
+    {
+      title: 'SAT',
+      value: format(new Date(curr.setDate(first + 5)), 'YYYY-MM-DD'),
+    },
+    {
+      title: 'SUN',
+      value: format(new Date(curr.setDate(first + 6)), 'YYYY-MM-DD'),
+    },
+  ];
+
+  return { firstDay, lastDay, weekDaysArray };
 };
