@@ -10,31 +10,31 @@ export const useWeekRange = () => {
 
   const weekDaysArray = [
     {
-      title: 'MON',
+      title: 'SUN',
       value: format(new Date(curr.setDate(first)), 'YYYY-MM-DD'),
     },
     {
-      title: 'TUE',
+      title: 'MON',
       value: format(new Date(curr.setDate(first + 1)), 'YYYY-MM-DD'),
     },
     {
-      title: 'WED',
+      title: 'TUE',
       value: format(new Date(curr.setDate(first + 2)), 'YYYY-MM-DD'),
     },
     {
-      title: 'THU',
+      title: 'WED',
       value: format(new Date(curr.setDate(first + 3)), 'YYYY-MM-DD'),
     },
     {
-      title: 'FRI',
+      title: 'THU',
       value: format(new Date(curr.setDate(first + 4)), 'YYYY-MM-DD'),
     },
     {
-      title: 'SAT',
+      title: 'FRI',
       value: format(new Date(curr.setDate(first + 5)), 'YYYY-MM-DD'),
     },
     {
-      title: 'SUN',
+      title: 'SAT',
       value: format(new Date(curr.setDate(first + 6)), 'YYYY-MM-DD'),
     },
   ];
