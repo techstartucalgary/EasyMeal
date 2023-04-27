@@ -34,6 +34,7 @@ import {
   useWeeklyGoals,
 } from 'services/weeklyGoals';
 import { useDailyGoals } from 'services/dailyGoals';
+import { useProfile } from 'services/Profile';
 import { weeklyGoals, goals } from './test-profile';
 import DetailedBadges from './DetailedBadges';
 import CalendarSection from './Calendar';
@@ -54,6 +55,7 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
   const { weeklyGoal, progress } = useWeeklyGoals();
   const { dailyGoal } = useDailyGoals();
   const { weekDaysArray } = useWeekRange();
+  const { profile, isLoading: profileIsLoading, getProfile } = useProfile();
 
   useEffect(() => {
     if (weeklyGoal?.goal) {
@@ -103,7 +105,8 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
               style={styles.mediumEmoji}
             />
             <Text style={styles.sectionHeader1}>
-              Currently at <Text style={styles.boldText}>Level 3</Text>
+              Currently at{' '}
+              <Text style={styles.boldText}>Level {profile?.level || 0}</Text>
             </Text>
           </View>
           <Pressable
@@ -136,7 +139,7 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
           <View
             style={[
               styles.progressBar,
-              { width: '50%', backgroundColor: '#74CF82' },
+              { width: `${progress}%`, backgroundColor: '#74CF82' },
             ]}
           />
         </View>
@@ -171,7 +174,7 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
             styles.sectionBottomMargin1,
           ]}
         >
-          Complete your goal to reach Level 4!
+          Complete your goal to reach Level {(profile?.level || 0) + 1}!
         </Text>
       </View>
 
