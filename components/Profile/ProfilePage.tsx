@@ -33,6 +33,7 @@ import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import { useNavigation } from '@react-navigation/native';
 import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
 import { useWeeklyGoals } from 'services/weeklyGoals';
+import { useProfile } from 'services/Profile';
 import DetailedCookingGoal from './DetailedCookingGoal';
 import Settings from './Settings';
 
@@ -64,6 +65,7 @@ const ProfilePage = () => {
   } = useDailyGoals();
   const { updateDailyGoal, isLoading: setDailyIsLoading } =
     useUpdateDailyGoals();
+  const { profile, isLoading: profileIsLoading, getProfile } = useProfile();
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -370,7 +372,9 @@ const ProfilePage = () => {
               />
               <Text style={styles.sectionHeader1}>
                 Your weekly Goal{' '}
-                <Text style={styles.sectionSubHeader1}>(Level 3)</Text>
+                <Text style={styles.sectionSubHeader1}>
+                  (Level {profile?.level || 0})
+                </Text>
               </Text>
             </View>
             <View
@@ -406,7 +410,7 @@ const ProfilePage = () => {
             </View>
 
             <Text style={[styles.sectionSubHeader2, styles.sectionTopMargin1]}>
-              Complete your goal to reach Level 4!
+              Complete your goal to reach Level {(profile?.level || 0) + 1}!
             </Text>
             <View style={styles.sectionArrowIcon}>
               <Feather

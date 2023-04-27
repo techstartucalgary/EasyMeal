@@ -376,6 +376,7 @@ const PantryPage = () => {
               return null;
             }}
             initialNumToRender={20}
+            ListHeaderComponent={<View style={styles.pantryResultsHeader} />}
             ListFooterComponent={<View style={styles.pantryResultsFooter} />}
           />
         )}
@@ -895,7 +896,7 @@ const styles = StyleSheet.create({
   },
   pantryCardContainer: {
     marginTop: 4,
-    marginBottom: 10,
+    marginBottom: 12,
     marginLeft: 16,
     marginRight: 16,
     height: 92,
@@ -924,15 +925,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   pantryCardShadow: {
-    shadowColor: '#5a6cea',
+    shadowColor: '#AAA',
     shadowOffset: {
       width: 0,
-      height: 9,
+      height: 3,
     },
-    shadowOpacity: 0.37,
-    shadowRadius: 7.49,
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
 
-    elevation: 12,
+    elevation: 6,
   },
   pantryCardTextContainer: {
     flexShrink: 1,
@@ -996,9 +997,14 @@ const styles = StyleSheet.create({
     height: 12,
     backgroundColor: 'rgba(0, 0, 0, 0)',
   },
+  pantryResultsHeader: {
+    width: '100%',
+    height: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
   pantryResultsFooter: {
     width: '100%',
-    height: 20,
+    height: 4,
     backgroundColor: 'rgba(0, 0, 0, 0)',
   },
   pantryTypeBar: {
