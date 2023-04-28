@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 // import { StatusBar } from 'expo-status-bar';
 // import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AuthProvider } from 'contexts/AuthContext/AuthProvider';
 import { NavigationContainer } from '@react-navigation/native';
@@ -24,20 +25,29 @@ function PrivateTabs() {
         headerShown: false,
 
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName = '';
+          let iconName = undefined;
 
           if (route.name === 'Home') {
-            iconName = focused ? 'ios-home' : 'ios-home-outline';
+            iconName = focused
+              ? require('./assets/images/icon-home-filled.png')
+              : require('./assets/images/icon-home.png');
           } else if (route.name === 'Search') {
-            iconName = focused ? 'ios-search' : 'ios-search-outline';
+            iconName = focused
+              ? require('./assets/images/icon-search-filled.png')
+              : require('./assets/images/icon-search.png');
           } else if (route.name === 'Pantry') {
-            iconName = focused ? 'ios-basket' : 'ios-basket-outline';
+            iconName = focused
+              ? require('./assets/images/icon-pantry-filled.png')
+              : require('./assets/images/icon-pantry.png');
           } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
+            iconName = focused
+              ? require('./assets/images/icon-profile-filled.png')
+              : require('./assets/images/icon-profile.png');
           }
 
           // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
+          //return <Ionicons name={iconName} size={size} color={color} />;
+          return <Image source={iconName} style={styles.iconImage} />;
         },
         tabBarActiveTintColor: '#6536F9',
         tabBarInactiveTintColor: '#9FA5C0',
@@ -86,11 +96,9 @@ const App = () => (
 
 export default App;
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
+const styles = StyleSheet.create({
+  iconImage: {
+    height: 20,
+    width: 20,
+  },
+});

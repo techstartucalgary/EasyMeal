@@ -26,6 +26,7 @@ function SignUpPage() {
   const [nameInput, setNameInput] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [displayErrorText, setDisplayErrorText] = useState(false);
   const { register, signInWithGoogle, signInWithFacebook } = useAuthContext();
 
   const [fontsLoaded] = useFonts({
@@ -89,10 +90,17 @@ function SignUpPage() {
         />
       </View>
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
+
+      {displayErrorText && (
+        <Text style={styles.errorText}>Invalid Email or Password</Text>
+      )}
+
       <Text
         style={styles.signupButton}
         onPress={() => {
-          register({ registerEmail, registerPassword });
+          register({ registerEmail, registerPassword }).catch((error) => {
+            setDisplayErrorText(true);
+          });
         }}
       >
         Sign Up
@@ -202,6 +210,13 @@ const styles = StyleSheet.create({
   },
   emailInput: {
     marginTop: 24,
+  },
+  errorText: {
+    color: '#FF4533',
+    fontFamily: 'Inter-Regular',
+    fontSize: 13,
+    marginLeft: 20,
+    marginTop: 4,
   },
   forgotPassword: {
     color: '#6536F9',
