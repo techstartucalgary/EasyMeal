@@ -232,17 +232,17 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
             </Text>
             <TextInput
               keyboardType="numeric"
-              maxLength={1}
-              placeholder="e.g. 7"
+              maxLength={3}
+              placeholder="e.g. 20"
               defaultValue={weeklyGoal?.goal.toString() || '0'}
               value={editGoalValue}
               onChangeText={(text) => {
-                setEditGoalValue(text.replace(/\D/g, ''));
+                // setEditGoalValue(text.replace(/\D/g, ''));
+                setEditGoalValue(text);
               }}
               style={styles.sectionTextInput}
             />
           </View>
-
           <View
             style={[styles.rowSpaceBetween, styles.sectionHorizontalMargin]}
           >

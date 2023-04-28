@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,6 @@ import {
   Pressable,
   Image,
   ScrollView,
-  FlatList,
   Modal,
   Dimensions,
   TextInput,
@@ -18,7 +17,6 @@ import {
 } from 'react-native';
 
 import {
-  AntDesign,
   Feather,
   Ionicons,
   MaterialCommunityIcons,
@@ -26,9 +24,6 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { LinearGradient } from 'expo-linear-gradient';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import Autocomplete from 'react-native-autocomplete-input';
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import { useNavigation } from '@react-navigation/native';
 import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
@@ -62,6 +57,10 @@ const ProfilePage = () => {
     isLoading: getDailyIsLoading,
     getDailyGoals,
     date,
+    caloriesProgress,
+    proteinProgress,
+    carbsProgress,
+    fatProgress,
   } = useDailyGoals();
   const { updateDailyGoal, isLoading: setDailyIsLoading } =
     useUpdateDailyGoals();
@@ -486,7 +485,10 @@ const ProfilePage = () => {
                   <View
                     style={[
                       styles.progressBarFilled,
-                      { backgroundColor: '#74CF82', width: '80%' },
+                      {
+                        backgroundColor: '#74CF82',
+                        width: `${caloriesProgress}%`,
+                      },
                     ]}
                   />
                 </View>
@@ -528,7 +530,10 @@ const ProfilePage = () => {
                   <View
                     style={[
                       styles.progressBarFilled,
-                      { backgroundColor: '#C05CC2', width: '68%' },
+                      {
+                        backgroundColor: '#C05CC2',
+                        width: `${proteinProgress}%`,
+                      },
                     ]}
                   />
                 </View>
@@ -568,7 +573,10 @@ const ProfilePage = () => {
                   <View
                     style={[
                       styles.progressBarFilled,
-                      { backgroundColor: '#E3B428', width: '44%' },
+                      {
+                        backgroundColor: '#E3B428',
+                        width: `${carbsProgress}%`,
+                      },
                     ]}
                   />
                 </View>
@@ -608,7 +616,7 @@ const ProfilePage = () => {
                   <View
                     style={[
                       styles.progressBarFilled,
-                      { backgroundColor: '#39C3B3', width: '43%' },
+                      { backgroundColor: '#39C3B3', width: `${fatProgress}%` },
                     ]}
                   />
                 </View>
