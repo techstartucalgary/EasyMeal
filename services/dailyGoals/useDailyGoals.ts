@@ -51,7 +51,27 @@ export const useDailyGoals = () => {
 
           const payload: DailyGoalType = {
             ...docSnap.data(),
-            [date]: prevElement.value,
+            [date]: {
+              ...prevElement.value,
+              calories: {
+                count: docSnap.data()[date]?.calories?.count || 0,
+                goal: prevElement.value.calories.goal,
+              },
+              carbs: {
+                count: docSnap.data()[date]?.carbs?.count || 0,
+                goal: prevElement.value.carbs.goal,
+              },
+              fat: {
+                count: docSnap.data()[date]?.fat?.count || 0,
+                goal: prevElement.value.fat.goal,
+              },
+              protein: {
+                count: docSnap.data()[date]?.protein?.count || 0,
+                goal: prevElement.value.protein.goal,
+              },
+              completed: !!docSnap.data()[date]?.completed,
+              cookedTimes: docSnap.data()[date]?.cookedTimes || 0,
+            },
           };
 
           await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
@@ -112,11 +132,47 @@ export const useDailyGoals = () => {
       )
     : undefined;
 
+  const calProgress = dailyGoal
+    ? (Math.round(dailyGoal[date]?.calories?.count || 0) /
+        Math.round(dailyGoal[date].calories.goal)) *
+      100
+    : 0;
+
+  const caloriesProgress = calProgress >= 100 ? 100 : calProgress;
+
+  const protProgress = dailyGoal
+    ? (Math.round(dailyGoal[date]?.protein?.count || 0) /
+        Math.round(dailyGoal[date].protein.goal)) *
+      100
+    : 0;
+
+  const proteinProgress = protProgress >= 100 ? 100 : protProgress;
+
+  const carbProgress = dailyGoal
+    ? (Math.round(dailyGoal[date]?.carbs?.count || 0) /
+        Math.round(dailyGoal[date].carbs.goal)) *
+      100
+    : 0;
+
+  const carbsProgress = carbProgress >= 100 ? 100 : carbProgress;
+
+  const fatsProgress = dailyGoal
+    ? (Math.round(dailyGoal[date]?.fat?.count || 0) /
+        Math.round(dailyGoal[date].fat.goal)) *
+      100
+    : 0;
+
+  const fatProgress = fatsProgress >= 100 ? 100 : fatsProgress;
+
   return {
     dailyGoal,
     markedDates,
     isLoading,
     getDailyGoals,
     date,
+    caloriesProgress,
+    proteinProgress,
+    carbsProgress,
+    fatProgress,
   };
 };
