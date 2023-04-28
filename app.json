@@ -22,6 +22,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.easymeal",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -29,6 +31,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b657ada8-565d-448e-9ac7-7616b438a57e"
+      }
     }
   }
 }
