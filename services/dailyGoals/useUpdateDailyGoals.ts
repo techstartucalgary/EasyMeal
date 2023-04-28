@@ -23,13 +23,21 @@ export const useUpdateDailyGoals = () => {
         if (docSnap.exists() && docSnap.get(date)) {
           await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
         }
-        if (payload[date].completed && weeklyGoal?.updatedAt !== date) {
-          await completedTodaysGoal();
+        if (weeklyGoal?.updatedAt === date) {
+          if (payload[date].completed && weeklyGoal.count < weeklyGoal.goal) {
+            await completedTodaysGoal();
+          }
         }
         setIsLoading(false);
       }
     },
-    [completedTodaysGoal, currentUser, weeklyGoal?.updatedAt],
+    [
+      completedTodaysGoal,
+      currentUser,
+      weeklyGoal?.count,
+      weeklyGoal?.goal,
+      weeklyGoal?.updatedAt,
+    ],
   );
 
   return { updateDailyGoal, isLoading };

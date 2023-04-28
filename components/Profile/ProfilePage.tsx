@@ -110,6 +110,10 @@ const ProfilePage = () => {
       fat: string;
     },
   ) => {
+    if (updatedGoals.caloric.length <= 0) {
+      updatedGoals.caloric = '0';
+    }
+
     if (type === 'carbs' || type === 'all') {
       setEditCarbGrams(
         Math.floor(
