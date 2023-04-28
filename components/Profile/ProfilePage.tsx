@@ -137,15 +137,22 @@ const ProfilePage = () => {
   const updateEditDiet = () => {
     if (dailyGoal) {
       const prevCaloric = dailyGoal[date].calories.goal;
-      const prevCarb = Math.floor(
+
+      let prevCarb = Math.floor(
         ((dailyGoal[date].carbs.goal * 4) / prevCaloric) * 100,
       );
-      const prevProtein = Math.floor(
+      let prevProtein = Math.floor(
         ((dailyGoal[date].protein.goal * 4) / prevCaloric) * 100,
       );
-      const prevFat = Math.floor(
+      let prevFat = Math.floor(
         ((dailyGoal[date].fat.goal * 9) / prevCaloric) * 100,
       );
+
+      if (prevCaloric === 0) {
+        prevCarb = 0;
+        prevProtein = 0;
+        prevFat = 0;
+      }
 
       setEditCaloricGoal(`${prevCaloric}`);
       setEditCarbGoal(`${prevCarb}%`);
