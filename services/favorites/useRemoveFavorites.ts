@@ -8,11 +8,10 @@ export function useRemoveFavorites() {
   const [isLoading, setIsLoading] = useState(false);
   const { currentUser } = useAuthContext();
 
-  const { favorites, getFavorites } = useFavorites();
+  const { favorites } = useFavorites();
 
   async function removeFavorites(id: number) {
     setIsLoading(true);
-    await getFavorites();
     if (currentUser) {
       if (!favorites) {
         await setDoc(doc(db, 'favorites', currentUser.uid), {
@@ -23,7 +22,6 @@ export function useRemoveFavorites() {
         await setDoc(doc(db, 'favorites', currentUser.uid), {
           recipes: favorites.filter((el) => el.id !== id),
         });
-        await getFavorites();
         setIsLoading(false);
       }
     }

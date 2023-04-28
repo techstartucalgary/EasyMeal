@@ -1,4 +1,4 @@
-import React, { useState, PropsWithChildren } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,38 +7,22 @@ import {
   StatusBar,
   Platform,
   Pressable,
-  Image,
-  ScrollView,
-  FlatList,
-  Modal,
   Dimensions,
   TextInput,
-  Button,
 } from 'react-native';
 
-import {
-  AntDesign,
-  Feather,
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome5,
-  MaterialIcons,
-} from '@expo/vector-icons';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { LinearGradient } from 'expo-linear-gradient';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import Autocomplete from 'react-native-autocomplete-input';
 
 import { useNavigation } from '@react-navigation/native';
 import { useAuthContext } from 'contexts/AuthContext';
-import { weeklyGoals } from './test-profile';
-import CalendarSection from './Calendar';
 
 const Settings = () => {
   const navigation = useNavigation();
   const [hidePassword, setHidePassword] = useState(true);
   const { logout } = useAuthContext();
   const [loginPassword, setLoginPassword] = useState('');
+  const { currentUser } = useAuthContext();
   const toggleHidePassword = () => {
     setHidePassword(!hidePassword);
   };
@@ -70,11 +54,11 @@ const Settings = () => {
         <Text style={styles.informationHeader}>Your Information</Text>
         <Text style={styles.inputLabel}>Name</Text>
         <View style={styles.inputField}>
-          <Text style={styles.inputText}>Sal Doe</Text>
+          <Text style={styles.inputText}>{currentUser?.displayName}</Text>
         </View>
         <Text style={styles.inputLabel}>Email</Text>
         <View style={styles.inputField}>
-          <Text style={styles.inputText}>saldoe@ucalgary.ca</Text>
+          <Text style={styles.inputText}>{currentUser?.email}</Text>
         </View>
       </View>
       <View style={styles.settingsSectionContainer}>
@@ -253,6 +237,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingTop: 8,
     marginBottom: 8,
+    height: 36,
   },
   inputText: {
     color: '#2D2D2D',

@@ -11,11 +11,7 @@ import { useDailyCookedRecipes } from './useDailyCookedRecipes';
 export const useUpdateDailyCookedRecipes = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    dailyGoal,
-    isLoading: isLoadingDailyGoal,
-    getDailyGoals,
-  } = useDailyGoals();
+  const { dailyGoal, isLoading: isLoadingDailyGoal } = useDailyGoals();
   const { updateDailyGoal } = useUpdateDailyGoals();
 
   useDailyCookedRecipes();
@@ -69,10 +65,9 @@ export const useUpdateDailyCookedRecipes = () => {
             completed,
           },
         });
-        await getDailyGoals();
       }
     },
-    [dailyGoal, getDailyGoals, updateDailyGoal],
+    [dailyGoal, updateDailyGoal],
   );
 
   const tooggleRecipe = useCallback(

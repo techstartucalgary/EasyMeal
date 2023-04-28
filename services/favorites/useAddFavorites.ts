@@ -9,11 +9,10 @@ export function useAddFavorites() {
   const [isLoading, setIsLoading] = useState(false);
   const { currentUser } = useAuthContext();
 
-  const { favorites, getFavorites } = useFavorites();
+  const { favorites } = useFavorites();
 
   async function addFavorites(recipe: FavoriteRecipeType) {
     setIsLoading(true);
-    await getFavorites();
     if (currentUser) {
       if (!favorites) {
         await setDoc(doc(db, 'favorites', currentUser.uid), {
@@ -24,7 +23,6 @@ export function useAddFavorites() {
         await setDoc(doc(db, 'favorites', currentUser.uid), {
           recipes: [...favorites, recipe],
         });
-        await getFavorites();
         setIsLoading(false);
       }
     }

@@ -55,7 +55,7 @@ const ProfilePage = () => {
   const {
     dailyGoal,
     isLoading: getDailyIsLoading,
-    getDailyGoals,
+    // getDailyGoals,
     date,
     caloriesProgress,
     proteinProgress,
@@ -241,7 +241,7 @@ const ProfilePage = () => {
       });
     }
 
-    await getDailyGoals();
+    // await getDailyGoals();
 
     updateEditDiet();
   };
@@ -985,9 +985,7 @@ const styles = StyleSheet.create({
     color: '#33363F',
   },
   header2Text: {
-    marginTop: 20,
     marginLeft: 28,
-
     fontFamily: 'Inter-SemiBold',
     fontSize: 20,
     color: '#33363F',
