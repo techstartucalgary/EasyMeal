@@ -304,10 +304,10 @@ const ProfilePage = () => {
               You{' '}
               <Text style={styles.boldText}>
                 saved $
-                {(
+                {Math.abs(
                   Object.keys(dailyCookedRecipes.recipes).length *
                   restaurantPrice -
-                  totalPrice
+                  totalPrice,
                 ).toFixed()}
               </Text>{' '}
               today by cooking at home!
