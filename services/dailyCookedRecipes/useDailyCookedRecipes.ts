@@ -10,9 +10,7 @@ const date = format(new Date(), 'YYYY-MM-DD');
 export const useDailyCookedRecipes = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [dailyCookedRecipes, setDailyCookedRecipes] = useState<RecipeList | {}>(
-    {},
-  );
+  const [dailyCookedRecipes, setDailyCookedRecipes] = useState<RecipeList>();
 
   const getDailyCookedRecipes = useCallback(async () => {
     if (currentUser) {
@@ -43,5 +41,16 @@ export const useDailyCookedRecipes = () => {
     getDailyCookedRecipes();
   }, [getDailyCookedRecipes]);
 
-  return { dailyCookedRecipes, isLoading, getDailyCookedRecipes, date };
+  const totalPrice = Object.keys(dailyCookedRecipes?.recipes ?? {}).reduce(
+    (acc, curr) => acc + (dailyCookedRecipes?.recipes[curr].price || 0),
+    0,
+  );
+
+  return {
+    dailyCookedRecipes,
+    isLoading,
+    getDailyCookedRecipes,
+    date,
+    totalPrice,
+  };
 };

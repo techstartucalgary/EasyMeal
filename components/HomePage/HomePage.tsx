@@ -87,7 +87,9 @@ const HomePage = () => {
               </Text>
               <View style={styles.recipeCardSubHeader}>
                 <Text style={styles.recipeCardTextSubHeader}>
-                  {item.dishTypes[0]} ·{' '}
+                  {item.dishTypes[0].charAt(0).toUpperCase() +
+                    item.dishTypes[0].slice(1)}{' '}
+                  ·{' '}
                 </Text>
                 <Text style={styles.recipeCardTextSubHeader}>
                   {item.readyInMinutes} mins
@@ -251,25 +253,26 @@ const styles = StyleSheet.create({
   },
   recipeCard: {
     backgroundColor: '#ffffff',
-    marginLeft: 10,
+    marginLeft: 0,
     marginTop: 0,
     marginRight: 10,
     marginBottom: 16,
     borderRadius: 16,
 
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 5,
+    // },
+    // shadowOpacity: 0.34,
+    // shadowRadius: 6.27,
 
     elevation: 10,
   },
   favoritesContainer: {
     flex: 1,
     marginLeft: 0,
+    paddingLeft: 0,
     marginRight: 0,
     marginTop: 0,
   },
