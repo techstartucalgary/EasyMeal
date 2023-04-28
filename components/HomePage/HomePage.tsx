@@ -47,7 +47,7 @@ const HomePage = () => {
         </View>
       );
     }
-    if (favorites?.length === 0) {
+    if (favorites?.length === 0 || favorites === undefined) {
       return (
         <View style={styles.centerContainer}>
           <Feather
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     fontFamily: 'Inter-SemiBold',
     fontSize: 20,
-    color: 'black',
+    color: '#9FA5C0',
     marginTop: 24,
     marginLeft: 24,
     marginRight: 24,
