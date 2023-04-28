@@ -22,7 +22,8 @@ export const useUpdateWeeklyGoals = () => {
   const { currentUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const { firstDay, lastDay } = useWeekRange();
-  const { getWeeklyGoals } = useWeeklyGoals();
+
+  useWeeklyGoals();
   const { levelUp } = useUpdateProfile();
 
   const updateWeeklyGoal = useCallback(
@@ -61,10 +62,10 @@ export const useUpdateWeeklyGoals = () => {
           );
         });
       }
-      await getWeeklyGoals();
+      // await getWeeklyGoals();
       setIsLoading(false);
     },
-    [currentUser, firstDay, getWeeklyGoals, lastDay, levelUp],
+    [currentUser, firstDay, lastDay, levelUp],
   );
 
   const completedTodaysGoal = useCallback(async () => {

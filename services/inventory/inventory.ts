@@ -88,9 +88,8 @@ export const useInventoryIngredients = ({
 
           setIngredientsData(response);
         }
-
-        setIsLoading(false);
       }
+      setIsLoading(false);
     }
   }, [currentUser, storageType]);
 
