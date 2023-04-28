@@ -70,7 +70,7 @@ const Navigator = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Home" component={PrivateTabs} />
+      {currentUser && <Stack.Screen name="Home" component={PrivateTabs} />}
       {(currentUser ? privatePages : publicPages).map(({ page, name }) => (
         <Stack.Screen key={name} name={name} component={page} />
       ))}
