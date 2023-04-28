@@ -403,7 +403,10 @@ const ProfilePage = () => {
               <View
                 style={[
                   styles.progressBarFilled,
-                  { backgroundColor: '#74CF82', width: `${progress}%` },
+                  {
+                    backgroundColor: '#74CF82',
+                    width: `${progress > 100 ? 100 : progress}%`,
+                  },
                 ]}
               />
             </View>

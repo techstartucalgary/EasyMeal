@@ -24,7 +24,7 @@ const LoginPage = () => {
   const [hidePassword, setHidePassword] = useState(true);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [errorText, setErrorText] = useState('');
+  const [displayErrorText, setDisplayErrorText] = useState(false);
   const { login, signInWithGoogle, signInWithFacebook } = useAuthContext();
 
   const [fontsLoaded] = useFonts({
@@ -85,15 +85,15 @@ const LoginPage = () => {
 
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
 
-      {errorText.length != 0 && (
-        <Text style={styles.errorText}>{errorText}</Text>
+      {displayErrorText && (
+        <Text style={styles.errorText}>Email or Password is incorrect</Text>
       )}
 
       <Text
         style={styles.loginButton}
         onPress={() => {
           login({ loginEmail, loginPassword }).catch((error) => {
-            console.log(error);
+            setDisplayErrorText(true);
           });
         }}
       >
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 13,
     marginLeft: 20,
-    marginTop: 8,
+    marginTop: 4,
   },
   forgotPassword: {
     color: '#6536F9',

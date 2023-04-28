@@ -65,7 +65,10 @@ const WeeklyProgressHeader: FC<WeeklyProgressHeaderProps> = ({
         <View
           style={[
             styles.progressBar,
-            { width: `${progress}%`, backgroundColor: '#74CF82' },
+            {
+              width: `${progress > 100 ? 100 : progress}%`,
+              backgroundColor: '#74CF82',
+            },
           ]}
         />
       </View>
