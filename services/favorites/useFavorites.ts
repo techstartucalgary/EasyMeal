@@ -1,6 +1,6 @@
-import { doc, getDoc } from '@firebase/firestore';
+import { doc, onSnapshot } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
 import { FavoriteRecipeType } from './types';
 
@@ -11,23 +11,26 @@ export const useFavorites = () => {
     undefined,
   );
 
-  const getFavorites = useCallback(async () => {
+  useEffect(() => {
     if (currentUser) {
       const favoritesCollectionRef = doc(db, 'favorites', currentUser?.uid);
 
       setIsLoading(true);
-      const docSnap = await getDoc(favoritesCollectionRef);
+
+      const unsub = onSnapshot(favoritesCollectionRef, (doc) => {
+        if (doc.exists()) {
+          setFavorites(doc.data().recipes);
+        }
+      });
 
       setIsLoading(false);
-      if (docSnap.exists()) {
-        setFavorites(docSnap.data().recipes);
-      }
+
+      return () => {
+        unsub();
+      };
     }
+    return () => {};
   }, [currentUser]);
 
-  useEffect(() => {
-    getFavorites();
-  }, [getFavorites]);
-
-  return { favorites, isLoading, getFavorites };
+  return { favorites, isLoading };
 };

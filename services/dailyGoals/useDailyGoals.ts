@@ -1,6 +1,6 @@
-import { doc, getDoc, setDoc } from '@firebase/firestore';
+import { doc, onSnapshot, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
 import { MarkedDates } from 'react-native-calendars/src/types';
@@ -39,81 +39,84 @@ export const useDailyGoals = () => {
     undefined,
   );
 
-  const getDailyGoals = useCallback(async () => {
+  useEffect(() => {
     if (currentUser) {
       setIsLoading(true);
       const dailyGoalProfile = doc(db, 'daily_goals', currentUser?.uid);
-      const docSnap = await getDoc(dailyGoalProfile);
 
-      if (docSnap.exists()) {
-        if (!docSnap.get(date)) {
-          const prevElement = getClosestPreviousElement(docSnap.data());
+      const unsub = onSnapshot(dailyGoalProfile, async (docSnap) => {
+        if (docSnap.exists()) {
+          if (!docSnap.get(date)) {
+            const prevElement = getClosestPreviousElement(docSnap.data());
 
+            const payload: DailyGoalType = {
+              ...docSnap.data(),
+              [date]: {
+                ...prevElement.value,
+                calories: {
+                  count: docSnap.data()[date]?.calories?.count || 0,
+                  goal: prevElement.value.calories.goal,
+                },
+                carbs: {
+                  count: docSnap.data()[date]?.carbs?.count || 0,
+                  goal: prevElement.value.carbs.goal,
+                },
+                fat: {
+                  count: docSnap.data()[date]?.fat?.count || 0,
+                  goal: prevElement.value.fat.goal,
+                },
+                protein: {
+                  count: docSnap.data()[date]?.protein?.count || 0,
+                  goal: prevElement.value.protein.goal,
+                },
+                completed: !!docSnap.data()[date]?.completed,
+                cookedTimes: docSnap.data()[date]?.cookedTimes || 0,
+              },
+            };
+
+            await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
+            setDailyGoal(payload);
+          } else {
+            setDailyGoal(docSnap.data());
+          }
+        } else {
           const payload: DailyGoalType = {
-            ...docSnap.data(),
             [date]: {
-              ...prevElement.value,
               calories: {
-                count: docSnap.data()[date]?.calories?.count || 0,
-                goal: prevElement.value.calories.goal,
+                goal: 0,
+                count: 0,
               },
               carbs: {
-                count: docSnap.data()[date]?.carbs?.count || 0,
-                goal: prevElement.value.carbs.goal,
+                goal: 0,
+                count: 0,
               },
               fat: {
-                count: docSnap.data()[date]?.fat?.count || 0,
-                goal: prevElement.value.fat.goal,
+                goal: 0,
+                count: 0,
               },
               protein: {
-                count: docSnap.data()[date]?.protein?.count || 0,
-                goal: prevElement.value.protein.goal,
+                goal: 0,
+                count: 0,
               },
-              completed: !!docSnap.data()[date]?.completed,
-              cookedTimes: docSnap.data()[date]?.cookedTimes || 0,
+              completed: false,
+              cookedTimes: 0,
+              timestamp: new Date().getTime(),
             },
           };
 
           await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
           setDailyGoal(payload);
-        } else {
-          setDailyGoal(docSnap.data());
         }
-      } else {
-        const payload: DailyGoalType = {
-          [date]: {
-            calories: {
-              goal: 0,
-              count: 0,
-            },
-            carbs: {
-              goal: 0,
-              count: 0,
-            },
-            fat: {
-              goal: 0,
-              count: 0,
-            },
-            protein: {
-              goal: 0,
-              count: 0,
-            },
-            completed: false,
-            cookedTimes: 0,
-            timestamp: new Date().getTime(),
-          },
-        };
+      });
 
-        await setDoc(doc(db, 'daily_goals', currentUser.uid), payload);
-        setDailyGoal(payload);
-      }
       setIsLoading(false);
-    }
-  }, [currentUser]);
 
-  useEffect(() => {
-    getDailyGoals();
-  }, [getDailyGoals]);
+      return () => {
+        unsub();
+      };
+    }
+    return () => {};
+  }, [currentUser]);
 
   const markedDates = dailyGoal
     ? Object.keys(dailyGoal).reduce(
@@ -168,7 +171,6 @@ export const useDailyGoals = () => {
     dailyGoal,
     markedDates,
     isLoading,
-    getDailyGoals,
     date,
     caloriesProgress,
     proteinProgress,

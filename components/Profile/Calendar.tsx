@@ -18,7 +18,6 @@ export default CalendarSection;
 const styles = StyleSheet.create({
   calendarSectionContainer: {
     marginTop: 16,
-    marginHorizontal: 16,
     marginBottom: 16,
     backgroundColor: '#FFFFFF',
     borderRadius: 22,

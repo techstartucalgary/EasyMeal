@@ -222,13 +222,6 @@ export const useDeleteFromInventory = () => {
         } else {
           const currentPantryData = docSnap.get('pantry');
 
-          const existingIngredient: IngredientType | undefined =
-            currentPantryData
-              ? currentPantryData[storage].find(
-                  (el: IngredientType) => el.id === id,
-                )
-              : undefined;
-
           const payload = {
             pantry: {
               ...currentPantryData,
