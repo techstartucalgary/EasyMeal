@@ -29,6 +29,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
 import { useWeeklyGoals } from 'services/weeklyGoals';
 import { useProfile } from 'services/Profile';
+import { useDailyCookedRecipes } from 'services/dailyCookedRecipes';
 import DetailedCookingGoal from './DetailedCookingGoal';
 import Settings from './Settings';
 
@@ -65,6 +66,10 @@ const ProfilePage = () => {
   const { updateDailyGoal, isLoading: setDailyIsLoading } =
     useUpdateDailyGoals();
   const { profile, isLoading: profileIsLoading, getProfile } = useProfile();
+
+  const { totalPrice, dailyCookedRecipes } = useDailyCookedRecipes();
+
+  const restaurantPrice = 20;
 
   const [fontsLoaded] = useFonts({
     'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
@@ -293,10 +298,28 @@ const ProfilePage = () => {
             source={require('../../assets/images/emoji-sparkles.png')}
             style={styles.savingsImage}
           />
-          <Text style={styles.savingsText}>
-            You <Text style={styles.boldText}>saved $215</Text> this month by
-            cooking at home!
-          </Text>
+          {dailyCookedRecipes &&
+          Object.keys(dailyCookedRecipes.recipes).length > 0 ? (
+            <Text style={styles.savingsText}>
+              You{' '}
+              <Text style={styles.boldText}>
+                saved $
+                {(
+                  Object.keys(dailyCookedRecipes.recipes).length *
+                    restaurantPrice -
+                  totalPrice
+                ).toFixed()}
+              </Text>{' '}
+              today by cooking at home!
+            </Text>
+          ) : (
+            <Text style={styles.savingsText}>
+              You{' '}
+              <Text style={styles.boldText}>
+                haven&apos;t cooked anything today!
+              </Text>{' '}
+            </Text>
+          )}
         </View>
         <Text style={styles.header2Text}>Your Progress</Text>
 

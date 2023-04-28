@@ -112,7 +112,7 @@ const RecipeOverview = () => {
               }
             }}
           >
-            <MaterialIcons name="remove" size={24} color="#000000" />
+            <MaterialIcons name="favorite" size={24} color="#6536F9" />
           </Pressable>
         ) : (
           <Pressable
@@ -131,7 +131,7 @@ const RecipeOverview = () => {
               await getFavoriteDetail();
             }}
           >
-            <MaterialIcons name="favorite" size={24} color="#000000" />
+            <MaterialIcons name="favorite-outline" size={24} color="#6536F9" />
           </Pressable>
         )}
         {isLoadingDaily ? (
@@ -154,7 +154,7 @@ const RecipeOverview = () => {
                   carbs,
                   fat: fats,
                   price:
-                    recipeInformation.pricePerServing *
+                    (recipeInformation.pricePerServing / 100) *
                     recipeInformation.servings,
                   protein,
                 });
@@ -192,7 +192,7 @@ const RecipeOverview = () => {
           <View style={styles.timecontainer}>
             <Feather name="dollar-sign" size={18} color="#000001" />
             <Text style={styles.time}>
-              {recipeInformation?.pricePerServing}/ Serving
+              {(recipeInformation?.pricePerServing / 100).toFixed(2)}/ Serving
             </Text>
           </View>
         </View>
