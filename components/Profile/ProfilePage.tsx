@@ -115,7 +115,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.carbs.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-            4,
+          4,
         ),
       );
     }
@@ -124,7 +124,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.protein.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-            4,
+          4,
         ),
       );
     }
@@ -133,7 +133,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.fat.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-            9,
+          9,
         ),
       );
     }
@@ -306,15 +306,15 @@ const ProfilePage = () => {
             style={styles.savingsImage}
           />
           {dailyCookedRecipes &&
-          Object.keys(dailyCookedRecipes.recipes).length > 0 ? (
+            Object.keys(dailyCookedRecipes.recipes).length > 0 ? (
             <Text style={styles.savingsText}>
               You{' '}
               <Text style={styles.boldText}>
                 saved $
                 {Math.abs(
                   Object.keys(dailyCookedRecipes.recipes).length *
-                    restaurantPrice -
-                    totalPrice,
+                  restaurantPrice -
+                  totalPrice,
                 ).toFixed()}
               </Text>{' '}
               today by cooking at home!
@@ -733,6 +733,7 @@ const ProfilePage = () => {
               <TextInput
                 keyboardType="numeric"
                 maxLength={3}
+                defaultValue="0%"
                 placeholder="e.g. 30%"
                 value={editCarbGoal}
                 onChangeText={(text) => {
@@ -779,6 +780,7 @@ const ProfilePage = () => {
                 keyboardType="numeric"
                 maxLength={3}
                 placeholder="e.g. 30%"
+                defaultValue="0%"
                 value={editProteinGoal}
                 onChangeText={(text) => {
                   setEditProteinGoal(text.replace(/\D/g, ''));
@@ -823,6 +825,7 @@ const ProfilePage = () => {
                 keyboardType="numeric"
                 maxLength={3}
                 placeholder="e.g. 30%"
+                defaultValue="0%"
                 value={editFatGoal}
                 onChangeText={(text) => {
                   setEditFatGoal(text.replace(/\D/g, ''));
