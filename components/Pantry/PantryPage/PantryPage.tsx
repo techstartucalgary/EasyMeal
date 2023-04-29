@@ -16,24 +16,21 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
-import { useFonts } from 'expo-font';
-import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Autocomplete from 'react-native-autocomplete-input';
 
 import useDebounce from 'hooks/useDebounce';
-import { pantryTypes } from './pantry-types';
-import { pantryItems } from './test-pantry';
+import { pantryTypes } from '../pantry-types';
 
-import { useSearchIngredient } from '../../services/ingredients/useSearchIngredients';
+import { useSearchIngredient } from '../../../services/ingredients/useSearchIngredients';
 import {
   useInventoryIngredients,
   useAddToInventory,
   useDeleteFromInventory,
-} from '../../services/inventory/inventory';
-import { Result } from '../../services/ingredients/types';
-import { StorageType } from '../../services/inventory/types';
+} from '../../../services/inventory/inventory';
+import { Result } from '../../../services/ingredients/types';
+import { StorageType } from '../../../services/inventory/types';
 
 const PantryPage = () => {
   const [selectedPantryType, setSelectedPantryType] = useState('all');
@@ -52,8 +49,6 @@ const PantryPage = () => {
   const [addItemPantryType, setAddItemPantryType] = useState<StorageType>(
     pantryTypes[1].val as StorageType,
   );
-
-  const [testItems, setTestItems] = useState(pantryItems);
   const {
     ingredients: ingredientSearchResult,
     isLoading: ingredientSearchLoading,
@@ -61,7 +56,6 @@ const PantryPage = () => {
   const {
     ingredients,
     isLoading: inventoryLoading,
-    getInventory,
     fridgeCount,
     freezerCount,
     dryPanCount,
@@ -72,18 +66,6 @@ const PantryPage = () => {
     isLoading: deleteLoading,
     deleteAllFromInventory,
   } = useDeleteFromInventory();
-
-  const [fontsLoaded] = useFonts({
-    'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-    'Inter-ExtraLight': require('../../assets/fonts/Inter-ExtraLight.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   const calcPantryCount = () => {
     const tmpCounts = pantryCounts;
@@ -152,15 +134,12 @@ const PantryPage = () => {
       quantity: addCount,
       storage: addItemPantryType,
     }).then(() => {
-      getInventory();
       setAddItemVisible(!addItemVisible);
     });
   };
 
   const deletePantryItem = (itemID: number, itemType: StorageType) => {
-    deleteFromInventory({ id: itemID, storage: itemType }).then(() =>
-      getInventory(),
-    );
+    deleteFromInventory({ id: itemID, storage: itemType });
   };
 
   const updatePantryItemCount = (
@@ -183,8 +162,6 @@ const PantryPage = () => {
       image: itemImage,
       quantity: newCount,
       storage: itemType,
-    }).then(() => {
-      getInventory();
     });
   };
 
@@ -307,8 +284,6 @@ const PantryPage = () => {
                           deleteAllFromInventory({
                             id: item.id,
                             storage: item.storage,
-                          }).then(() => {
-                            getInventory();
                           })
                         }
                       >

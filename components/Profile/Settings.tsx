@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import { useFonts } from 'expo-font';
 
 import { useNavigation } from '@react-navigation/native';
 import { useAuthContext } from 'contexts/AuthContext';
@@ -26,17 +25,6 @@ const Settings = () => {
   const toggleHidePassword = () => {
     setHidePassword(!hidePassword);
   };
-  const [fontsLoaded] = useFonts({
-    'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-    'Inter-ExtraLight': require('../../assets/fonts/Inter-ExtraLight.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <SafeAreaView style={styles.profilePageContainer}>

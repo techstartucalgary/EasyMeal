@@ -1,4 +1,4 @@
-import React, { useState, PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,93 +8,67 @@ import {
   Platform,
   Pressable,
   Image,
-  ScrollView,
   FlatList,
-  Modal,
   Dimensions,
-  TextInput,
 } from 'react-native';
 
-import {
-  AntDesign,
-  Feather,
-  Ionicons,
-  MaterialCommunityIcons,
-  FontAwesome5,
-  MaterialIcons,
-} from '@expo/vector-icons';
-import { useFonts } from 'expo-font';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 
-import { weeklyGoals, goals } from './test-profile';
 import { testBadges } from './test-profile';
 
 type DetailedBadgesProps = PropsWithChildren<{
   animateFunction: (slideLeft: boolean) => void;
 }>;
 
-const DetailedBadges: React.FC<DetailedBadgesProps> = ({ animateFunction }) => {
-  const [fontsLoaded] = useFonts({
-    'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-    'Inter-ExtraLight': require('../../assets/fonts/Inter-ExtraLight.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
-  return (
-    <SafeAreaView style={styles.profilePageContainer}>
-      <View style={styles.profilePageHeader}>
-        <Pressable
-          onPress={() => animateFunction(false)}
-          style={styles.profileButton}
-        >
-          <MaterialIcons name="arrow-back-ios" size={24} color="black" />
-          <Text style={styles.profileButtonText}>Profile</Text>
-        </Pressable>
-        <Text style={styles.headerText}>Your badges</Text>
-      </View>
-      <FlatList
-        data={testBadges.badges}
-        keyExtractor={(item: any) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.badgeContainer}>
-            <CircularProgressBase
-              value={(item.currProgress / item.completedProgress) * 100}
-              radius={56}
-              activeStrokeColor={'#6536F9'}
-              inActiveStrokeColor={'#E0E0E0'}
-              activeStrokeWidth={6}
-              inActiveStrokeWidth={6}
-            >
-              <Image
-                source={item.image}
-                resizeMode={'center'}
-                style={styles.badgeImage}
-              />
-            </CircularProgressBase>
-            <Text style={styles.badgeTitle}>{item.title}</Text>
-            {item.currProgress != 0 &&
-              item.currProgress != item.completedProgress && (
-                <Text style={styles.badgeProgressText}>
-                  {item.currProgress}/{item.completedProgress} completed
-                </Text>
-              )}
-            <Text style={styles.badgeDescription}>{item.description}</Text>
-          </View>
-        )}
-        numColumns={2}
-        initialNumToRender={20}
-        style={styles.badgeListContainer}
-      />
-    </SafeAreaView>
-  );
-};
+const DetailedBadges: React.FC<DetailedBadgesProps> = ({ animateFunction }) => (
+  <SafeAreaView style={styles.profilePageContainer}>
+    <View style={styles.profilePageHeader}>
+      <Pressable
+        onPress={() => animateFunction(false)}
+        style={styles.profileButton}
+      >
+        <MaterialIcons name="arrow-back-ios" size={24} color="black" />
+        <Text style={styles.profileButtonText}>Profile</Text>
+      </Pressable>
+      <Text style={styles.headerText}>Your badges</Text>
+    </View>
+    <FlatList
+      data={testBadges.badges}
+      keyExtractor={(item: any) => item.id}
+      renderItem={({ item }) => (
+        <View style={styles.badgeContainer}>
+          <CircularProgressBase
+            value={(item.currProgress / item.completedProgress) * 100}
+            radius={56}
+            activeStrokeColor="#6536F9"
+            inActiveStrokeColor="#E0E0E0"
+            activeStrokeWidth={6}
+            inActiveStrokeWidth={6}
+          >
+            <Image
+              source={item.image}
+              resizeMode="center"
+              style={styles.badgeImage}
+            />
+          </CircularProgressBase>
+          <Text style={styles.badgeTitle}>{item.title}</Text>
+          {item.currProgress !== 0 &&
+            item.currProgress !== item.completedProgress && (
+              <Text style={styles.badgeProgressText}>
+                {item.currProgress}/{item.completedProgress} completed
+              </Text>
+            )}
+          <Text style={styles.badgeDescription}>{item.description}</Text>
+        </View>
+      )}
+      numColumns={2}
+      initialNumToRender={20}
+      style={styles.badgeListContainer}
+    />
+  </SafeAreaView>
+);
 
 export default DetailedBadges;
 

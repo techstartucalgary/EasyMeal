@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
   View,
   SafeAreaView,
   TextInput,
-  Button,
   StatusBar,
   Platform,
   Image,
@@ -13,7 +12,6 @@ import {
   Pressable,
 } from 'react-native';
 
-import { useFonts } from 'expo-font';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { auth } from 'utils/firebase-config';
 
@@ -29,12 +27,6 @@ function SignUpPage() {
   const [displayErrorText, setDisplayErrorText] = useState(false);
   const { register, signInWithGoogle, signInWithFacebook } = useAuthContext();
 
-  const [fontsLoaded] = useFonts({
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-  });
-
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -42,10 +34,6 @@ function SignUpPage() {
       }
     });
   }, [navigate]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   const toggleHidePassword = () => {
     setHidePassword(!hidePassword);
@@ -122,7 +110,7 @@ function SignUpPage() {
         >
           <View style={styles.altLoginButton}>
             <Image
-              source={require('../../assets/google-logo.png')}
+              source={require('../../../assets/google-logo.png')}
               style={styles.altLogo}
             />
           </View>
@@ -130,7 +118,7 @@ function SignUpPage() {
 
         <View style={styles.altLoginButton}>
           <Image
-            source={require('../../assets/apple-logo.png')}
+            source={require('../../../assets/apple-logo.png')}
             style={styles.altLogo}
           />
         </View>

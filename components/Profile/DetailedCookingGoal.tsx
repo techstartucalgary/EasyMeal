@@ -1,4 +1,4 @@
-import React, { useState, PropsWithChildren, useEffect } from 'react';
+import React, { useState, PropsWithChildren } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFonts } from 'expo-font';
 
 import WeeklyProgressHeader from 'components/shared/WeeklyProgressHeader/WeeklyProgressHeader';
 import EditWeeklyGoalModal from 'components/shared/EditWeeklyGoalModal/EditWeeklyGoalModal';
@@ -29,18 +28,6 @@ const DetailedCookingGoal: React.FC<DetailedCookingGoalProps> = ({
   badgesPageVisible,
 }) => {
   const [editGoalVisible, setEditGoalVisible] = useState(false);
-
-  const [fontsLoaded] = useFonts({
-    'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-    'Inter-ExtraLight': require('../../assets/fonts/Inter-ExtraLight.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   if (badgesPageVisible) {
     return <DetailedBadges animateFunction={animateFunction} />;
