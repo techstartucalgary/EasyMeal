@@ -1,4 +1,4 @@
-export let pantryItems = [
+export const pantryItems = [
   {
     id: 1,
     name: 'Tomatoes',

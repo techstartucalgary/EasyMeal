@@ -41,7 +41,9 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-more-text": "^2.2.0",
     "react-native-web": "~0.18.7",
-    "react-native-webview": "11.23.0"
+    "react-native-webview": "11.23.0",
+    "expo-font": "~10.2.0",
+    "expo-constants": "~13.2.4"
   },
   "devDependencies": {
     "@expo/webpack-config": "^0.17.4",
