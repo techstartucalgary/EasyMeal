@@ -192,7 +192,8 @@ const RecipeOverview = () => {
           <View style={styles.timecontainer}>
             <Feather name="dollar-sign" size={18} color="#000001" />
             <Text style={styles.time}>
-              {(recipeInformation?.pricePerServing / 100).toFixed(2)}/ Serving
+              {((recipeInformation?.pricePerServing || 0) / 100).toFixed(2)}/
+              Serving
             </Text>
           </View>
         </View>

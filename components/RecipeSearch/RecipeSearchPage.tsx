@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -324,7 +325,7 @@ const RecipeSearchPage = () => {
           <Slider
             value={cookingTime}
             onValueChange={(cookingTime) => {
-              setCookingTime(cookingTime as number);
+              setCookingTime(cookingTime as unknown as number);
             }}
             minimumValue={10}
             maximumValue={60}

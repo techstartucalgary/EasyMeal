@@ -27,8 +27,7 @@ import { useFonts } from 'expo-font';
 
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 
-import { weeklyGoals, goals } from './test-profile';
-import { testBadges } from './test-profile';
+import { weeklyGoals, goals, testBadges } from './test-profile';
 
 type DetailedBadgesProps = PropsWithChildren<{
   animateFunction: (slideLeft: boolean) => void;
@@ -67,20 +66,20 @@ const DetailedBadges: React.FC<DetailedBadgesProps> = ({ animateFunction }) => {
             <CircularProgressBase
               value={(item.currProgress / item.completedProgress) * 100}
               radius={56}
-              activeStrokeColor={'#6536F9'}
-              inActiveStrokeColor={'#E0E0E0'}
+              activeStrokeColor="#6536F9"
+              inActiveStrokeColor="#E0E0E0"
               activeStrokeWidth={6}
               inActiveStrokeWidth={6}
             >
               <Image
                 source={item.image}
-                resizeMode={'center'}
+                resizeMode="center"
                 style={styles.badgeImage}
               />
             </CircularProgressBase>
             <Text style={styles.badgeTitle}>{item.title}</Text>
-            {item.currProgress != 0 &&
-              item.currProgress != item.completedProgress && (
+            {item.currProgress !== 0 &&
+              item.currProgress !== item.completedProgress && (
                 <Text style={styles.badgeProgressText}>
                   {item.currProgress}/{item.completedProgress} completed
                 </Text>

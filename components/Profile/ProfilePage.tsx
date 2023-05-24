@@ -119,7 +119,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.carbs.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-          4,
+            4,
         ),
       );
     }
@@ -128,7 +128,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.protein.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-          4,
+            4,
         ),
       );
     }
@@ -137,7 +137,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.fat.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-          9,
+            9,
         ),
       );
     }
@@ -310,15 +310,15 @@ const ProfilePage = () => {
             style={styles.savingsImage}
           />
           {dailyCookedRecipes &&
-            Object.keys(dailyCookedRecipes.recipes).length > 0 ? (
+          Object.keys(dailyCookedRecipes.recipes).length > 0 ? (
             <Text style={styles.savingsText}>
               You{' '}
               <Text style={styles.boldText}>
                 saved $
                 {Math.abs(
                   Object.keys(dailyCookedRecipes.recipes).length *
-                  restaurantPrice -
-                  totalPrice,
+                    restaurantPrice -
+                    totalPrice,
                 ).toFixed()}
               </Text>{' '}
               today by cooking at home!

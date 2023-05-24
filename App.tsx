@@ -25,7 +25,7 @@ function PrivateTabs() {
         headerShown: false,
 
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName = undefined;
+          let iconName;
 
           if (route.name === 'Home') {
             iconName = focused
@@ -46,7 +46,7 @@ function PrivateTabs() {
           }
 
           // You can return any component that you like here!
-          //return <Ionicons name={iconName} size={size} color={color} />;
+          // return <Ionicons name={iconName} size={size} color={color} />;
           return <Image source={iconName} style={styles.iconImage} />;
         },
         tabBarActiveTintColor: '#6536F9',

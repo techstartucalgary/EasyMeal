@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -203,6 +204,7 @@ const PantryPage = () => {
         return 'Dry pantry';
       }
     }
+    return null;
   };
 
   const unselectAddItem = () => {
