@@ -1,4 +1,4 @@
-import { doc, getDoc, onSnapshot, setDoc } from '@firebase/firestore';
+import { doc, getDoc, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useState } from 'react';
 import { db } from 'utils/firebase-config';
@@ -12,7 +12,7 @@ export const useDailyCookedRecipes = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [dailyCookedRecipes, setDailyCookedRecipes] = useState<RecipeList>();
 
-  useEffect(() => {
+  const getDailyCookedRecipes = useCallback(async () => {
     if (currentUser) {
       setIsLoading(true);
       const dailyCookedRecipesProfile = doc(
@@ -20,32 +20,26 @@ export const useDailyCookedRecipes = () => {
         'daily_cooked_recipes',
         currentUser?.uid,
       );
+      const docSnap = await getDoc(dailyCookedRecipesProfile);
 
-      const unsub = onSnapshot(dailyCookedRecipesProfile, async (docSnap) => {
-        if (docSnap.exists() && docSnap.get(date)) {
-          setDailyCookedRecipes(docSnap.get(date) as RecipeList);
-        } else {
-          const payload: DailyCookedRecipe = {
-            [date]: {
-              recipes: {},
-            },
-          };
+      if (docSnap.exists() && docSnap.get(date)) {
+        setDailyCookedRecipes(docSnap.get(date) as RecipeList);
+      } else {
+        const payload: DailyCookedRecipe = {
+          [date]: {
+            recipes: {},
+          },
+        };
 
-          await setDoc(
-            doc(db, 'daily_cooked_recipes', currentUser.uid),
-            payload,
-          );
-        }
-      });
-
+        await setDoc(doc(db, 'daily_cooked_recipes', currentUser.uid), payload);
+      }
       setIsLoading(false);
-
-      return () => {
-        unsub();
-      };
     }
-    return () => {};
   }, [currentUser]);
+
+  useEffect(() => {
+    getDailyCookedRecipes();
+  }, [getDailyCookedRecipes]);
 
   const totalPrice = Object.keys(dailyCookedRecipes?.recipes ?? {}).reduce(
     (acc, curr) => acc + (dailyCookedRecipes?.recipes[curr].price || 0),
@@ -55,6 +49,7 @@ export const useDailyCookedRecipes = () => {
   return {
     dailyCookedRecipes,
     isLoading,
+    getDailyCookedRecipes,
     date,
     totalPrice,
   };

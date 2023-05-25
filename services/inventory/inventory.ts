@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from '@firebase/firestore';
+import { doc, getDoc, onSnapshot, setDoc } from '@firebase/firestore';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { db } from 'utils/firebase-config';
@@ -59,43 +59,46 @@ export const useInventoryIngredients = ({
   });
   const { currentUser } = useAuthContext();
 
-  const getInventory = useCallback(async () => {
+  useEffect(() => {
     if (currentUser) {
       setIsLoading(true);
+
       const inventoryCollectionRef = doc(db, 'inventory', currentUser?.uid);
 
-      const docSnap = await getDoc(inventoryCollectionRef);
+      const unsub = onSnapshot(inventoryCollectionRef, (docSnap) => {
+        if (docSnap.exists()) {
+          if (storageType) {
+            setIngredientsData(docSnap.get('pantry')[storageType]);
+          } else {
+            setCounters({
+              fridgeCount: docSnap.get('pantry')?.fridge?.length || 0,
+              freezerCount: docSnap.get('pantry')?.freezer?.length || 0,
+              dryPanCount: docSnap.get('pantry')?.dryPan?.length || 0,
+            });
+            const response = Object.keys(docSnap.get('pantry')).reduce(
+              (acc: IngredientWithStorage[], key) => [
+                ...acc,
+                ...docSnap.get('pantry')[key].map((el: IngredientType) => ({
+                  ...el,
+                  storage: key as StorageType,
+                })),
+              ],
+              [] as IngredientWithStorage[],
+            );
 
-      if (docSnap.exists()) {
-        if (storageType) {
-          setIngredientsData(docSnap.get('pantry')[storageType]);
-        } else {
-          setCounters({
-            fridgeCount: docSnap.get('pantry')?.fridge?.length || 0,
-            freezerCount: docSnap.get('pantry')?.freezer?.length || 0,
-            dryPanCount: docSnap.get('pantry')?.dryPan?.length || 0,
-          });
-          const response = Object.keys(docSnap.get('pantry')).reduce(
-            (acc: IngredientWithStorage[], key) => [
-              ...acc,
-              ...docSnap.get('pantry')[key].map((el: IngredientType) => ({
-                ...el,
-                storage: key as StorageType,
-              })),
-            ],
-            [] as IngredientWithStorage[],
-          );
-
-          setIngredientsData(response);
+            setIngredientsData(response);
+          }
         }
-      }
-      setIsLoading(false);
-    }
-  }, [currentUser, storageType]);
+      });
 
-  useEffect(() => {
-    getInventory();
-  }, [getInventory]);
+      setIsLoading(false);
+
+      return () => {
+        unsub();
+      };
+    }
+    return () => {};
+  }, [currentUser, storageType]);
 
   const ingredients = ingredientsData.map((el) => ({
     ...el,
@@ -105,7 +108,6 @@ export const useInventoryIngredients = ({
   return {
     ingredients,
     isLoading,
-    getInventory,
     fridgeCount,
     freezerCount,
     dryPanCount,

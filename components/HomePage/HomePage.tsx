@@ -13,7 +13,6 @@ import { useAuthContext } from 'contexts/AuthContext';
 import { useFavorites } from 'services/favorites';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import WeeklyProgressHeader from 'components/shared/WeeklyProgressHeader/WeeklyProgressHeader';
 import EditWeeklyGoalModal from 'components/shared/EditWeeklyGoalModal/EditWeeklyGoalModal';
 
@@ -23,17 +22,6 @@ const HomePage = () => {
   const { navigate } = useNavigation();
   const { favorites, isLoading } = useFavorites();
   const [editGoalVisible, setEditGoalVisible] = useState(false);
-
-  const [fontsLoaded] = useFonts({
-    'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   const renderFavoriteList = () => {
     if (isLoading) {
@@ -258,15 +246,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 16,
     borderRadius: 16,
-
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 5,
-    // },
-    // shadowOpacity: 0.34,
-    // shadowRadius: 6.27,
-
     elevation: 10,
   },
   favoritesContainer: {

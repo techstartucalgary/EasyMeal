@@ -23,7 +23,6 @@ import {
   FontAwesome5,
   MaterialIcons,
 } from '@expo/vector-icons';
-import { useFonts } from 'expo-font';
 import { CircularProgressBase } from 'react-native-circular-progress-indicator';
 import { useNavigation } from '@react-navigation/native';
 import { useDailyGoals, useUpdateDailyGoals } from 'services/dailyGoals';
@@ -31,7 +30,6 @@ import { useWeeklyGoals } from 'services/weeklyGoals';
 import { useProfile } from 'services/Profile';
 import { useDailyCookedRecipes } from 'services/dailyCookedRecipes';
 import DetailedCookingGoal from './DetailedCookingGoal';
-import Settings from './Settings';
 
 import { goals } from './test-profile';
 
@@ -71,18 +69,6 @@ const ProfilePage = () => {
 
   const restaurantPrice = 20;
 
-  const [fontsLoaded] = useFonts({
-    'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-    'Inter-ExtraLight': require('../../assets/fonts/Inter-ExtraLight.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   const slideProfilePage = (slideLeft: boolean) => {
     if (slideLeft) {
       Animated.timing(slidePosition, {
@@ -119,7 +105,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.carbs.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-          4,
+            4,
         ),
       );
     }
@@ -128,7 +114,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.protein.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-          4,
+            4,
         ),
       );
     }
@@ -137,7 +123,7 @@ const ProfilePage = () => {
         Math.floor(
           ((parseInt(updatedGoals.fat.slice(0, -1), 10) / 100.0) *
             parseInt(updatedGoals.caloric, 10)) /
-          9,
+            9,
         ),
       );
     }
@@ -310,15 +296,15 @@ const ProfilePage = () => {
             style={styles.savingsImage}
           />
           {dailyCookedRecipes &&
-            Object.keys(dailyCookedRecipes.recipes).length > 0 ? (
+          Object.keys(dailyCookedRecipes.recipes).length > 0 ? (
             <Text style={styles.savingsText}>
               You{' '}
               <Text style={styles.boldText}>
                 saved $
                 {Math.abs(
                   Object.keys(dailyCookedRecipes.recipes).length *
-                  restaurantPrice -
-                  totalPrice,
+                    restaurantPrice -
+                    totalPrice,
                 ).toFixed()}
               </Text>{' '}
               today by cooking at home!

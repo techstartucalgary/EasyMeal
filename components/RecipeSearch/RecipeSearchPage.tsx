@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import {
   StyleSheet,
@@ -15,17 +16,14 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-import { useFonts } from 'expo-font';
 import { AntDesign, MaterialIcons, Feather } from '@expo/vector-icons';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { Slider } from '@miblanchard/react-native-slider';
 import useDebounce from 'hooks/useDebounce';
 import { cuisines, types, diets } from './filter-options';
-import { testRecipes } from './test-results';
 
 import { useRecipes } from '../../services/searchRecipe/useSearchRecipes';
 
@@ -34,10 +32,8 @@ const RecipeSearchPage = () => {
   const debouncedSearchTerm = useDebounce(searchTerm);
   const [cookingTime, setCookingTime] = useState(60);
   const [filterVisible, setFilterVisible] = useState(false);
-  const [cardDimension, setCardDimension] = useState(0);
   const [recipeCardWidth, setRecipeCardWidth] = useState(0);
   const { navigate } = useNavigation();
-  const { logout } = useAuthContext();
 
   const [selectedCuisine, setSelectedCuisine] =
     useState<typeof cuisines[number]['searchTerm']>(undefined);
@@ -55,17 +51,6 @@ const RecipeSearchPage = () => {
     query: debouncedSearchTerm,
     number: 20,
   });
-
-  const [fontsLoaded] = useFonts({
-    'Inter-Bold': require('../../assets/fonts/Inter-Bold.ttf'),
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <SafeAreaView style={styles.pageContainer}>

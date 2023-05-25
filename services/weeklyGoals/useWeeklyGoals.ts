@@ -8,7 +8,6 @@ import {
   limit,
   orderBy,
   addDoc,
-  onSnapshot,
 } from '@firebase/firestore';
 import { db } from 'utils/firebase-config';
 import { format } from 'utils/date';
@@ -25,7 +24,7 @@ export const useWeeklyGoals = () => {
   );
   const { firstDay, lastDay } = useWeekRange();
 
-  useEffect(() => {
+  const getWeeklyGoals = useCallback(async () => {
     if (currentUser) {
       setIsLoading(true);
       const weeklyGoalsCollectionRef = collection(
@@ -34,64 +33,59 @@ export const useWeeklyGoals = () => {
         currentUser?.uid,
         'goals',
       );
+      const currentWeeklyGoalQ = query(
+        weeklyGoalsCollectionRef,
+        where('firstDay', '==', firstDay),
+        where('lastDay', '==', lastDay),
+        limit(1),
+      );
+      const currentWeeklyGoalSnapshot = await getDocs(currentWeeklyGoalQ);
 
-      const unsub = onSnapshot(weeklyGoalsCollectionRef, async (docSnap) => {
-        const currentWeeklyGoalQ = query(
-          weeklyGoalsCollectionRef,
-          where('firstDay', '==', firstDay),
-          where('lastDay', '==', lastDay),
-          limit(1),
-        );
+      let currentWeeklyGoal: WeeklyGoal | undefined;
 
-        const currentWeeklyGoalSnapshot = await getDocs(currentWeeklyGoalQ);
-
-        let currentWeeklyGoal: WeeklyGoal | undefined;
-
-        currentWeeklyGoalSnapshot.forEach((doc) => {
-          currentWeeklyGoal = doc.data() as WeeklyGoal;
-        });
-
-        if (currentWeeklyGoal) {
-          setWeeklyGoal(currentWeeklyGoal);
-        } else {
-          const lastWeeklyGoalQ = query(
-            weeklyGoalsCollectionRef,
-            orderBy('timestamp', 'desc'),
-            limit(1),
-          );
-          const lastWeeklyGoalSnapshot = await getDocs(lastWeeklyGoalQ);
-
-          let lastWeeklyGoal: WeeklyGoal | undefined;
-
-          lastWeeklyGoalSnapshot.forEach((doc) => {
-            lastWeeklyGoal = doc.data() as WeeklyGoal;
-          });
-
-          const payload: WeeklyGoal = lastWeeklyGoal || {
-            count: 0,
-            goal: 0,
-            firstDay,
-            lastDay,
-            timestamp: new Date().getTime(),
-            updatedAt: date,
-          };
-
-          await addDoc(weeklyGoalsCollectionRef, {
-            ...payload,
-            timestamp: new Date().getTime(),
-          });
-
-          setWeeklyGoal(payload);
-          setIsLoading(false);
-        }
+      currentWeeklyGoalSnapshot.forEach((doc) => {
+        currentWeeklyGoal = doc.data() as WeeklyGoal;
       });
 
-      return () => {
-        unsub();
-      };
+      if (currentWeeklyGoal) {
+        setWeeklyGoal(currentWeeklyGoal);
+      } else {
+        const lastWeeklyGoalQ = query(
+          weeklyGoalsCollectionRef,
+          orderBy('timestamp', 'desc'),
+          limit(1),
+        );
+        const lastWeeklyGoalSnapshot = await getDocs(lastWeeklyGoalQ);
+
+        let lastWeeklyGoal: WeeklyGoal | undefined;
+
+        lastWeeklyGoalSnapshot.forEach((doc) => {
+          lastWeeklyGoal = doc.data() as WeeklyGoal;
+        });
+
+        const payload: WeeklyGoal = lastWeeklyGoal || {
+          count: 0,
+          goal: 0,
+          firstDay,
+          lastDay,
+          timestamp: new Date().getTime(),
+          updatedAt: date,
+        };
+
+        await addDoc(weeklyGoalsCollectionRef, {
+          ...payload,
+          timestamp: new Date().getTime(),
+        });
+
+        setWeeklyGoal(payload);
+        setIsLoading(false);
+      }
     }
-    return () => {};
   }, [currentUser, firstDay, lastDay]);
+
+  useEffect(() => {
+    getWeeklyGoals();
+  }, [getWeeklyGoals]);
 
   const progress = Math.round(
     weeklyGoal?.count && weeklyGoal?.goal
@@ -99,5 +93,5 @@ export const useWeeklyGoals = () => {
       : 0,
   );
 
-  return { weeklyGoal, isLoading, progress };
+  return { getWeeklyGoals, weeklyGoal, isLoading, progress };
 };

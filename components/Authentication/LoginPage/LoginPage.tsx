@@ -5,7 +5,6 @@ import {
   View,
   SafeAreaView,
   TextInput,
-  Button,
   StatusBar,
   Platform,
   Image,
@@ -13,7 +12,6 @@ import {
   Pressable,
 } from 'react-native';
 
-import { useFonts } from 'expo-font';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useAuthContext } from 'contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -27,12 +25,6 @@ const LoginPage = () => {
   const [displayErrorText, setDisplayErrorText] = useState(false);
   const { login, signInWithGoogle, signInWithFacebook } = useAuthContext();
 
-  const [fontsLoaded] = useFonts({
-    'Inter-SemiBold': require('../../assets/fonts/Inter-SemiBold.ttf'),
-    'Inter-Medium': require('../../assets/fonts/Inter-Medium.ttf'),
-    'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-  });
-
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -40,10 +32,6 @@ const LoginPage = () => {
       }
     });
   }, [navigate]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   const toggleHidePassword = () => {
     setHidePassword(!hidePassword);
@@ -116,7 +104,7 @@ const LoginPage = () => {
         >
           <View style={styles.altLoginButton}>
             <Image
-              source={require('../../assets/google-logo.png')}
+              source={require('../../../assets/google-logo.png')}
               style={styles.altLogo}
             />
           </View>
@@ -124,7 +112,7 @@ const LoginPage = () => {
 
         <View style={styles.altLoginButton}>
           <Image
-            source={require('../../assets/apple-logo.png')}
+            source={require('../../../assets/apple-logo.png')}
             style={styles.altLogo}
           />
         </View>

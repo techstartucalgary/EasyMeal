@@ -1,18 +1,16 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useEffect } from 'react';
-// import { StatusBar } from 'expo-status-bar';
-// import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import { StyleSheet, Image } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { AuthProvider } from 'contexts/AuthContext/AuthProvider';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuthContext } from 'contexts/AuthContext';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
+import RecipeOverview from 'components/RecipeOverview';
 import HomePage from 'components/HomePage/HomePage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Settings from 'components/Profile/Settings';
+import { useFonts } from 'expo-font';
 import { publicPages, privatePages, ParamList } from './pages';
 
 const Tab = createBottomTabNavigator<ParamList>();
@@ -24,8 +22,8 @@ function PrivateTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
 
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName = undefined;
+        tabBarIcon: ({ focused }) => {
+          let iconName;
 
           if (route.name === 'Home') {
             iconName = focused
@@ -46,7 +44,7 @@ function PrivateTabs() {
           }
 
           // You can return any component that you like here!
-          //return <Ionicons name={iconName} size={size} color={color} />;
+          // return <Ionicons name={iconName} size={size} color={color} />;
           return <Image source={iconName} style={styles.iconImage} />;
         },
         tabBarActiveTintColor: '#6536F9',
@@ -63,6 +61,18 @@ function PrivateTabs() {
 
 const Navigator = () => {
   const { currentUser } = useAuthContext();
+
+  const [fontsLoaded] = useFonts({
+    'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
+    'Inter-SemiBold': require('./assets/fonts/Inter-SemiBold.ttf'),
+    'Inter-Medium': require('./assets/fonts/Inter-Medium.ttf'),
+    'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+    'Inter-ExtraLight': require('./assets/fonts/Inter-ExtraLight.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <Stack.Navigator

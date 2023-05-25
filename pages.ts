@@ -1,12 +1,9 @@
-import HomePage from 'components/HomePage/HomePage';
 import HeroPage from 'components/HomePage/HeroPage';
-import RecipeSearchPage from 'components/RecipeSearch/RecipeSearchPage';
-import RecipeOverview from 'components/RecipeOverview/RecipeOverview';
+import RecipeSearchPage from 'components/RecipeSearch';
 import LoginPage from 'components/Authentication/LoginPage';
 import SignUpPage from 'components/Authentication/SignUpPage';
 import PantryPage from 'components/Pantry/PantryPage';
-import ProfilePage from 'components/Profile/ProfilePage';
-import Settings from 'components/Profile/Settings';
+import ProfilePage from 'components/Profile';
 
 export const publicPages = [
   {
@@ -24,10 +21,6 @@ export const publicPages = [
 ] as const;
 
 export const privatePages = [
-  // {
-  //   page: HomePage,
-  //   name: 'Home',
-  // },
   {
     page: RecipeSearchPage,
     name: 'Search',
